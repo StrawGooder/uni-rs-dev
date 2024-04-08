@@ -1,0 +1,19 @@
+{
+    "id": "made-fmodel",
+    "name": "自定义模态框",
+    "displayName": "自定义模态框",
+    "version": "1.0.3",
+    "description": "自定义模态框",
+    "keywords": [
+        "自定义模态框"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    },
+    "dependencies": {
+        "jsts": "^2.11.0"
+    }
+}

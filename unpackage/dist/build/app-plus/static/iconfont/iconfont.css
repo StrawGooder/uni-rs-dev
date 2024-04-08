@@ -1,0 +1,137 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3392691 */
+  /* Color fonts */
+  src: 
+       url('@/static/iconfont/iconfont.woff2?t=1656580313845') format('woff2'),
+       url('@/static/iconfont/iconfont.woff?t=1656580313845') format('woff'),
+       url('@/static/iconfont/iconfont.ttf?t=1656580313845') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-caozuoguanli:before {
+  content: "\e613";
+}
+
+.icon-xingzhuanggongnengtubiao-:before {
+  content: "\e622";
+}
+
+.icon-quxian:before {
+  content: "\e86d";
+}
+
+.icon-shanchuquxiao:before {
+  content: "\e674";
+}
+
+.icon-chexiao:before {
+  content: "\e602";
+}
+
+.icon-mianji-5:before {
+  content: "\e7be";
+}
+
+.icon-shangchuan:before {
+  content: "\e760";
+}
+
+.icon-jianyan:before {
+  content: "\e94c";
+}
+
+.icon-anquan:before {
+  content: "\e96b";
+}
+
+.icon-tongzhi2:before {
+  content: "\e96e";
+}
+
+.icon-yonghuming:before {
+  content: "\e708";
+}
+
+.icon-yonghu:before {
+  content: "\e625";
+}
+
+.icon-zhuyeyonghu:before {
+  content: "\e626";
+}
+
+.icon-yonghuqunti:before {
+  content: "\e627";
+}
+
+.icon-yonghu1:before {
+  content: "\e643";
+}
+
+.icon-daohang:before {
+  content: "\e974";
+}
+
+.icon-fenlei:before {
+  content: "\e975";
+}
+
+.icon-weixian:before {
+  content: "\e979";
+}
+
+.icon-baojing:before {
+  content: "\e97c";
+}
+
+.icon-paizhao1:before {
+  content: "\ecd7";
+}
+
+.icon-tongzhi:before {
+  content: "\ecd8";
+}
+
+.icon-liuyan:before {
+  content: "\ecd9";
+}
+
+.icon-bangzhu:before {
+  content: "\ecda";
+}
+
+.icon-shezhi:before {
+  content: "\ecdc";
+}
+
+.icon-tongzhi1:before {
+  content: "\ed54";
+}
+
+.icon-xiaoxi:before {
+  content: "\ed59";
+}
+
+.icon-shoucang:before {
+  content: "\ed5a";
+}
+
+.icon-biaoqian:before {
+  content: "\ed5c";
+}
+
+.icon-daohang1:before {
+  content: "\ed69";
+}
+
+.icon-paizhao:before {
+  content: "\e972";
+}
+
