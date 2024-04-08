@@ -13,6 +13,4 @@ export default {
 	},
 	angle:5,
 	distance:6,
-	
-	
 }
