@@ -1,0 +1,51 @@
+# custom configs
+# some media files
+# *.(png|jpg|jpeg)
+# *.(rar|zip)
+# *.(pdf|doc|docx)
+
+# log files
+*log*.txt
+
+
+# for those deprecated file
+*Deprecated*
+# for backup or temporary files
+/*(Bkp|-bkp)
+*(Temp|temp)*
+
+*Mg
+
+.DS_Store
+node_modules
+/node_modules
+/dist
+
+*.bat
+!git-nsp-status.bat
+
+package-lock.json
+
+# local env files
+.env.local
+.env.*.local
+    
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+# uniapp files filter
+
+unpackage/dist/dev/app-plus
