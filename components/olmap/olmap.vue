@@ -1,32 +1,39 @@
 <template>
 	<view class="container">
-		<!-- compassangel用于当罗盘角度改变，逻辑层向视图层传递改变角度 -->
 		<view :prop="compassangel" :change:prop="ol.oncompasschanges" :propgeojson="geojson_data"
 			:change:propgeojson="ol.GetGeojson">
 		</view>
 		<!--监控手机用户的界面大小  -->
 		<view id="olMap"
-			:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}">
-			<!-- 可拖拽视频组件 -->
-			<!-- <videoconference></videoconference> -->
+			:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}" style="z-index: 9998;">
+
 		</view>
 	</view>
 </template>
 <!-- 逻辑层 -->
 <script>
 	import {
-		getShpAll
+		getShpOne,
+		get_shooting_point,
+		get_all_layerimage,
+		getDrawGeojsonDatas
 	} from '../../utils/getData.js';
 	import setting from '@/setting.js';
+	import {
+		sourcesFromTileGrid
+	} from 'ol/source';
 	import {
 		mapState,
 		mapMutations
 	} from 'vuex';
+	// import videoconference from '@/components/v'
+
 	export default {
 		computed: mapState(['hasLogin', 'uerInfo']),
-		// components: {
-		// 	videoconference
-		// },
+		
+		props: {
+
+		},
 		data() {
 			return {
 				nowMapIndex: true,
@@ -59,7 +66,12 @@
 				lat:''
 			}
 		},
-		// },
+		watch: {
+
+		},
+		components: {
+
+		},
 		created() {
 			// 计算屏幕高度 ，宽度
 			let _this = this;
@@ -73,13 +85,13 @@
 				}
 			});
 		},
+
+
 		computed: { //计算
 			nintyPercentScreenHeight() { //百分之九十的屏幕高
-			
 				if (this.phoneHeight !== '' && this.phoneWidth !== '') {
 					return 750 / (this.phoneWidth) * (this.phoneHeight) * 1 + 'rpx'
 				} else {
-					
 					return '2000rpx'
 				}
 			},
@@ -92,26 +104,7 @@
 			},
 		},
 		onHide() {
-			
-			uni.removeStorageSync('first');
-			// //停止加速度监听
-			// uni.stopAccelerometer();
-			
-			// 取消监听
-			// uni.offCompassChange(this.excuteCompass)
-			// uni.stopCompass();
-
-		},
-		beforeDestroy() {
-			// uni.stopCompass();
-			// uni.offCompassChange(this.excuteCompass)
-			// uni.stopCompass();
-			console.log("beforeDestroy")
-						// clearInterval(this.gyroUpdateTimer);
-						// //停止监听陀螺仪数据
-						// this.gyroModule.stopGyro();
-			// uni.stopAccelerometer();
-			
+			uni.removeStorageSync('first');		
 		},
 		methods: {
 			...mapMutations(['logout']),
@@ -127,6 +120,7 @@
 					url: '../../pages/login/login'
 				})
 			},
+
 			login_onCompassChange() {
 				 // uni.onCompassChange(this.excuteCompass);
 				uni.onCompassChange((CompassRes) => {
@@ -178,55 +172,16 @@
 				});
 			},
 			// },
-			async changeOptionFn() {
-				var that = this
-				//等待地图加载完,后期优化
-	
-				while (this.init_map_complete == 0) {}
-				await plus.geolocation.watchPosition( //不停的获取和更新用户的地理位置信息，自定义执行间隔时间；当设备地理位置发生改变时，自动调用；
-					function(p) {
-						that.lon = p.coords.longitude
-						that.lat = p.coords.latitude
-						// p为获取成功的定位数据
-						if (that.options.longitudes == p.coords.longitude && that.options.latitude == p.coords
-							.latitude) {
-							if (that.watchPositionTime < 6000) {
-								that.watchPositionTime += 2000
-							}
-						} else {
-							that.options.longitudes = p.coords.longitude
-							that.options.latitude = p.coords.latitude
-							if (that.watchPositionTime > 0) {
-								that.watchPositionTime = 0
-							}
-						}
-						
-					},
-					function(err) {
-						//失败回调
-					}, {
-						provider: 'system',
-						//是否使用高精度设备，如GPS。默认是true  
-						enableHighAccuracy: true,
-						//超时时间，单位毫秒，默认为0  
-						//使用设置时间内的缓存数据，单位毫秒  
-						//默认为0，即始终请求新数据  
-						//如设为Infinity，则始终使用缓存数据  
-						maximumAge: that.watchPositionTime
-					});
 
-			},
 		},
 		mounted() {
-			// this.getShpDate()
-			// this.login_onCompassChange()
+			 this.getShpDate()
+			 this.login_onCompassChange()
 		},
-		created(){
-			this.getShpDate()
-			
-		},
+
 	}
 </script>
+
 <script module="ol" lang="renderjs">
 	import 'ol/ol.css';
 	import Map from 'ol/Map';
@@ -261,7 +216,9 @@
 	} from 'ol/interaction';
 	import {
 		boundingExtent,
-		getCenter
+		getCenter,
+		getTopLeft,
+		getWidth
 	} from 'ol/extent';
 	import Overlay from 'ol/Overlay';
 	import {
@@ -273,7 +230,8 @@
 	} from 'ol/Observable';
 	import {
 		MousePosition,
-		ScaleLine
+		ScaleLine,
+		defaults,
 	} from 'ol/control';
 	import {
 		createStringXY
@@ -293,6 +251,8 @@
 	// import {bbox} from 'ol/loadingstrategy';
 	// import {fromLonLat, toLonLat,transformExtent, transform } from 'ol/proj'
 	import WKB from 'ol/format/WKB';
+	import WMTSTileGrid from 'ol/tilegrid/WMTS'
+	import WMTS from "ol/source/WMTS";
 	import setting from '@/setting.js';
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 	const source = new sourcevector({
@@ -372,14 +332,7 @@
 			console.log("destroyed")
 		},
 		beforeDestroy() {
-			// uni.stopCompass();
-			// uni.offCompassChange(this.excuteCompass)
-			// uni.stopCompass();
-			console.log("beforeDestroy")
-						// clearInterval(this.gyroUpdateTimer);
-						// //停止监听陀螺仪数据
-						// this.gyroModule.stopGyro();
-			// uni.stopAccelerometer();
+
 			
 		},
 		methods: {
@@ -425,22 +378,48 @@
 				this.map.addOverlay(measureTooltip);
 			},
 		 async	initAmap() {
-				var sourceMark = new XYZ({
-					url: 'http://t2.tianditu.com/DataServer?T=img_w&tk=da4af7d03246cb5e7a32655e023f54aa&x={x}&y={y}&l={z}'
-					//url: 'http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX={z}&TILEROW={x}&TILECOL={y}&tk=4f8cd127245e44fe72f01408ec3862d5'
-					// url: 'http://t4.tianditu.com/DataServer?T=img_w&tk=b9031f80391e6b65bd1dd80dcde1b097&x={x}&y={y}&l={z}'
-				})
+			 var that = this
+			 var wkid = 4326;
+			 const projection = getProjection('EPSG:3857');
+			 const projectionExtent = projection.getExtent();
+			 const size = getWidth(projectionExtent) / 256;
+			 const resolutions = new Array(19);
+			 const matrixIds = new Array(19);
+			 var wmtsUrl = 'http://t{0-7}.tianditu.gov.cn/img_w/wmts?tk='; //影像底图
+			 var token ="da4af7d03246cb5e7a32655e023f54aa"; 
+			 for (let z = 0; z < 19; ++z) {
+			 	// generate resolutions and matrixIds arrays for this WMTS
+			 	resolutions[z] = size / Math.pow(2, z);
+			 	matrixIds[z] = z;
+			 }
+			 
+			 var sourceMark = new WMTS({
+			 	url: wmtsUrl + token,
+			 	layer: 'img',
+			 	matrixSet: 'w',
+			 	format: 'tiles',
+			 	style: 'default',
+			 	projection: projection,
+			 	tileGrid: new WMTSTileGrid({
+			 		origin: getTopLeft(projectionExtent),
+			 		resolutions: resolutions,
+			 		matrixIds: matrixIds,
+			 	}),
+			 	// visible: true,
+			 })
+
 				const tileLayer = new TileLayer({
 					source: sourceMark
 				})
-				var sourceMark = new XYZ({
-					url: 'http://t2.tianditu.com/DataServer?T=cva_w&tk=da4af7d03246cb5e7a32655e023f54aa&x={x}&y={y}&l={z}'
+				var titleMarkUrl = new XYZ({
+					url: 'http://t2.tianditu.com/DataServer?T=cva_w&tk='+token+'&x={x}&y={y}&l={z}'
 				})
 				var tileMark = new TileLayer({
 					title: '标注图层',
-					source: sourceMark
+					source: titleMarkUrl
+
 				})
-				this.map = await new Map({
+				this.map = new Map({
 					// 设置地图图层
 					target: "olMap", // DOM容器
 					//越往左，图层越在底层
@@ -450,9 +429,14 @@
 						center: [108, 22], //地图中心点 经纬度
 						zoom: 16, // 缩放级别-显示层级
 						minZoom: 0, // 最小缩放级别
-						maxZoom: 25, // 最大缩放级别
+						maxZoom: 30, // 最大缩放级别
 						projection: getProjection("EPSG:4326")
 					}),
+					controls:defaults({
+						attribution: false,
+						zoom: false,
+						rotate: false
+					})
 				});
 				// this.loadGeoserverMap()
 				this.setPoint()
@@ -467,7 +451,7 @@
 						that.init_latitude = p.coords.latitude
 						try {
 							that.feature.setGeometry(new Point([that.init_longtudes, that.init_latitude]))
-							that.stylepoint.getText().setText(''+p.coords.longitude+"\n"+p.coords.latitude+'')
+							// that.stylepoint.getText().setText(''+p.coords.longitude+"\n"+p.coords.latitude+'')
 							if(that.init_center){
 								that.set_center_point(that.init_longtudes, that.init_latitude)
 								that.init_center =false
@@ -523,13 +507,19 @@
 				this.map.addLayer(this.VectorLayer);			
 				await this.createShePolygon();
 				//监听图层变化
-				// this.map.getView().on('change:resolution', () => {
-				//       if (this.map.getView().getZoom() >= 17) {
-				//         this.setLayerVisible("3333",true)
-				//       } else {
-				//         this.setLayerVisible("3333",false)
-				//       }
-				//     })
+				this.map.getView().on('change:resolution', () => {
+					let layers = this.map.getLayers().getArray()
+					for (const layer of layers) {
+						const ln = layer.get("name")
+						if (typeof ln != 'undefined') {
+							if (this.map.getView().getZoom() >= 17) {
+								this.setLayerVisible(ln, true)
+							} else {
+								this.setLayerVisible(ln, false)
+							}
+						}
+					}
+				})
 			},
 			//添加图层
 			loadGeoserverMap() {
@@ -672,7 +662,7 @@
 		},
 	}
 </script>
-<!-- ```javascript -->
+
 <style>
 	.content {
 		display: flex;
@@ -773,5 +763,35 @@
 
 	.ol-tooltip-static:before {
 		border-top-color: #ffcc33;
+	}
+	.operation-button{	
+		// display: inline-block;
+		width: 60rpx;
+		height: 60rpx;				
+		border: none;
+		border-radius: 50%;	
+		margin-top: 20rpx;
+		left:20rpx
+	}
+	.operation-text{
+		font-size: 15rpx;
+		top: 50%;
+		transform: translateX(-50%);
+		position: absolute;
+		display: inline-block;
+	}
+	.operation-icon {
+		font-size:45rpx;
+		// position: fixed;
+		display: inline-block;
+		position: absolute;
+		top: -56%; /* 调整位置 */
+		left: 50%;
+		transform: translateX(-50%)
+	}
+
+	button::after {
+		border: none;
+		background-color: none;
 	}
 </style>

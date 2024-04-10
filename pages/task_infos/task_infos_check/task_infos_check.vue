@@ -2,25 +2,18 @@
 	<view>
 		<!-- <olMap  @func="chang_transition_top($event)"></olMap> -->
 		<!-- 地图模块向空间分析传值 -->
-		<u-toast ref="uToast" />
+
 		<olmapoperation :messageOlmap="messageolmap" @olmapSend="messageAnaly($event)" :tbbh="tbbh"
 			@featureGeoJsonSend="getfeatureGeoJson($event)" @compassangelSend="getcompassangel($event)"
 			@jwdSend="getjwd($event)" @get_graphphone_status="get_graphphone_status($event)"></olmapoperation>
 		<view class="index">
-			<!--    <uni-nav-bar title="u-transition" :is-back="false"></uni-nav-bar>
-		    <image
-		      class="mainImg"
-		      src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fmobile%2F2020-05-20%2F5ec49c878b478.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1640914481&t=c2bfcdd374daedb8c9259716a57c30d7"
-		      mode="widthFix"
-		    /> -->
-			<!-- 在最外层用u-transition组件包起来，具体可看官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法"; -->
 			<uni-transition v-bind:custom-class="{'menu_warp': isActive, 'menu_warp1': hasError }" :show="show"
 				ref="menuWarp">
 				<!-- "menu_warp" -->
 				<view class="warp">
 					<button class="bar" @touchmove.stop="touchMove" @touchend.stop="touchEnd"
 						@touchstart.stop="touchStart" ></button> 
-					<custom-tabs type="c1" :value="value" style="height: 100%;">
+					<custom-tabs type="c1" :value="value" >
 						<one></one>
 						<two :id="tbbh"></two>
 						<three :id="tbbh"></three>
@@ -131,9 +124,7 @@
 			//开始触摸
 			touchStart(e) {
 				//记录手指触摸到屏幕的那一个的位置，计算小黑条的top值
-
 				this.start = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2);
-
 			},
 			//修改transition的top值,获取空间分析的值
 			messageAnaly(message) {
@@ -226,13 +217,7 @@
 			getfeatureGeoJson(message) {
 				this.featureGeoJsonData.push(message.geometry)
 			},
-			// getImageList(e) {
-			// 	this.imagelist = e;
-			// },
-			//获取错误图片的序号，从0开始算
-			// getimagestauts(e){
-			// 	this.image_error = e
-			// },
+
 			//触摸开始并且移动
 			touchMove(e) {			
 				// 
