@@ -812,34 +812,7 @@
 						maximumAge: 1000,
 					});
 			},
-			/*
-			 * 获取在线天地图
-			 * type:获取的瓦片类型，影像、矢量
-			 * wkid:坐标系
-			 * token:官网申请的开发者token
-			 */
-			getLayerUrlByData(type, wkid, token) {
-				var url = '',
-					layerId, tileMatrixSetId;
-				if (type === 'image') {
-					url = 'http://t{1-7}.tianditu.com/DataServer?';
-					layerId = "img_";
-					tileMatrixSetId = wkid === 4326 ? 'c' : "w";
-				} else if (type === 'label') {
-					url = 'http://t{1-7}.tianditu.com/DataServer?';
-					layerId = "cia_";
-					tileMatrixSetId = wkid === 4326 ? 'c' : "w";
-				} else if (type === 'street') {
-					url = 'http://t{1-7}.tianditu.com/DataServer?';
-					layerId = "vec_";
-					tileMatrixSetId = wkid === 4326 ? 'c' : "w";
-				} else if (type === 'street_label') {
-					url = 'http://t{1-7}.tianditu.com/DataServer?';
-					layerId = "cva_";
-					tileMatrixSetId = wkid === 4326 ? 'c' : "w";
-				}
-				return url + 'T=' + layerId + tileMatrixSetId + '&x={x}&y={y}&l={z}&tk=' + token;
-			},
+
 			initAmap() {
 				var that = this
 				var wkid = 4326;
@@ -960,7 +933,6 @@
 				this.map.getView().on('change:resolution', () => {
 					let layers = this.map.getLayers().getArray()
 					for (const layer of layers) {
-
 						const ln = layer.get("name")
 						if (typeof ln != 'undefined') {
 							if (this.map.getView().getZoom() >= 17) {
