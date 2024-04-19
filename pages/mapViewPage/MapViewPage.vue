@@ -1,8 +1,21 @@
 <template>
 	<view>
-		<ol-map>
-		</ol-map>
-		<view class="index" style="height: 60vh;position:absolute;">
+	<!-- 	<ol-map>
+		</ol-map> -->
+		<view
+		style="position: absolute;z-index: 999;top: 0px"
+		>
+			<MapViewBasicToolbar
+			>
+				
+			</MapViewBasicToolbar>
+			
+		</view>
+		
+		<view 
+		class="index" 
+		style="height: 60vh;position:absolute;"
+		>
 			<uni-transition  
 			v-bind:custom-class="{'menu_warp': isActive, 'menu_warp1': hasError }" 
 			:show="show"
@@ -16,16 +29,7 @@
 					@touchend.stop="touchEnd"
 					@touchstart.stop="touchStart" >
 					</button> 
-				<!-- 	<custom-tabs type="c1" :value="value" >
-						<one></one>
-						<two :id="tbbh"></two>
-						<three :id="tbbh"></three>
-						<chooseimage :imageList="imagelist" :get_map_data="get_map_data"
-							:set_graphphone_status="set_graphphone_status" :tbbh="tbbh"
-							:investigationStatus="investigationStatus">
-						</chooseimage>
-					</custom-tabs> -->
-					
+
 					<MapViewBottomPanel>
 						
 					</MapViewBottomPanel>
@@ -34,6 +38,19 @@
 			</uni-transition>
 		</view>
 	
+	<!-- 	<custom-tabs type="c1" :value="value" >
+			<one></one>
+			<two :id="tbbh"></two>
+			<three :id="tbbh"></three>
+			<chooseimage 
+			:imageList="imagelist" 
+			:get_map_data="get_map_data"
+			:set_graphphone_status="set_graphphone_status" 
+			:tbbh="tbbh"
+			:investigationStatus="investigationStatus"
+			>
+			</chooseimage>
+		</custom-tabs> -->
 	</view>
 
 </template>
@@ -42,27 +59,30 @@
 <!-- ```javascript -->
 <script>
 	import olMap from "@/components/olmap/olmap.vue";
-	import one from "@/components/custom-tab-check/custom-tab-check-one.vue";
-	import two from "@/components/custom-tab-check/custom-tab-check-two.vue";
-	import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
-	import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
-	import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
+	// import one from "@/components/custom-tab-check/custom-tab-check-one.vue";
+	// import two from "@/components/custom-tab-check/custom-tab-check-two.vue";
+	// import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
+	// import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
+	// import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
 	
 	import MapViewBottomPanel from "./MapViewBottomPanel.vue";
+	import MapViewBasicToolbar from "./MapViewBasicToolbar.vue";
 	
 	export default {
 		components: {
 			olMap,
 			MapViewBottomPanel,
-			one,
-			two,
-			three,
-			analy,
-			chooseimage,
+			MapViewBasicToolbar,
+			// one,
+			// two,
+			// three,
+			// analy,
+			// chooseimage,
 		},
 		data() {
 			return {
 				show: true,
+				
 				isActive: true,
 				hasError: false,
 				start: 0,
@@ -74,6 +94,25 @@
 		},
 		onLoad(options) {
 			this.windowHeight = uni.getSystemInfoSync().windowHeight;
+			
+		},
+		created(){
+			
+			
+			var tabName = `$change_tab_${this.rfTabName}`
+			uni.$off(tabName)
+			uni.$on(
+				tabName, 
+				(ev)=>{
+					this.slideBottomPanelTo()
+				}
+			)
+			
+		},
+		mounted(){
+
+			// temp for debug
+			setTimeout(()=>{this.slideBottomPanelTo(this.mintop, 128)}, 256)
 		},
 		methods:{
 			//开始触摸
@@ -83,8 +122,9 @@
 			},
 			touchMove(e) {			
 	
-				this.$u.throttle(function(e) {
-					//step 和 run 方法 查看uniapp官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法";其实文档上写需要先初始化init，但是不init也可以使用，不知道为什么
+				this.$u.throttle((e)=>{
+					//step 和 run 方法 查看uniapp官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法";
+					// 其实文档上写需要先初始化init，但是不init也可以使用，不知道为什么
 					let top = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2) * 100 + "vh";
 					if (parseInt(top) >= 80) {
 						top = this.maxtop;
@@ -99,12 +139,9 @@
 						this.isActive = true,
 						this.hasError = false
 					}
-					this.$refs.menuWarp.step({
-						top: top
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
+	
+					this.slideBottomPanelTo(top)
+					
 				}, 60, true)
 				//节流函数：60ms内，只触发一次，感知不大，这里用的是uview封装好的节流函数，官方文档：https://v1.uviewui.com/js/debounce.html
 			},
@@ -112,39 +149,41 @@
 			touchEnd(e) {
 				const start = this.start * 100;
 				const end = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2) * 100;
+				var pos = this.maxtop
+				
 				if (start > end) {
-					this.$refs.menuWarp.step({
-						top: "45%"  //面板高度  数值越高，则越低
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
-				} else if (start < end) {
-					this.$refs.menuWarp.step({
-						top: this.maxtop
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
+					pos = "45%"
+					
 				}
+				
+				this.slideBottomPanelTo(pos)
 			},
+			
 			//输入框获焦
 			focus() {
-				this.$refs.menuWarp.step({
-					top:this.mintop
-				}, {
-					duration: 180
-				});
-				this.$refs.menuWarp.run(() => {});
+
+				this.slideBottomPanelTo(this.mintop)
 			},
 			//输入框失焦
 			blur() {
+
+				this.slideBottomPanelTo(this.maxtop)
+			},
+			
+			// pos : sugget relative unit
+			slideBottomPanelTo(pos, duration){
+				
+				//step 和 run 方法 查看uniapp官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法";
+				// 其实文档上写需要先初始化init，但是不init也可以使用，不知道为什么
 				this.$refs.menuWarp.step({
-					top: this.maxtop
+					top: pos  //面板高度  数值越高，则越低
 				}, {
-					duration: 180
+					duration: duration || 180
 				});
 				this.$refs.menuWarp.run(() => {});
+				
+				console.log("debug-bottomTab", pos);
+			
 			},
 		},
 

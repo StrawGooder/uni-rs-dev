@@ -3,8 +3,11 @@
 	<view
 	:style="renderStyle()"
 	:class="rfImgClass"
+	@click="onClicked"
 	>
-		<view v-if="computedContentMode=='icon'">
+		<view 
+		v-if="computedContentMode=='icon'"
+		>
 		<!-- 	<image
 			:src = "loadSVG(icon)"
 			:style="renderStyle()"
@@ -28,7 +31,6 @@
 				{{text}}
 			</button>
 		</view>		
-		
 		
 	</view>
 
@@ -54,6 +56,11 @@ export default {
 		
 		text:{
 			
+			type:String,
+			default:""
+		},
+		
+		name:{
 			type:String,
 			default:""
 		},
@@ -186,9 +193,11 @@ export default {
 				color:this.color,
 				height: `${this.size}px`,
 				width: `${this.size}px`,
+				// fontSize : temp process, for icon(svg) size scale
+				fontSize:`${this.size-2}px`,
 			}
 			return style
-			
+
 		},
 		
 		loadSVG(icon){
@@ -199,6 +208,18 @@ export default {
 			
 		// 	return getSVG(icon)
 		// }
+		onClicked(ev){
+			
+			var ev_pro = {
+				
+				naiveEvent:ev,
+				btnKey:this.name,
+				data:{
+					
+				}
+			}
+			this.$emit("click", ev_pro)
+		}
 	
 	},
 	

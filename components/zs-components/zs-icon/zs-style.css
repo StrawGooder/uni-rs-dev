@@ -4,3 +4,11 @@
 		height:1em;
 		/* color:pink; */
 	}
+	
+	
+	.zs-hlyt{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+	}

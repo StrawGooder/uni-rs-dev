@@ -28,7 +28,7 @@
 		</view> -->
 		
 		<uni-row>
-			<uni-col :span='1'>
+			<uni-col :span='2'>
 				<ZsButtonGroup
 				:items = "rfFeatBtnItems"
 				>
@@ -108,9 +108,9 @@ export default {
 			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
 			rfBtnItems:
 			[
-				{"icon":"eyeFill", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
-				{"icon":"refresh", "color":"green"},
-				],
+				{"icon":"eyeFill", "name":"hide", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
+				{"icon":"refresh", "name":"refresh", "color":"green"},
+			],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
 		}
 	},

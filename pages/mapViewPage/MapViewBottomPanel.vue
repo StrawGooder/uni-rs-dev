@@ -2,27 +2,50 @@
 	
 	<view>
 		<custom-tabs
-		type="bottom"
-		:value="0"
+		:type="rfTabName"
+		:value="rfCurTabInd"
 		>
 			<custom-tab-pane 
 			label="图层" 
-			name="bottom_layer">
-				<MapObjViewCtrlPanel>
+			:name="makeupTabKey('layer')">
+				<MapObjLayerCtrlPanel>
 					
-				</MapObjViewCtrlPanel>
+				</MapObjLayerCtrlPanel>
 			</custom-tab-pane>
 			
-			<custom-tab-pane
-			label="分析"
-			name="bottom_analysis"
+		<!-- 	<custom-tab-pane
+			label="数据分析"
+			:name="makeupTabKey('analy')"
 			>
-				
+				<DataAnalyPanel>
+					
+				</DataAnalyPanel>
+			</custom-tab-pane> -->
+			<custom-tab-pane
+			label="空间分析"
+			:name="makeupTabKey('spatialAnaly')"
+			>
+				<SpatialAnalyPanel>
+					
+				</SpatialAnalyPanel>
+			</custom-tab-pane>
+			<custom-tab-pane
+			label="数据采集"
+			:name="makeupTabKey('dataCollection')"
+			>
+		<!-- 		<OutdoorDataCollectionPanel
+				:imageList="imagelist"
+				:get_map_data="get_map_data"
+				:set_graphphone_status="set_graphphone_status" 
+				:tbbh="tbbh"
+				:investigationStatus="investigationStatus"
+				>
+					
+				</OutdoorDataCollectionPanel> -->
 			</custom-tab-pane>
 			
 		</custom-tabs>
 		
-	
 	</view>
 
 </template>
@@ -31,8 +54,15 @@
 
 import Vue from 'vue';
 
-// import MapObjViewCtrlPanel from './MapObjViewCtrlPanel.vue';
-import MapObjViewCtrlPanel from './bottom-tabs/MapObjViewCtrlPanel.vue';
+// import MapObjLayerCtrlPanel from './MapObjLayerCtrlPanel.vue';
+import MapObjLayerCtrlPanel from './panels/MapObjLayerCtrlPanel.vue';
+import OutdoorDataCollectionPanel from './panels/OutdoorDataCollectionPanel.vue';
+import SpatialAnalyPanel from "./panels/SpatialAnalyPanel.vue";
+// import DataAnalyPanel from './panels/DataAnalyPanel.vue';
+
+// import OutdoorDataCollectionPanel from '@/components/custom-tab-check/custom-tab-check-chooseimage.vue';
+// import DataAnalyPanel from "@/components/custom-tab-check/custom-tab-check-analy.vue";
+
 
 export default {
     
@@ -43,7 +73,10 @@ export default {
     },
 
     components:{
-		MapObjViewCtrlPanel
+		MapObjLayerCtrlPanel,
+		OutdoorDataCollectionPanel,
+		// DataAnalyPanel,
+		SpatialAnalyPanel,
 		
 	},
 
@@ -54,7 +87,8 @@ export default {
         var props = this.$props
         
         return {
-
+			rfTabName:"mvbt",
+			rfCurTabInd:0
         }
     },
 
@@ -63,11 +97,25 @@ export default {
     },
 
     created(){
-
+		
+		
+		var tabName = `$change_tab_${this.rfTabName}`
+		uni.$off(tabName)
+		uni.$on(
+			tabName, 
+			(ev)=>{
+				
+			}
+		)
+		
     },
 
     methods:{
 
+		makeupTabKey(name){
+			
+			return `${this.rfTabName}_${name}`
+		}
     },
 
     // render(h){

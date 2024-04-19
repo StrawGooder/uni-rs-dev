@@ -1,44 +1,64 @@
-<template>
+<!-- <template>
 	<ZsButtonGroup
-	:layoutDir="v"
+	layoutDir="v"
 	:items = "rfBtnItems"
+	:itemSize="32"
 	>
 		
 	</ZsButtonGroup>
-</template>
+</template> -->
 
 <script type="text/javascript">
 
 import Vue from 'vue';
 import ZsButtonGroup from '../../components/zs-components/zs-button-group/ZsButtonGroup.vue';
 
+// const items = 
+
+function getDefaultProps(){
+	
+	return {
+		
+		items:{
+			default:()=>[
+				{"icon":"layersFill", "name":"layer", "color":"orange"},
+				{"icon":"eyeFill", "name":"view", "color":"orange"},
+			]
+		},
+		itemSize:{
+			default:48
+		},
+		layoutDir:{
+			default:"v"
+		}
+	}
+}
+
 export default {
     
     name:"MapViewBasicToolbar",
 
-    props:{
-		
-    },
+    props:getDefaultProps(),
 
     components:{
 		
-		ZsButtonGroup
+		// ZsButtonGroup
 		
 	},
 
-    mixins:[],
+    mixins:[ZsButtonGroup],
 
-    data(){
+   //  data(){
 
-        var props = this.$props
+   //      var props = this.$props
         
-        return {
-			rfBtnItems:[
-				{"icon":"layersFill", "color":"orange"},
-				{"icon":"eyeFill", "color":"orange"},
-			]
-        }
-    },
+   //      return {
+			// rfBtnItems:[
+			// 	{"icon":"layersFill", "name":"layer", "color":"orange"},
+			// 	{"icon":"eyeFill", "name":"view", "color":"orange"},
+			// ]
+   //      }
+   //  },
 
     computed:{
 
@@ -46,10 +66,24 @@ export default {
 
     created(){
 
+		
     },
 
     methods:{
 
+		handleClicked(ev){
+			
+			var key = ev.btnKey
+			console.log("debug-button ",key)
+			if(key=="layer")
+			{
+				
+			}
+			else if(key=="eye")
+			{
+				
+			}
+		}
     },
 
     // render(h){
