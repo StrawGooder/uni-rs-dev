@@ -41,16 +41,13 @@
 // import { defineComponent, h, render } from "vue" ;
 // import {getSVG} from "../zs-icon/iconSet.js";
 // import ZsIcon from "../zs-icon/ZsIcon.vue";
-import ZsButtonBase from "./ZsButtonBase.vue";
+// import ZsButtonBase from "./ZsButtonBase.vue";
+import ZsButtonBase from "./ZsButton.vue";
 
 
 export default {
 	
 	name:"ZsButtonSta2",
-	
-	// components:{
-	// 	ZsIcon
-	// },
 	
 	mixins:[ZsButtonBase],
 	
@@ -97,7 +94,7 @@ export default {
 			
 			get:function(){
 				
-				if(!this.isDisabled())
+				if(!this.isOff())
 				{
 					return this.icon
 				}
@@ -111,7 +108,7 @@ export default {
 			
 			get:function(){
 				
-				if(!this.isDisabled())
+				if(!this.isOff())
 				{
 					return this.color
 				}
@@ -162,8 +159,6 @@ export default {
 	// 		return "icon"		
 	// 	}
 		
-		
-	
 	},
 	
 	created(){
@@ -220,6 +215,8 @@ export default {
 				color: this.computedColor,
 				height: `${this.size}px`,
 				width: `${this.size}px`,
+				// fontSize : temp process, for icon(svg) size scale
+				fontSize:`${this.size-2}px`,
 			}
 			
 			return style
@@ -231,13 +228,28 @@ export default {
 		// 	return getSVG(icon)
 		// },
 		
-		isDisabled(){
+		isOff(){
 			return this.rfStatus<1?true:false
 		},
 		
 		onClicked(ev){
-			this.rfStatus = !this.rfStatus
+			// this.rfStatus = !this.rfStatus
 		},
+		
+		onClicked(ev){
+			
+			this.rfStatus = !this.rfStatus
+			var ev_pro = {
+				
+				naiveEvent:ev,
+				btnKey:this.name,
+				data:{
+					enabled:this.rfStatus
+				}
+			}
+			this.$emit("click", ev_pro)
+
+		}
 		// loadSVG2(icon){
 			
 		// 	return getSVG(icon)

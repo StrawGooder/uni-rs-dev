@@ -1,53 +1,13 @@
-<template>
-	
-<!-- 	<view>
-		
-			<view v-for="(it,ind) in items" :key="ind">
-				<image 
-				:src = "loadSVG(it.icon)"
-				:style="rfStyle">
-				</image>
-			</view>	
-	
-	</view> -->
-	
-	<uni-row>
-		<uni-col 
-		v-for="(it,ind) in items" 
-		:key="ind"
-		:span="computedItemCol"
-		>
-		<!-- 	<view>
-				<image 
-				:src = "loadSVG(it)"
-				:style="renderItemStyle(it)">
-				</image>
-			</view>	 -->	
-			
-		<!-- 	<ZsButton
-			v-if="it.compType=='base'"
-			v-bind="mergeItemProps(it)"
-			>
-				
-			</ZsButton> -->
-			<ZsButtonSta2
-			v-bind="mergeItemProps(it)"
-			>
-				
-			</ZsButtonSta2>
-		</uni-col>
-	
-	</uni-row>
 
-</template>
 
 <script>
 	
-import { defineComponent, h, render } from "vue" 
+// import { defineComponent, h, render } from "vue" 
 import ZsButton from "./ZsButton.vue"
 import ZsButtonSta2 from "./ZsButtonSta2.vue"
 import {getSVG} from "../zs-icon/iconSet.js"
-
+// import UniRow from "@/uni_modules/uni-row/components/uni-col/uni-col.vue"
+// import UniCol from "@/uni_modules/uni-row/components/uni-col/uni-col.vue"
 
 export default {
 	
@@ -55,7 +15,9 @@ export default {
 	
 	components:{
 		ZsButton,
-		ZsButtonSta2
+		ZsButtonSta2,
+		// UniRow,
+		// UniCol
 	},
 	
 	props:{
@@ -73,6 +35,16 @@ export default {
 		featMode:{
 			type:String,
 			default:""
+		},
+		
+		layoutDir:{
+			type:String,
+			default:"h"
+		},
+		
+		layoutMode:{
+			type:String,
+			default:"center"
 		}
 		
 	},
@@ -80,7 +52,7 @@ export default {
 	data(){
 		return {
 			
-			rfClass:["hlyt"],
+			rfContClass:{"zs-hlyt": this.layoutDir=="h"?true:false},
 			
 			// rfImgSrc: getSVG("eye")
 			rfStyle:{},
@@ -95,6 +67,39 @@ export default {
 		computedItemCol:{
 			get:function(){
 				return this.rfColTotal / this.items.length
+			}
+		},
+		
+		computedContClass:{
+			get:function(){
+				
+				// {"zs-hlyt": this.layoutDir=="h"?true:false}
+				
+				var class_name = "zs-hlyt"
+				
+				if(this.layoutDir=="h")
+				{
+					if(this.layoutMode=="start")
+					{
+						
+						class_name = class_name + ""
+					}
+					else if(this.layoutMode=="end")
+					{
+						class_name = class_name + "-end"
+					}
+					else if(this.layoutMode=="between")
+					{
+						class_name = class_name + "-between"
+					}
+				}
+				else
+				{
+					class_name = ""
+				}
+				
+				return [class_name]
+				
 			}
 		}
 		
@@ -145,10 +150,10 @@ export default {
 			return item
 		},
 		
-		loadSVG(item){
+		// loadSVG(item){
 			
-			return getSVG(item.icon)
-		}
+		// 	return getSVG(item.icon)
+		// },
 		// renderStart(){
 		// 	var props = this.$props
 			
@@ -164,55 +169,88 @@ export default {
 		
 		// renderEnd(){
 			
-		// }
+		// },
+		
+		onClicked(ev){
+			
+			this.handleClicked(ev)
+			this.$emit("click", ev)
+			
+		},
+		
+		handleClicked(ev){
+				
+		},
+		
+		// wrapElem(){
+			
+			
+		// },
+		
+		
+		renderBtns(h, items, wrap_elem){
+			
+			// if(wrap_elem!=null){
+				
+			// }
+			var ret_vns = []
+			
+			// for(var i in items)
+			// {
+			// 	ret_vns.push( this.renderBtn(h, this.mergeItemProps(items[i])) )
+			// }
+			items.forEach(
+				(it,i)=>{
+					ret_vns.push( this.renderBtn(h, this.mergeItemProps(it)) )
+				}
+			)
+			
+			return ret_vns
+		},
+		
+		renderBtn(h, item){
+			
+			return h("ZsButtonSta2", 
+			{
+				props:item, 
+				on:
+				{
+					click:(ev)=>{this.onClicked(ev)},
+				},
+			}
+			)
+			
+		},
 		
 	},
 	
 	
-	// render(h){
+	render(h){
+
+		var btn_vns = []
 		
-	// 	var props = this.$props
+		btn_vns = this.renderBtns(h, this.items)
 		
-	// 	var vn_childs = []
-		
-	// 	var pitems = props.items
-		
-	// 	var iter_item
-		
-	// 	var new_btn
-		
-	// 	for (let i in pitems) {
+		return h("view", {class:this.computedContClass}, btn_vns)
+		// var col_vns = []
+		// var iter_col_vn;
+		// for(var i in this.items)
+		// {
+		// 	iter_col_vn = h(
+		// 	// "uni-col", 
+		// 	"UniCol",
+		// 	{props:{span:this.computedItemCol}}, 
+		// 	[h("ZsButtonSta2", {props:this.items[i]})],
+		// 	)
+		// 	col_vns.push(iter_col_vn)
 			
-	// 		iter_item = pitems[i]
-			
-	// 		// new_btn = h("image", {props:{src:getSVG(iter_item["icon"])}})
-			
-	// 		new_btn = h("uni-image", 
-	// 		{
-	// 			props:
-	// 			{
-	// 				src:"../zs-icon/resources/imgs/svg/house2.svg",
-	// 			},
-	// 			// src:"static/imgs/svg/house.svg",
-	// 			// src:"../zs-icon/resources/imgs/svg/house2.svg",
-	// 		}
-	// 		)
-			
-	// 		vn_childs.push(new_btn)
-			
-	// 		// vn_childs.push(
-	// 		// 	h("button", 
-	// 		// 	{}, 
-	// 		// 	[iter_item["text"]],
-	// 		// 	)
-	// 		// )
-	// 	}
+		// }
 		
-	// 	vn_childs.push(h("uni-view",{}, ["aa"]))
+		// // return h("uni-row", {}, col_vns)
+		// return h("UniRow", {}, col_vns)
 		
-	// 	return h("uni-view", {}, vn_childs)
 		
-	// }
+	}
 	
 }
 	

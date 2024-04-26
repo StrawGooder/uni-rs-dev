@@ -1,19 +1,23 @@
 import Vue from "vue";
-var eye_icon = require("../zs-icon/resources/imgs/svg/house.svg");
-var refresh_icon = require("../zs-icon/resources/imgs/svg/house.svg");
+// var eye_icon = require("../zs-icon/resources/imgs/svg/house.svg");
+// var refresh_icon = require("../zs-icon/resources/imgs/svg/house.svg");
 
 function getSVG(name) {
 	
 	return name_to_svg[name]
 }
 
-var name_to_svg = {}
-var name_to_icon_comp = {}
+// var name_to_svg = {}
+var name_to_icon_comp = null
 
 function initSvgIconComponent(){
 	
-	var retDom = ""
-	
+	if(name_to_icon_comp!=null)
+	{
+		return
+	}
+	name_to_icon_comp={}
+
 	var name_to_svg = {
 		// "eye":eye_icon,
 		// "refresh":refresh_icon
@@ -45,31 +49,46 @@ function initSvgIconComponent(){
 		,
 			
 		"eyeFill":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
-					  <g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
+						<g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M112 209 c-24 -12 -54 -37 -68 -55 -26 -33 -26 -33 -4 -64 12 -16 41\
-					-41 64 -55 24 -14 56 -25 71 -25 42 0 112 37 141 76 26 34 26 34 0 68 -28 37\
-					-98 76 -137 76 -13 0 -43 -10 -67 -21z m117 -45 c12 -15 21 -37 21 -50 0 -26\
-					-43 -64 -73 -64 -28 0 -67 38 -67 65 0 12 9 34 21 49 28 35 70 35 98 0z" />\
+						-41 64 -55 24 -14 56 -25 71 -25 42 0 112 37 141 76 26 34 26 34 0 68 -28 37\
+						-98 76 -137 76 -13 0 -43 -10 -67 -21z m117 -45 c12 -15 21 -37 21 -50 0 -26\
+						-43 -64 -73 -64 -28 0 -67 38 -67 65 0 12 9 34 21 49 28 35 70 35 98 0z" />\
 						<path d="M147 152 c-10 -10 -17 -25 -17 -34 0 -19 31 -48 52 -48 19 0 48 31\
-					48 52 0 19 -31 48 -52 48 -8 0 -22 -8 -31 -18z" />\
-					  </g>\
+						48 52 0 19 -31 48 -52 48 -8 0 -22 -8 -31 -18z" />\
+						</g>\
 					</svg>'
 		,
 		"eyeSlashFill":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
-						  <g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="#2f3236" stroke="none">\
+							<g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="#2f3236" stroke="none">\
 							<path d="M60 232 c0 -14 229 -236 237 -229 7 8 -215 237 -229 237 -5 0 -8 -3\
-						-8 -8z" />\
+							-8 -8z" />\
 							<path d="M137 223 c-12 -12 15 -33 42 -33 34 0 71 -38 71 -72 0 -21 26 -58 41\
-						-58 3 0 15 14 28 31 22 30 22 30 -3 64 -14 18 -45 42 -69 54 -42 20 -97 28\
-						-110 14z" />\
+							-58 3 0 15 14 28 31 22 30 22 30 -3 64 -14 18 -45 42 -69 54 -42 20 -97 28\
+							-110 14z" />\
 							<path d="M40 150 c-21 -30 -21 -30 0 -60 29 -40 99 -80 142 -80 19 0 38 3 41\
-						7 12 12 -15 33 -42 33 -34 0 -71 38 -71 72 0 22 -26 58 -43 58 -3 0 -15 -13\
-						-27 -30z" />\
+							7 12 12 -15 33 -42 33 -34 0 -71 38 -71 72 0 22 -26 58 -43 58 -3 0 -15 -13\
+							-27 -30z" />\
 							<path d="M200 145 c13 -14 26 -23 28 -20 7 7 -29 45 -41 45 -6 0 0 -11 13 -25z" />\
 							<path d="M130 113 c0 -12 38 -48 45 -41 3 2 -6 15 -20 28 -14 13 -25 19 -25\
-						13z" />\
-						  </g>\
+							13z" />\
+							</g>\
 						</svg>'
+						,
+		"layersFill":'<svg width="36.000000pt" height="28.000000pt" viewBox="0 0 36.000000 28.000000" xmlns="http://www.w3.org/2000/svg">\
+						<g transform="translate(0.000000,28.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
+						<path d="M98 228 c-43 -23 -78 -45 -78 -48 0 -3 36 -25 80 -49 80 -42 80 -42\
+						160 0 44 24 80 46 80 49 0 6 -152 90 -161 90 -2 0 -39 -19 -81 -42z" />\
+						<path d="M42 117 c-12 -6 -22 -14 -22 -18 0 -5 36 -27 80 -49 80 -40 80 -40\
+						160 0 44 22 80 44 80 49 0 4 -10 12 -22 18 -18 8 -34 4 -80 -21 -58 -31 -58\
+						-31 -116 0 -46 25 -62 29 -80 21z" />\
+						</g>\
+						</svg>'
+		,
+		"crosshair2":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-crosshair2" viewBox="0 0 16 16">\
+					  <path d="M8 0a.5.5 0 0 1 .5.5v.518A7 7 0 0 1 14.982 7.5h.518a.5.5 0 0 1 0 1h-.518A7 7 0 0 1 8.5 14.982v.518a.5.5 0 0 1-1 0v-.518A7 7 0 0 1 1.018 8.5H.5a.5.5 0 0 1 0-1h.518A7 7 0 0 1 7.5 1.018V.5A.5.5 0 0 1 8 0m-.5 2.02A6 6 0 0 0 2.02 7.5h1.005A5 5 0 0 1 7.5 3.025zm1 1.005A5 5 0 0 1 12.975 7.5h1.005A6 6 0 0 0 8.5 2.02zM12.975 8.5A5 5 0 0 1 8.5 12.975v1.005a6 6 0 0 0 5.48-5.48zM7.5 12.975A5 5 0 0 1 3.025 8.5H2.02a6 6 0 0 0 5.48 5.48zM10 8a2 2 0 1 0-4 0 2 2 0 0 0 4 0"/>\
+					</svg>'
+		
 	}
 	
 
@@ -91,7 +110,7 @@ function initSvgIconComponent(){
 	
 	// name_to_icon_comp["eye"] = createIconComponent("EyeIcon", name_to_svg["eye2"])
 					
-	name_to_icon_comp["eye2"] = name_to_icon_comp["eye"] 
+	// name_to_icon_comp["eye2"] = name_to_icon_comp["eye"] 
 	
 }
 
@@ -126,6 +145,7 @@ function createIconComponent(name, svg, props){
 		}
 		
 	Object.assign(merged_props, props || {})
+	
 	var component = Vue.extend(
 		{
 			name:name,

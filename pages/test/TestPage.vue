@@ -8,13 +8,19 @@
 
 import {h} from "vue";
 import MapObjListItem from '../mapViewPage/MapObjListItem.vue';
-import MapObjCtrlPanel from "../mapViewPage/MapObjCtrlPanel.vue";
+// import MapObjLayerCtrlPanel from "../mapViewPage/MapObjLayerCtrlPanel.vue";
+import MapObjLayerCtrlPanel from "../mapViewPage/panels/MapObjLayerCtrlPanel.vue";
+import MapViewBottomPanel from "../mapViewPage/MapViewBottomPanel.vue";
 
 import Vue from "vue";
 // import MapObjListItem from '../mapViewPage/MapObjListItemSetup.vue';
 
 function testMapObjCtrlPanel(h){
-	return h(MapObjCtrlPanel, {}, [])
+	return h("MapObjLayerCtrlPanel", {}, [])
+}
+
+function testMapViewBottomPanel(h){
+	return h("MapViewBottomPanel", {}, [])
 }
 
 function testMapObjListItem(h){
@@ -35,12 +41,14 @@ export default {
 	
 	components:{
 		MapObjListItem,
-		MapObjCtrlPanel
+		MapObjLayerCtrlPanel,
+		MapViewBottomPanel
 	},
 	
 	render(h){
 		
-		return testMapObjCtrlPanel(h)
+		// return testMapObjCtrlPanel(h)
+		return testMapViewBottomPanel(h)
 	}
 }
 	

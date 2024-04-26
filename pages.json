@@ -72,7 +72,17 @@
             }
             
         }
-        ,{
+        ,
+        {
+            "path" : "pages/mapViewPage/MapViewPage",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        },
+		{
             "path" : "components/custom-tab-check/custom-tab-check-one",
             "style" :                                                                                    
             {

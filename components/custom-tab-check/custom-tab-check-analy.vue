@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<custom-tab-pane label="空间分析信息" name="c1_2">
+		<!-- <custom-tab-pane label="空间分析信息" name="c1_2">
 			<scroll-view scroll-y style="height: 530rpx;">
 			
 				<uni-list  class="uni-list-cell"  hover-class="uni-list-cell-hover" v-for="(value, key) in messageAnaly" :key="key">
@@ -14,7 +14,20 @@
 				</uni-list>
 				</uni-list>
 			</scroll-view>
-		</custom-tab-pane>
+		</custom-tab-pane> -->
+		<scroll-view scroll-y style="height: 530rpx;">
+		
+			<uni-list  class="uni-list-cell"  hover-class="uni-list-cell-hover" v-for="(value, key) in messageAnaly" :key="key">
+			    <view class="uni-media-list">
+			        <view class="uni-media-list-body">
+			            <view class="uni-media-list-text-top">{{JSON.stringify(value.item_name)}} </view>
+						<text style="margin-left: 100rpx;width: 55%;">{{JSON.stringify(value.area_percentage)}}%</text>
+					
+			        </view>
+			    </view>
+			</uni-list>
+			</uni-list>
+		</scroll-view>
 	</view>
 </template>
 <script>

@@ -6,7 +6,14 @@
 		:scroll-into-view="scrollId" 
 		scroll-with-animation
 		>
-			<view v-for="(item,index) in tabList" class="tab-bar-item" :class="{'active':tabIndex==index}" :id="`tab_${index}`" :style="[{'padding':`0 ${tabSpacing}rpx`},tabIndex==index?activeTextStyle:defaultTextStyle]" :key="index" @click="putChange(item.name,index);tabChange(index)">
+			<view 
+			v-for="(item,index) in tabList" 
+			class="tab-bar-item" 
+			:class="{'active':tabIndex==index}" 
+			:id="`tab_${index}`" 
+			:style="[{'padding':`0 ${tabSpacing}rpx`},tabIndex==index?activeTextStyle:defaultTextStyle]" 
+			:key="index" 
+			@click="switchTab(index)">
 				<text class="txt">{{item.label}}</text>
 				<text class="active-line" v-if="tabIndex==index" :style="[activeLineStyle]"></text>
 			</view>
@@ -20,7 +27,7 @@
 </template>
 <script>
 	export default {
-		name: "tabs",
+		name: "ZsTabs",
 		props: {
 			type: {
 				type: [String],

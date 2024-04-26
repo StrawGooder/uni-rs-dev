@@ -27,8 +27,8 @@
 			
 		</view> -->
 		
-		<uni-row>
-			<uni-col :span='1'>
+		<!-- <uni-row>
+			<uni-col :span='2'>
 				<ZsButtonGroup
 				:items = "rfFeatBtnItems"
 				>
@@ -46,7 +46,38 @@
 				>	
 				</ZsButtonGroup>
 			</uni-col>
-		</uni-row>
+		</uni-row> -->
+		
+		<view class="zs-hlyt">
+			
+			<view class="zs-hlyt" style="width:50%">
+				<view>
+					
+					<!-- <ZsIcon
+					icon="rectangle"
+					:color="iconColor"
+					>
+					</ZsIcon>	 -->				
+					<ZsButtonGroup
+					:items = "rfFeatBtnItems"
+					>
+						
+					</ZsButtonGroup>		
+				</view>
+				
+				<view>
+					{{text}}
+				</view>
+				
+			</view>
+			<view style="width:50%; display: flex;justify-content: end;">
+				<ZsButtonGroup
+				:items = "rfBtnItems"
+				>	
+				</ZsButtonGroup>				
+				
+			</view>
+		</view>
 		
 	</view>
 	
@@ -108,9 +139,9 @@ export default {
 			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
 			rfBtnItems:
 			[
-				{"icon":"eyeFill", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
-				{"icon":"refresh", "color":"green"},
-				],
+				{"icon":"eyeFill", "name":"hide", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
+				{"icon":"refresh", "name":"refresh", "color":"green"},
+			],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
 		}
 	},

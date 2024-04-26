@@ -6,7 +6,7 @@
 		:type="rfSectType"
 		:title="rfVecSectTitle"
 		>
-			<view  :class="rfContentContainerClass">
+			<view  :class="rfSecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
@@ -20,7 +20,7 @@
 		:title="rfImgSectTitle"
 		>
 		
-			<view :class="rfContentContainerClass">
+			<view :class="rfSecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
@@ -46,7 +46,7 @@ import { h, ref, computed, mounted, unMounted } from "vue" ;
 // import ZsButtonGroup from "../../components/zs-components/zs-button-group/ZsButtonGroup.vue";
 // import ZsIcon from "../../components/zs-components/zs-icon/ZsIcon.vue";
 // import ZsIconVue from "../../components/zs-components/zs-icon/ZsIcon.vue";
-import MapObjListItem from "./MapObjListItem.vue";
+import MapObjListItem from "../MapObjListItem.vue";
 
 export default {
 	
@@ -92,7 +92,8 @@ export default {
 			rfVecSectTitle:"vector info",
 			rfImgSectTitle:"raster info",
 			
-			rfContentContainerClass:["uni-pl-5"],
+			rfContainerClass:[],
+			rfSecContainerClass:["uni-pl-5"],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
 			rfItems:[
 				{text:"forest", iconColor:"red"},
