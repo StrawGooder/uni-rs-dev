@@ -32,3 +32,8 @@
 		
 	
 	}
+	
+	
+	.zs-noscrollbar::-webkit-scrollbar{
+		display: none;
+	}

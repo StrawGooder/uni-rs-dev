@@ -10,6 +10,7 @@
 		funcMode="display"
 		:treeData = "rfGeoLocationData"
 		:selectParent="rfSelectParent"
+		@dbclickTreeItem = "handleTreeItemEndDbClicked"
 		>
 			<template
 			#item-end="slotProps"
@@ -18,8 +19,10 @@
 				<ZsButtonGroup
 				v-if="slotProps.data.isDbClicked"
 				:items = "rfTreeItemEndBtns"
-				@click.stop = "handleTreeItemEndDbClicked"
+				
 				>
+				
+				<!-- @click.stop = "handleTreeItemEndDbClicked" -->
 					
 				</ZsButtonGroup>
 				
@@ -36,6 +39,7 @@ import Vue from 'vue';
 import ZsGeoLocationSelectGroup from '../../../components/zs-components/zs-select/ZsGeoLocationSelectGroup.vue';
 import ZsNextTree from '../../../components/zs-components/zs-tree/zs-next-tree/ZsNextTree.vue';
 import ZsButtonGroup from '../../../components/zs-components/zs-button-group/ZsButtonGroup.vue';
+import { transformDatas } from '../../../utils/dataTransform';
 
 const geo_loc_data = [
 	
@@ -54,9 +58,33 @@ const geo_loc_data = [
 	{id:"8", label:"宾阳县"},
 	{id:"9", label:"良庆区"},
 	{id:"10", label:"邕宁区"},
-	{id:"11", label:"江南区"}
+	{id:"11", label:"江南区"},
 	
 ]
+
+const _geoloc_to_treedata_table = {
+	"label":{
+		"key":"name",
+		
+	},
+	"geo_extent":{
+		"key":"bound",
+		"value":(v,k, item)=>{
+			return v.split(",")
+		}
+	},
+	"geo_center":{
+		"key":"lat",
+		"value":(v, k, item)=>{
+			return [item["lat"],item["lnt"]]
+		}
+	}
+}
+
+function getGeoToTreedataMap(){
+	
+}
+
 
 export default {
     
@@ -99,14 +127,56 @@ export default {
     },
 
     created(){
-
+		
+		
     },
 
     methods:{
 
 		onGeoLocationSelectFormChanged(ev){
+
+			var ev_data = ev["data"]
+			console.log("debug-SpatialQueryPanel ", ev_data)
+			var _this = this
+
+			var root_url = "/static/map/locations/nations/china"
+			var sub_url = `/广西壮族自治区-${ev_data["value"]}-县区.json`
+			var final_url = root_url + sub_url
 			
-			console.log("debug-select ", ev)
+			// function transformDatas(){
+				
+			// }
+			
+			if(ev_data["level"]==3)
+			{
+				uni.request(
+					{
+						url:final_url,
+						method:"get"
+					}
+				)
+				.then(
+					(result)=>{
+						
+						var data = result[1].data["data"]
+						
+						var new_data = transformDatas(
+													data[0]["child"], 
+													_geoloc_to_treedata_table
+													)
+						console.log("debug-SpatialQueryPanel ", new_data, ev_data)
+						_this.rfGeoLocationData = new_data
+						uni.$emit(
+							"navMapLocTo",
+							{
+								"geoCoord":new_data["geo_center"],
+								"geoExtent":new_data["geo_extent"]
+							}
+						)
+					}
+				)
+			}
+			// console.log("debug-select ", ev_data)
 		},
 		
 		changeGeoLocation(){
@@ -129,8 +199,27 @@ export default {
 				]
 		},
 		
-		handleTreeItemEndDbClicked(){
+		handleTreeItemEndDbClicked(evt){
 			
+			// temp process
+			var data = evt.data
+			
+			var target_loc_name = data["label"]
+			
+			var xian_geo_loc_data = this._geo_loc_data["南宁市"]
+			
+			var found_i = -1
+			for(var i in xian_geo_loc_data)
+			{
+				if (target_loc_name == xian_geo_loc_data[i]["name"] )
+				{
+					found_i = i
+					break;
+				}
+			}
+			if(found_i<0)return
+			
+			this.$emit("navGeoLocTo", {data: xian_geo_loc_data[i]})
 			
 		}
     },
@@ -142,7 +231,27 @@ export default {
     // },
 
     mounted(){
-
+		
+		this._geo_loc_data = {
+			"南宁":null
+		}
+		var _this = this
+		var geo_loc_data = "广西-南宁市-县区-geo-location.json"
+		// uni.request({
+		// 	url:"/static/map/locations/"+geo_loc_data
+		// })
+		// .then(
+		// 	(data)=>{
+		// 		var resp = data[1]
+		// 		// console.log("debug-spatialq geo location", resp)
+		// 		var data = resp.data["data"][0]["child"][0]
+		// 		console.log("debug-spatialq geo location", data)
+				
+		// 		_this._geo_loc_data["南宁"] = resp.data["data"][0]["child"]
+		// })
+		
+		
+		
     },
 
     beforeDestroy(){

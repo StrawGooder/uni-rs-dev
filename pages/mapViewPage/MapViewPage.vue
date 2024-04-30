@@ -1,7 +1,9 @@
 <template>
 	<view>
-	<!-- 	<ol-map>
-		</ol-map> -->
+		<ol-map
+		hideMapImg
+		>
+		</ol-map>
 
 		<view
 		style="position: absolute; z-index: 999; top: 20vh; right:1vw"
@@ -13,6 +15,7 @@
 			</MapViewBasicToolbar>
 			
 		</view>
+		
 	<!-- 	<view
 		style="position: absolute;top:0px;height:500px"
 		>	
@@ -25,6 +28,8 @@
 			>
 				
 			</next-tree> -->	
+			
+		<!-- bottom panel -->
 		<view 
 		class="index" 
 		style="height: 60vh;position:absolute;"
@@ -160,6 +165,7 @@
 		mounted(){
 
 			// temp for debug
+			// popup the bottom panel
 			setTimeout(()=>{this.popupBottomPanel()}, 256)
 		},
 		methods:{

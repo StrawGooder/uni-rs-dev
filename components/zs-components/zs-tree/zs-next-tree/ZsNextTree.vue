@@ -621,7 +621,8 @@
 				
 				// zs-adding
 				this.rfCurDbClickedItemId = item.id
-				// this.$emit("dbclickTreeItem", {data:item})
+				this.$emit("dbclickTreeItem", {data:item})
+				
 				// zs-adding
 			},
 			
@@ -1120,7 +1121,7 @@
 		},
 
 		mounted() {
-			console.log('debug-zsntree. zs-next-tree mounted successfully------------')	
+			// console.log('debug-zsntree. zs-next-tree mounted successfully------------')	
 			this.uiModeInit();
 		}
 	}

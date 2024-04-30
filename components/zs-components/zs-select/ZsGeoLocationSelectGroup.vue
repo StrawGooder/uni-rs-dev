@@ -53,7 +53,8 @@
 			:list="rfNationData"
 			
 			label="国家"
-			@change="(ev)=>onSelectChanged(ev, 3)"
+			initValue="中国"
+			@change="(ev)=>onSelectChanged(ev, 1)"
 			>
 				
 			</ZsSelectForm>
@@ -66,6 +67,7 @@
 		<ZsSelectForm
 		label="省份"
 		:list="rfProvinceData"
+		initValue="广西壮族自治区"
 		@change="(ev)=>onSelectChanged(ev, 2)"
 		>
 			
@@ -79,6 +81,7 @@
 		<ZsSelectForm
 		label="城市"
 		:list="rfCityData"
+		initValue="南宁市"
 		@change="(ev)=>onSelectChanged(ev, 3)"
 		>
 			
@@ -96,7 +99,14 @@
 import Vue from 'vue';
 import ZsSelectForm from './ZsSelectForm.vue';
 
-const city_data = [{value:"南宁市"}, {value:"桂林市"},{value:"柳州市"}]
+const city_data = [
+	{value:"河池市"},
+	{value:"南宁市"}, 
+	{value:"桂林市"},
+	{value:"柳州市"}, 
+	{value:"百色市"},
+	{value:"北海市"}
+	]
 const province_data = [{value:"广西壮族自治区"}, {value:"广东省"},{value:"湖南省"}]
 const nation_data = [{value:"中国"}]
 
@@ -142,7 +152,11 @@ export default {
 			var ev_data = {
 				level:level,
 				origin_event:ev,
-				value: ev["newVal"]
+				// value: ev["newVal"]
+				data:{
+					level:level,
+					value:ev["newVal"]
+				}
 			}
 			this.$emit("change", ev_data)
 		}

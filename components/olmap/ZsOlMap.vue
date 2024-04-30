@@ -9,10 +9,33 @@
 		>
 		</view>
 		<!--监控手机用户的界面大小  -->
-		<view id="olMap"
+	<!-- 	<view id="olMap"
 			:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}" 
 			style="z-index: 9998;">
-
+		</view> -->
+		
+		<!-- style="width:750rpx;height:750rpx" -->
+		<view
+		:style="computedViewportStyle"
+		:ref = "rfMapContElem"
+		style="overflow: scroll;"
+		class="zs-noscrollbar"
+		>
+			
+	<!-- 		<view id="olMap"
+				:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}" 
+				style="z-index: 9998;">
+			
+			</view> -->
+			
+			<view id="olMap"
+				:style="computedMapContViewStyle" 
+				style="z-index: 9998;"
+				
+				>
+			
+			</view>
+			
 		</view>
 
 	</view>
@@ -25,7 +48,7 @@
 	import {
 		getShpAll
 	} from '../../utils/getData.js';
-
+	
 	import setting from '@/setting.js';
 	import {
 		mapState,
@@ -46,6 +69,8 @@
 				},
 				phoneHeight: '', //屏幕高
 				phoneWidth: '', //屏幕宽
+				// phoneHeight: null, //屏幕高
+				// phoneWidth: null, //屏幕宽
 				measure_value: null,
 				// lineLayer: null, //线图层
 				draw: null,
@@ -65,23 +90,19 @@
 				gyroModule: null,
 				OptionTimer: '', //定时器
 				lon:'',
-				lat:''
+				lat:'',
+				
+				
+			
+				// rfViewBufSize:512,
+				rfViewBufSize:256,
+				// rfViewBufSize:128,
+				// rfViewBufSize:0
+				
+				rfMapContElem:"mapContainer"
 			}
 		},
-		// },
-		created() {
-			// 计算屏幕高度 ，宽度
-			let _this = this;
-			uni.getSystemInfo({
-				success(res) {
-					_this.phoneHeight = res.windowHeight;
-					_this.phoneWidth = res.windowWidth
-				},
-				fail(e) {
-					console.log("高度获取失败：",e)
-				}
-			});
-		},
+	
 		computed: { //计算
 			nintyPercentScreenHeight() { //百分之九十的屏幕高
 				if (this.phoneHeight !== '' && this.phoneWidth !== '') {
@@ -98,6 +119,65 @@
 					return '1000rpx'
 				}
 			},
+			
+			
+			computedViewportStyle:{
+				get:function(){
+					return {
+						// width:`${this.computedViewWidth}rpx`,
+						// height:`${this.computedViewHeight}rpx`,
+						width:`${this.computedViewWidth}px`,
+						height:`${this.computedViewHeight}px`,
+					}
+				}
+			},
+			
+			// computedMapContViewStyle(){
+			
+			// 	return {
+			// 		width:`${this.computedMapContViewWidth}rpx`,
+			// 		height:`${this.computedMapContViewHeight}rpx`,
+			// 	}	
+				
+			// },
+			computedMapContViewStyle:{
+				get:function(){
+					return {
+						// width:`${this.computedMapContViewWidth}rpx`,
+						// height:`${this.computedMapContViewHeight}rpx`,
+						width:`${this.computedMapContViewWidth}px`,
+						height:`${this.computedMapContViewHeight}px`,
+					}
+				}
+			},
+			
+			computedMapContViewWidth:{
+				get:function(){
+					
+					return this.computedViewWidth + this.rfViewBufSize
+				}
+			},
+			
+			computedMapContViewHeight:{
+				get:function(){
+					return this.computedViewHeight + this.rfViewBufSize
+				}
+			},
+			
+			computedViewWidth:{
+				get:function(){
+					return this.phoneWidth!=""? this.phoneWidth: 750
+					// return 750
+				}
+			},
+			
+			computedViewHeight:{
+				get:function(){
+
+					return this.phoneHeight!=""? this.phoneHeight: this.computedViewWidth
+					// return 750
+				}
+			}
 		},
 		onHide() {
 			
@@ -192,18 +272,67 @@
 		mounted() {
 			// this.getShpDate()
 			 this.login_onCompassChange()
+			 
+			 // console.log(`debug-olzsmap`, this.$refs[this.rfMapContElem])
+			 
+			 
+			 // setTimeout(
+			 // ()=>{
+				 
+			 // },
+			 // 500
+			 // )
+			 
+
+			 
+			 
+			 
+			 let _this = this;
+			 
+			 function moveViewToCenter(){
+				
+				var scroll_top = (_this.computedMapContViewHeight- _this.computedViewHeight) / 2
+				var scroll_left = (_this.computedMapContViewWidth - _this.computedViewWidth ) / 2
+				
+				_this.$refs[_this.rfMapContElem].$el.scrollTo(scroll_left, scroll_top)
+				
+				// console.log("debug-zsolmap ", _this.$refs[_this.rfMapContElem])
+			 }
+			 
+			
+			uni.getSystemInfo({
+				success(res) {
+					_this.phoneHeight = res.windowHeight;
+					_this.phoneWidth = res.windowWidth
+					
+
+					moveViewToCenter()
+					console.log("debug-zsolmap ", `width:${res.windowWidth} , height: ${res.windowHeight}`)
+				},
+				fail(e) {
+					console.log("高度获取失败：",e)
+				}
+			});
+			
 		},
 		created(){
+		
+			// 计算屏幕高度 ，宽度
+	
+			
 			this.getShpDate()
 			
 		},
-	}
+	};
 	// import Draw from "ol/interaction/Draw.js";
 	// new Draw()
 	// import Text from "ol/format/TextFeature.js";
 	// import CircleStyle from "ol/style/Circle.js"
 	
+	
 </script>
+
+
 
 <script module="ol" lang="renderjs"> 
 
@@ -287,7 +416,9 @@
 	import setting from '@/setting.js';
 	import { createDrawer } from "./drawer/Drawer.js"
 	import {makePolygonDrawStyleFunc} from "./drawer/style.js"
-
+	import { importAdminLayer } from './locations/index.js';
+	
+	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 	const source = new VectorSource({
 		wrapX: false
@@ -361,8 +492,8 @@
 		
 		gDrawInta.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
 		gDrawInta.on("drawend", 
-		(evt)=>{
-			console.log("debug-ol-draw ", "draw end")
+			(evt)=>{
+				console.log("debug-ol-draw ", "draw end")
 			} 
 		)
 		gDrawInta.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
@@ -398,6 +529,11 @@
 	
 	export default {
 		// components:{videoconference},
+		props:{
+			hideMapImg:{
+				type:Boolean
+			}
+		},
 		data() {
 			return {
 				map: null, //地图
@@ -433,8 +569,27 @@
 				//用来做双向判断，判断地图是否初始化好
 				init_map_complete: 0,
 				set_center_status: 1, //是否需要重新设置重新点，0：不重置，1：重置
-				watchPositionTime: 1000, //动态改变定位间隔时间
+				watchPositionTime: 1000, //动态改变定位间隔时间,
+				
+				
+				rfScreenSize:null
 			}
+		},
+		
+		created(){
+		
+			// let _this = this;
+			// uni.getSystemInfo({
+			// 	success(res) {
+			// 		// _this.phoneHeight = res.windowHeight;
+			// 		// _this.phoneWidth = res.windowWidth
+			// 		_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+			// 	},
+			// 	fail(e) {
+			// 		console.log("高度获取失败：",e)
+			// 	}
+			// });
+			
 		},
 		mounted() {
 			if (typeof window.ol === 'function') {
@@ -454,7 +609,8 @@
 				script.onload = this.initAmap.bind(this)
 				document.head.appendChild(script)
 			}
-
+			
+			
 
 		},
 		destroyed(){
@@ -515,7 +671,10 @@
 			 const resolutions = new Array(19);
 			 const matrixIds = new Array(19);
 			 var wmtsUrl = 'http://t{0-7}.tianditu.gov.cn/img_w/wmts?tk='; //影像底图
-			 var token ="da4af7d03246cb5e7a32655e023f54aa"; 
+			 // qj token
+			 // var token ="da4af7d03246cb5e7a32655e023f54aa";
+			  // zs token
+			 var token = "5552493db63e98f85ae582b3429040c0"
 			 for (let z = 0; z < 19; ++z) {
 			 	// generate resolutions and matrixIds arrays for this WMTS
 			 	resolutions[z] = size / Math.pow(2, z);
@@ -548,12 +707,25 @@
 					source: titleMarkUrl
 
 				})
+				
+				//地图源的瓦片图层
+				// 设置显示地图的视图
+				var layer_array = [
+						tileLayer, 
+						tileMark
+						]
+				if(this.hideMapImg)
+				{
+					
+					layer_array = []				
+				}
+
 				this.map = new Map({
 					// 设置地图图层
 					target: "olMap", // DOM容器
 					//越往左，图层越在底层
-					layers: [ tileLayer, tileMark], //地图源的瓦片图层
-					// 设置显示地图的视图
+					layers: layer_array, 
+					
 					view: new View({
 						center: [108, 22], //地图中心点 经纬度
 						zoom: 16, // 缩放级别-显示层级
@@ -625,6 +797,9 @@
 						}
 					}
 				})
+				
+				this.initEvent()
+				this.initViewCenterCoord()
 				
 				
 				
@@ -759,7 +934,7 @@
 					      })
 					 })
 				})
-				console.log("olmap setStyle")
+				console.log("debug-olmap setStyle")
 				this.feature.setStyle(this.stylepoint)
 				let source = new VectorSource()
 				source.addFeature(this.feature)
@@ -771,11 +946,12 @@
 			
 			initInteraction(){
 				
-				addDrawInteraction(this.map)
+				// addDrawInteraction(this.map)
 				
 			},
 			
 			initGPSLocation(){
+				
 				
 				var that = this
 				// has an effect on app side 
@@ -817,6 +993,180 @@
 						//如设为Infinity，则始终使用缓存数据  
 						maximumAge: 500,
 					});
+				
+			}
+			,
+			
+			initEvent(){
+				
+				var _this = this
+				var total = 5
+							
+				var center_coord = [107.324739,24.033756999999998]
+				var mpview = _this.map.getView()
+				// this.map.on("dblclick", 
+				// 	(evt)=>{
+				// 		// console.log("debug-zsolmap ", evt)
+				// 		// console.log("debug-zsolmap ", mpview.getCenter(), evt["coordinate"])
+				// 	}
+				// )
+				this.map.on("click", 
+					(evt)=>{
+						// console.log("debug-zsolmap ", evt)
+						console.log(`debug-zsolmap \n`,
+						`screen center coord ${mpview.getCenter()}\n`,
+						`click coord ${evt["coordinate"]}\n`, 
+						`cur zoom ${mpview.getZoom()}\n`,
+						`cur resol ${mpview.getResolution()}\n`,
+						'======================================='
+						)
+					}
+				)
+				
+				uni.$on(
+					"navMapLocationTo",
+					(evData)=>{
+						_this.navLocationTo(evData["geoCoord"], {extent:evData["geoExtent"]})
+					}
+				)
+			},
+			
+			initViewCenterCoord(){
+				
+				// var mpview = this.map.getView()
+				// var center_coord = [107.324739,24.033756999999998]
+				// mpview.centerOn(
+				// 	[107.324739,24.033756999999998],
+				// 	[512,512],
+				// 	[256,256]
+				// )
+				
+				// mpview.adjustZoom(0.5, center_coord)
+				
+				// this.testViewZoom()
+				
+				this.testImportGeoLocation()
+			},
+			
+			testImportGeoLocation(){
+				
+				// setTimeout(()=>{
+				// 	this.testViewZoom()}, 
+				// 	1000
+				// )
+				
+				let _this = this
+				
+				uni.getSystemInfo({
+					success(res) {
+						// _this.phoneHeight = res.windowHeight;
+						// _this.phoneWidth = res.windowWidth
+						_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+						_this.testViewZoom()
+					},
+					fail(e) {
+						console.log("设备屏幕尺寸获取失败：",e)
+					}
+				}
+				)
+				
+				// this.testViewZoom()
+				
+		
+				var import_prom = importAdminLayer("district")
+				
+				import_prom.then(
+				(result)=>{
+					console.log("debug-olmap ", result)
+					_this.map.addLayer(result)
+					_this.map.render()
+				})
+				
+			},
+			
+			navLocationTo(coord, opts){
+				
+				opts = opts || {}
+				var mode = opts["mode"] || "full_extent" 
+				var geo_extent = opts["extent"] || null
+				if(mode=="full_extent")
+				{
+					if(!geo_extent)
+					{
+						var msg = `attemp to nav location to ${coord} on mode '${mode}', but 'extent' param not given`
+						throw new Error(msg)
+						// console.log(msg)
+					}
+				}
+			
+				var extent = geo_extent
+				
+				var _this = this
+							
+				// var center_coord = computeCenter(extent)
+				var center_coord = coord
+				
+				var zoom = 9
+				var mpview = _this.map.getView()
+				// mpview.setZoom(9.2)
+				
+				// var bottom_height_mp = mpview.getResolution()*100
+				// center_coord[1] = center_coord[1] - bottom_height_mp
+				
+				var view_size = [1100,1000]
+				if(this.rfScreenSize){
+					view_size = this.rfScreenSize
+				}
+				view_size = [0,0]
+				var resol;
+				// resol = computeResolution(this.rfScreenSize[0], Math.abs(extent[2]- extent[0]) )
+				resol = computeResolutionByExtent(extent, this.rfScreenSize, "longer")
+				// var resol_delta = resol / mpview.getResolution()
+				mpview.setResolution(resol + resol*0.2)
+				// mpview.adjustResolution(resol_delta)
+				
+				// console.log("debug-zsolmap ", view_size)
+				var center_view_pos_pix = [view_size[0]/2, view_size[1]/2]
+				mpview.centerOn(
+					center_coord,
+					// [512,512],
+					view_size,
+					center_view_pos_pix
+				)
+					
+			},
+			
+			testViewZoom(){
+				
+				// 河池
+				// coord 107.89729588504589,24.663186754658177
+				// zoom 9
+				// 河池 extent
+				// var extent = [106.568412,25.613664999999997,109.153964,23.557816]
+				var extent = [108,25.613664999999997,109.153964,23.557816]
+				var _this = this
+				var total = 5
+			
+				var center_coord = computeCenter(extent)
+				
+				this.navLocationTo(center_coord, {extent: extent})
+				
+				function _loop() {
+					
+					mpview.adjustZoom(0.5, center_coord)
+					console.log("debug-zsolmap",` \
+					zoom: ${mpview.getZoom()}, \
+					resol: ${mpview.getResolution()}\
+					center: ${mpview.getCenter()}`
+					)
+					if(total>0){
+						total--
+						setTimeout(()=>{_loop()}, 2000);
+					}
+				}
+				
+				// setTimeout(()=>{_loop()}, 4000);
+				// _loop()
 				
 			}
 		},
