@@ -20,7 +20,8 @@
 			class="next-tree-view" 
 			style="'top:'+(_showTreeBar?'72rpx':'0rpx')"
 			>
-				<next-search-more v-if="ifSearch" 
+				<next-search-more 
+				v-if="ifSearch" 
 				@search="onSearch" 
 				mode="center" 
 				placeholder="请输入关键字" 
@@ -258,7 +259,7 @@
 				initNum: 1,
 	
 				rfCurClickedItemId: '',
-				rfCurDbClickedItemId: '',
+				rfCurDblclickedItemId: '',
 				
 			}
 		},
@@ -620,8 +621,8 @@
 			onTreeItemDbclicked(item){
 				
 				// zs-adding
-				this.rfCurDbClickedItemId = item.id
-				this.$emit("dbclickTreeItem", {data:item})
+				this.rfCurDblclickedItemId = item.id
+				this.$emit("dblclickTreeItem", {data:item})
 				
 				// zs-adding
 			},
@@ -1106,7 +1107,7 @@
 				return {
 					item:item,
 					isClicked: this.isClickedItem(item, index),
-					isDbClicked: this.isDbClickedItem(item, index)
+					isDblclicked: this.isDblclickedItem(item, index)
 				}
 			},
 			
@@ -1114,9 +1115,13 @@
 				return item.id==this.rfCurClickedItemId
 			},
 			
-			isDbClickedItem(item){
-				return item.id==this.rfCurDbClickedItemId
+			isDblclickedItem(item){
+				return item.id==this.rfCurDblclickedItemId
 			}
+			
+			// getItemId(item){
+			// 	return item[""]
+			// }
 			
 		},
 

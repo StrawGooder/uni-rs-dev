@@ -8,8 +8,8 @@ function computeResolution(geo_len, view_len){
 
 function computeResolutionByExtent(geo_extent, view_size, mode){
 	mode = mode || "longer"
-	var geo_lat_len = geo_extent[3] -  geo_extent[1]
-	var geo_lot_len = geo_extent[2] -  geo_extent[0] 
+	var geo_lat_len = Math.abs( geo_extent[3] -  geo_extent[1] )
+	var geo_lot_len = Math.abs( geo_extent[2] -  geo_extent[0] )
 	var view_width = view_size[0]
 	var view_height = view_size[1]
 	

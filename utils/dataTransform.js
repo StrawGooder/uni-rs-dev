@@ -7,7 +7,7 @@ var _Loda = require("lodash")
 
 // for transform the response data of fetching from server
 // use case 1: table container , list container pagination query 
-function transformData(d, trans_table){
+function transformData(d, trans_table, opts){
 
     // modify 20230810
     // var new_d = {},
@@ -136,11 +136,24 @@ function transformData(d, trans_table){
 
 
 // version2
-function transformDataByNewKeyIndex(d, trans_table){
+function transformDataByNewKeyIndex(d, trans_table, opts){
 
+	opts = opts || {"ignoredKeys": null}
+	
+	var ignored_keys = opts["ignoredKeys"] || null
+	var ignored_data = {}
+	if(ignored_keys && Array.isArray(ignored_keys))
+	{
+		ignored_keys.forEach((k,i)=>{ignored_data[k] = d[k]; delete d[k]})
+	}
 
     // var new_d = updateObject({}, d)
 	var new_d = _Loda.merge({},d)
+	
+	// if(ignored_keys && Array.isArray(ignored_keys)){
+	// 	ignored_keys.forEach((k,i)=>{d[k] = ignored_data[k]})
+	// }
+	Object.assign(d, ignored_data)
 	
        
     var old_v,
@@ -245,15 +258,17 @@ function transformDataByNewKeyIndex(d, trans_table){
 }
 
 
-function transformDatas(ds, transTable, apiVersion){
+function transformDatas(ds, transTable, opts){
 
+	opts = opts || {"apiVersion":2, "ignoredKeys": null}
+	
     if(!transTable)
     {
         return ds
     }
 
-    apiVersion = apiVersion || 2
-
+    var apiVersion = opts["apiVersion"] || 2
+	
     // array
     var new_datas = []
 
@@ -266,8 +281,13 @@ function transformDatas(ds, transTable, apiVersion){
 
     for(var i in ds)
     {
-        new_datas.push(transFunc(ds[i], transTable))
+        new_datas.push(transFunc(ds[i], transTable, opts))
     }
+	
+	if(!Array.isArray(ds))
+	{
+		return new_datas[0]
+	}
 
     return new_datas
     

@@ -73,7 +73,10 @@ function createLayerByAdminLevel(level){
 			// console.log("debug-olmap-location ", data)
 			// ol's layer
 			var lyr  = null 
-			lyr= createVectorLayerFromDataObj(data)
+			lyr= createVectorLayerFromDataObj(data, 
+					null, 
+					{"color":"red", "size":"16px", "bindProp":"name"},
+					)
 			
 			return lyr
 		}

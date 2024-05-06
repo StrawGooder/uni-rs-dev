@@ -5,19 +5,22 @@
 		@change = "onGeoLocationSelectFormChanged"
 		/>
 		
+		<!-- valueKey is id key -->
 		<ZsNextTree
 		uiMode="page"
 		funcMode="display"
+		valueKey="cityCode"
+		
 		:treeData = "rfGeoLocationData"
 		:selectParent="rfSelectParent"
-		@dbclickTreeItem = "handleTreeItemEndDbClicked"
+		@dblclickTreeItem = "handleTreeItemEndDblClicked"
 		>
 			<template
 			#item-end="slotProps"
 			>
 				
 				<ZsButtonGroup
-				v-if="slotProps.data.isDbClicked"
+				v-if="slotProps.data.isDblclicked"
 				:items = "rfTreeItemEndBtns"
 				
 				>
@@ -67,16 +70,23 @@ const _geoloc_to_treedata_table = {
 		"key":"name",
 		
 	},
-	"geo_extent":{
+	"geoExtent":{
 		"key":"bound",
 		"value":(v,k, item)=>{
-			return v.split(",")
+			return v.split(",").map((elem,)=>{return elem*1.})
 		}
 	},
-	"geo_center":{
+	"geoCenter":{
 		"key":"lat",
 		"value":(v, k, item)=>{
-			return [item["lat"],item["lnt"]]
+			// return [item["lnt"],item["lat"]]
+			// var extent = item["bound"].split(",")
+			var extent = item["geoExtent"]
+			
+			var coord = [(extent[0]+extent[2])/2, (extent[1]+extent[3])/2]
+				
+			// console.log("debug-spaQueryPanel ", extent, [item["lnt"],item["lat"]])
+			return coord
 		}
 	}
 }
@@ -160,19 +170,28 @@ export default {
 						
 						var data = result[1].data["data"]
 						
-						var new_data = transformDatas(
+						var new_data = transformDatas(data, _geoloc_to_treedata_table, {"ignoredKeys":["child"]})
+						// var coord = [data["lnt"],data["lat"]]
+						// var extent =
+						console.log("debug-spa-query-panel ", new_data)
+						uni.$emit(
+							"locateMapViewportTo",
+							{
+								// "geoCoord":child_data["geoCenter"],
+								// "geoExtent":child_data["geoExtent"]
+								"geoCoord": new_data[0]["geoCenter"],
+								"geoExtent": new_data[0]["geoExtent"]
+							}
+						)
+						
+						var child_data = transformDatas(
 													data[0]["child"], 
 													_geoloc_to_treedata_table
 													)
-						console.log("debug-SpatialQueryPanel ", new_data, ev_data)
-						_this.rfGeoLocationData = new_data
-						uni.$emit(
-							"navMapLocTo",
-							{
-								"geoCoord":new_data["geo_center"],
-								"geoExtent":new_data["geo_extent"]
-							}
-						)
+						// console.log("debug-SpatialQueryPanel ", new_data, ev_data)
+						
+						_this.rfGeoLocationData = child_data
+						
 					}
 				)
 			}
@@ -199,28 +218,37 @@ export default {
 				]
 		},
 		
-		handleTreeItemEndDbClicked(evt){
+		handleTreeItemEndDblClicked(evt){
 			
 			// temp process
 			var data = evt.data
+			var source_data = evt.data["source"]
+			// var target_loc_name = data["label"]
 			
-			var target_loc_name = data["label"]
+			// var xian_geo_loc_data = this._geo_loc_data["南宁市"]
 			
-			var xian_geo_loc_data = this._geo_loc_data["南宁市"]
+			// var found_i = -1
+			// for(var i in xian_geo_loc_data)
+			// {
+			// 	if (target_loc_name == xian_geo_loc_data[i]["name"] )
+			// 	{
+			// 		found_i = i
+			// 		break;
+			// 	}
+			// }
+			// if(found_i<0) return
 			
-			var found_i = -1
-			for(var i in xian_geo_loc_data)
-			{
-				if (target_loc_name == xian_geo_loc_data[i]["name"] )
+			// this.$emit("navGeoLocTo", {data: xian_geo_loc_data[i]})
+			console.log("debug-spatial-query-panel", source_data["cityCode"], data["id"])
+			uni.$emit(
+				"locateMapViewportTo",
 				{
-					found_i = i
-					break;
+					// "geoCoord":child_data["geoCenter"],
+					// "geoExtent":child_data["geoExtent"]
+					"geoCoord": source_data["geoCenter"],
+					"geoExtent": source_data["geoExtent"]
 				}
-			}
-			if(found_i<0)return
-			
-			this.$emit("navGeoLocTo", {data: xian_geo_loc_data[i]})
-			
+			)	
 		}
     },
 
@@ -232,11 +260,11 @@ export default {
 
     mounted(){
 		
-		this._geo_loc_data = {
-			"南宁":null
-		}
-		var _this = this
-		var geo_loc_data = "广西-南宁市-县区-geo-location.json"
+		// this._geo_loc_data = {
+		// 	"南宁":null
+		// }
+		// var _this = this
+		// var geo_loc_data = "广西-南宁市-县区-geo-location.json"
 		// uni.request({
 		// 	url:"/static/map/locations/"+geo_loc_data
 		// })

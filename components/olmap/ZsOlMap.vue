@@ -1024,9 +1024,9 @@
 				)
 				
 				uni.$on(
-					"navMapLocationTo",
+					"locateMapViewportTo",
 					(evData)=>{
-						_this.navLocationTo(evData["geoCoord"], {extent:evData["geoExtent"]})
+						_this.locateViewportTo(evData["geoCoord"], {extent:evData["geoExtent"]})
 					}
 				)
 			},
@@ -1077,14 +1077,14 @@
 				
 				import_prom.then(
 				(result)=>{
-					console.log("debug-olmap ", result)
+					console.log("debug-zsolmap ", result)
 					_this.map.addLayer(result)
 					_this.map.render()
 				})
 				
 			},
 			
-			navLocationTo(coord, opts){
+			locateViewportTo(coord, opts){
 				
 				opts = opts || {}
 				var mode = opts["mode"] || "full_extent" 
@@ -1093,7 +1093,7 @@
 				{
 					if(!geo_extent)
 					{
-						var msg = `attemp to nav location to ${coord} on mode '${mode}', but 'extent' param not given`
+						var msg = `attemp to nav location to coordinate ${coord} on mode '${mode}', but 'extent' param not given`
 						throw new Error(msg)
 						// console.log(msg)
 					}
@@ -1106,7 +1106,7 @@
 				// var center_coord = computeCenter(extent)
 				var center_coord = coord
 				
-				var zoom = 9
+				var zoom_lv = 9
 				var mpview = _this.map.getView()
 				// mpview.setZoom(9.2)
 				
@@ -1119,19 +1119,36 @@
 				}
 				view_size = [0,0]
 				var resol;
+				
+				
 				// resol = computeResolution(this.rfScreenSize[0], Math.abs(extent[2]- extent[0]) )
 				resol = computeResolutionByExtent(extent, this.rfScreenSize, "longer")
+				
+				// var lat_offset = 500 * resol
+				// var lat_offset = (this.rfScreenSize[1]/2)  * resol 
+				// consider popuping bottom panel height
+				var lat_offset = (extent[1] - extent[3])/1.8
+				// extent[1] = extent[1] - lat_offset
+				// extent[3] = extent[3] - lat_offset
+				center_coord[1] = center_coord[1] - lat_offset
 				// var resol_delta = resol / mpview.getResolution()
-				mpview.setResolution(resol + resol*0.2)
+				// mpview.setResolution(resol + resol*0.2)
+				mpview.setResolution(resol + resol*0.25)
 				// mpview.adjustResolution(resol_delta)
 				
 				// console.log("debug-zsolmap ", view_size)
 				var center_view_pos_pix = [view_size[0]/2, view_size[1]/2]
+				// mpview.centerOn(
+				// 	center_coord,
+				// 	// [512,512],
+				// 	view_size,
+				// 	center_view_pos_pix
+				// )
 				mpview.centerOn(
 					center_coord,
 					// [512,512],
-					view_size,
-					center_view_pos_pix
+					[0,0],
+					[0,0]
 				)
 					
 			},
@@ -1149,7 +1166,7 @@
 			
 				var center_coord = computeCenter(extent)
 				
-				this.navLocationTo(center_coord, {extent: extent})
+				this.locateViewportTo(center_coord, {extent: extent})
 				
 				function _loop() {
 					
