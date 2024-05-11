@@ -329,7 +329,7 @@
 	// import Text from "ol/format/TextFeature.js";
 	// import CircleStyle from "ol/style/Circle.js"
 	
-	
+	// import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
 </script>
 
 
@@ -415,6 +415,7 @@
 	
 	import setting from '@/setting.js';
 	import { createDrawer } from "./drawer/Drawer.js"
+	import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
 	import {makePolygonDrawStyleFunc} from "./drawer/style.js"
 	import { importAdminLayer } from './locations/index.js';
 	
@@ -449,6 +450,7 @@
 	// zs features
 	var gDrawInta = null;
 	var gDrawPointInta = null;
+	
 	function addDrawInteraction(map){
 	
 		// if(gDrawInta!=null)return 
@@ -714,6 +716,7 @@
 						tileLayer, 
 						tileMark
 						]
+				// zs-add
 				if(this.hideMapImg)
 				{
 					
@@ -742,7 +745,7 @@
 			
 				// zs add draw layer temp
 				this.map.addLayer(vector)
-				this.initInteraction()
+				
 				// this.loadGeoserverMap()
 				this.setPoint()
 
@@ -801,7 +804,7 @@
 				this.initEvent()
 				this.initViewCenterCoord()
 				
-				
+				this.initInteraction()
 				
 			},
 			//添加图层
@@ -947,7 +950,43 @@
 			initInteraction(){
 				
 				// addDrawInteraction(this.map)
-				
+				var _this = this
+				var sel = openFeatureSelection(this.map, 
+								// ()=>{
+									
+								// },
+								// "hover",
+								// "altclick",
+								// "singleclick"
+								"click",
+								{
+									layers:(lyr)=>{
+										return true
+									}
+								}
+								)
+					
+					sel.on("select", 
+						function(evt){
+							
+							var features = evt.target.getFeatures().getArray()
+							console.log("debug-zsolmap select interation", features)
+							var geom = features[0].getGeometry()
+							var extent = geom.getExtent()
+							
+							_this.locateViewportTo(
+								computeCenter(extent),
+								{
+									extent:extent
+								}
+							)
+							
+							// geom.
+						}
+					)
+					
+				// console.log("debug-zsolmap add select")
+					
 			},
 			
 			initGPSLocation(){
@@ -1073,11 +1112,20 @@
 				// this.testViewZoom()
 				
 		
-				var import_prom = importAdminLayer("district")
+				
+				var import_prom = importAdminLayer("city")
 				
 				import_prom.then(
 				(result)=>{
 					console.log("debug-zsolmap ", result)
+					_this.map.addLayer(result)
+					_this.map.render()
+				})
+				
+				import_prom = importAdminLayer("county")
+				
+				import_prom.then(
+				(result)=>{
 					_this.map.addLayer(result)
 					_this.map.render()
 				})
@@ -1088,10 +1136,11 @@
 				
 				opts = opts || {}
 				var mode = opts["mode"] || "full_extent" 
-				var geo_extent = opts["extent"] || null
+				// geo extent
+				var extent = opts["extent"] || null
 				if(mode=="full_extent")
 				{
-					if(!geo_extent)
+					if(!extent)
 					{
 						var msg = `attemp to nav location to coordinate ${coord} on mode '${mode}', but 'extent' param not given`
 						throw new Error(msg)
@@ -1099,7 +1148,7 @@
 					}
 				}
 			
-				var extent = geo_extent
+				// var extent = geo_extent
 				
 				var _this = this
 							
@@ -1124,16 +1173,25 @@
 				// resol = computeResolution(this.rfScreenSize[0], Math.abs(extent[2]- extent[0]) )
 				resol = computeResolutionByExtent(extent, this.rfScreenSize, "longer")
 				
+				// var resol_scale = resol*1.5
+				var resol_scale = resol*2.2
 				// var lat_offset = 500 * resol
 				// var lat_offset = (this.rfScreenSize[1]/2)  * resol 
-				// consider popuping bottom panel height
-				var lat_offset = (extent[1] - extent[3])/1.8
+				// 
+				// to display the feature geometry on user visible area 
+				// so popuping bottom panel height was considered, 
+				// map viewport center posistion was moved down 
+				 // according distance of the feature geometry
+				 // half geographical height
+				
+				var lat_offset = Math.abs( (extent[1] - extent[3]) )/1.8
+				
 				// extent[1] = extent[1] - lat_offset
 				// extent[3] = extent[3] - lat_offset
 				center_coord[1] = center_coord[1] - lat_offset
 				// var resol_delta = resol / mpview.getResolution()
 				// mpview.setResolution(resol + resol*0.2)
-				mpview.setResolution(resol + resol*0.25)
+				mpview.setResolution(resol_scale)
 				// mpview.adjustResolution(resol_delta)
 				
 				// console.log("debug-zsolmap ", view_size)

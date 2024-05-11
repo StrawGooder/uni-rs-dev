@@ -1,3 +1,7 @@
+import {Geometry} from "ol/geom"
+
+
+
 function computeResolution(geo_len, view_len){
 	
 	// var resol = geo_len/view_len

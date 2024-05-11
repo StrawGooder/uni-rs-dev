@@ -9,12 +9,45 @@ import Map from "ol/Map.js"
 
 
 
-const _type_to_level = {
+// const _type_to_level = {
+// 	"nation":0,
+// 	"province":1,
+// 	"city":2,
+// 	"district":3
+// }
+
+const _level_to_type = ["nation","province","city","county"]
+var _type_to_level = null
+
+function initConfig(){
+	
+	if(_type_to_level==null)
+	{
+		_type_to_level = {}
+		_level_to_type.forEach((x,i)=>{_type_to_level[x] = i})
+	}
+	
+}
+
+initConfig()
+
+const _type_to_layer_style = {
 	"nation":0,
 	"province":1,
-	"city":2,
-	"district":3
+	"city":{
+		geomStyle:{"color":"blue", "width":"1px"},
+		labelStyle:{"color":"red", "size":"16px", "bindProp":"name"},
+	},
+	"county":{
+		
+		geomStyle:{"color":"cyan", "width":"1px"},
+		labelStyle:{"color":"red", "size":"16px", "bindProp":"name", 
+		// "textFormat":"县区-${name} 地名代码-${cityCode}",
+		"textFormat":"县区-${name} 地名代码-${gb}"
+		},
+	}
 }
+
 
 const _request_configs = 
 	{
@@ -37,7 +70,7 @@ const _request_configs =
 				"url":"/广西壮族自治区_市.json",
 			},
 			{
-				"name":"getDistrict",
+				"name":"getCounty",
 				"url":"/广西壮族自治区-县-test.json"
 			}
 			
@@ -63,6 +96,8 @@ function createLayerByAdminLevel(level){
 	
 	var final_url = src_root_url + sub_url
 	
+	var lyr_style_config = _type_to_layer_style[_level_to_type[level]]
+	
 	var prom = uni.request({
 		url:final_url,
 	})
@@ -72,10 +107,14 @@ function createLayerByAdminLevel(level){
 				
 			// console.log("debug-olmap-location ", data)
 			// ol's layer
-			var lyr  = null 
-			lyr= createVectorLayerFromDataObj(data, 
-					null, 
-					{"color":"red", "size":"16px", "bindProp":"name"},
+			var lyr  = null
+			var style_cfg = {
+						geomStyle:lyr_style_config["geomStyle"], 
+						labelStyle:lyr_style_config["labelStyle"],
+					}
+			// console.log("debug-olmap-location ", style_cfg)
+			lyr = createVectorLayerFromDataObj(data, 
+					style_cfg
 					)
 			
 			return lyr
