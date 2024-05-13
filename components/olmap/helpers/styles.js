@@ -4,7 +4,15 @@ import {merge as mergeObject, isFunction } from "lodash"
 
 const _default_text_style = {
 	"color":"black",
-	"size":"16px"
+	"size":"16px",
+	"height":1,
+	"placement":"point",
+	"align":"center",
+	"rotation":0,
+	"baseline":"center",
+	"weight":"bold",
+	// family
+	"fontType":"arial"
 }
 
 function formatText(feature, bindProp, textFormat){
@@ -63,17 +71,22 @@ function createTextStyleObject(feature, resolution, opts){
 	// Object.assign(, new_opts)
 	
 	const size  = new_opts["size"]
-	const color = new_opts["color"]
+	
 	const weight = new_opts["weight"]
 	const height = new_opts["height"]
 	const fontType = new_opts["fontType"]
-	const align = new_opts["align"]
+	
 	const font = weight + ' ' + size + '/' + height + ' ' + fontType;
+	
+	const color = new_opts["color"]
 	const fillColor = new_opts["fillColor"] || "#fffffff";
 	const outlineColor = new_opts["outlineColor"] || color;
 	// const outlineColor = new_opts["outlineColor"];
 	const outlineWidth = new_opts["outlineWidth"];
 
+	const align = new_opts["align"]
+
+	console.log("debug-zsolmap layer text style ", font)
 	  return new Text({
 		textAlign: align == '' ? undefined : align,
 		textBaseline: new_opts["baseline"],

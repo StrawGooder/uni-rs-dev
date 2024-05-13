@@ -47,10 +47,14 @@
 		created() {
 			uni.$on(this.putChangeKey, item => {
 				if (this.timer) clearTimeout(this.timer);
+			
+				
 				this.show = true;
 				this.timer = setTimeout(() => {
 					this.show = this.name == item.name;
 				}, item.duration)
+				
+				
 			})
 		},
 		watch: {

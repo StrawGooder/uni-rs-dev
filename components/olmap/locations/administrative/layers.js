@@ -36,15 +36,16 @@ const _type_to_layer_style = {
 	"province":1,
 	"city":{
 		geomStyle:{"color":"blue", "width":"1px"},
-		labelStyle:{"color":"red", "size":"16px", "bindProp":"name"},
+		// labelStyle:{"color":"red", "size":"16px", "bindProp":"name"},
+		labelStyle:{"color":"rgb(255 0 0/10%)", "size":"64px", "height":1, "bindProp":"name","weight":"normal"},
 	},
 	"county":{
 		
 		geomStyle:{"color":"cyan", "width":"1px"},
-		labelStyle:{"color":"red", "size":"16px", "bindProp":"name", 
-		// "textFormat":"县区-${name} 地名代码-${cityCode}",
-		"textFormat":"县区-${name} 地名代码-${gb}"
-		},
+		// labelStyle:{"color":"red", "size":"16px", "bindProp":"name", 
+		// // "textFormat":"县区-${name} 地名代码-${cityCode}",
+		// "textFormat":"县区-${name} 地名代码-${gb}"
+		// },
 	}
 }
 
@@ -76,6 +77,7 @@ const _request_configs =
 			
 		]
 	}
+
 
 
 function createLayer(type){

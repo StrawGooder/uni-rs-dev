@@ -330,6 +330,7 @@
 	// import CircleStyle from "ol/style/Circle.js"
 	
 	// import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
+	// import { createVectorLayerFromURL } from './helpers/layers.js';
 </script>
 
 
@@ -420,12 +421,14 @@
 	import { importAdminLayer } from './locations/index.js';
 	
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
+	import { createVectorLayerFromURL } from './helpers/layers.js';
 	// import videoconference from "@/components/video_conference/video_conference.vue";
-	const source = new VectorSource({
+	const recvDrawVecSrc = new VectorSource({
 		wrapX: false
 	});
-	const vector = new VectorLayer({
-		source: source,
+	
+	const recvDrawVecLyr = new VectorLayer({
+		source: recvDrawVecSrc,
 		style:new style(
 			{
 				file: new fill({color:"#ffffffa"}),
@@ -458,13 +461,11 @@
 		
 		var draw_init_options = {}
 		
-
-		
 		
 		gDrawInta = createDrawer(
 			"base",
 			{
-				source:source,
+				source:recvDrawVecSrc,
 				style:makePolygonDrawStyleFunc(),
 				// style:new style(
 				// 	{
@@ -607,7 +608,8 @@
 				}, 1000);
 				// 动态引入较大类库避免影响页面展示
 				const script = document.createElement('script')
-				script.src = 'https://cdn.bootcdn.net/ajax/libs/openlayers/4.6.5/ol.js'
+				// script.src = 'https://cdn.bootcdn.net/ajax/libs/openlayers/4.6.5/ol.js'
+				script.src = '/static/ol.js'
 				script.onload = this.initAmap.bind(this)
 				document.head.appendChild(script)
 			}
@@ -744,7 +746,7 @@
 				});
 			
 				// zs add draw layer temp
-				this.map.addLayer(vector)
+				this.map.addLayer(recvDrawVecLyr)
 				
 				// this.loadGeoserverMap()
 				this.setPoint()
@@ -917,7 +919,6 @@
 				
 				})
 
-				
 				// const iconStyle= new Icon({
 				//   src: 'https://raw.githubusercontent.com/google/material-design-icons/master/png/maps/add_business/materialiconsoutlined/24dp/2x/outline_add_business_black_24dp.png',
 				// });
@@ -955,10 +956,10 @@
 								// ()=>{
 									
 								// },
-								// "hover",
+								"hover",
 								// "altclick",
 								// "singleclick"
-								"click",
+								// "click",
 								{
 									layers:(lyr)=>{
 										return true
@@ -971,15 +972,15 @@
 							
 							var features = evt.target.getFeatures().getArray()
 							console.log("debug-zsolmap select interation", features)
-							var geom = features[0].getGeometry()
-							var extent = geom.getExtent()
+							// var geom = features[0].getGeometry()
+							// var extent = geom.getExtent()
 							
-							_this.locateViewportTo(
-								computeCenter(extent),
-								{
-									extent:extent
-								}
-							)
+							// _this.locateViewportTo(
+							// 	computeCenter(extent),
+							// 	{
+							// 		extent:extent
+							// 	}
+							// )
 							
 							// geom.
 						}
@@ -1052,13 +1053,13 @@
 				this.map.on("click", 
 					(evt)=>{
 						// console.log("debug-zsolmap ", evt)
-						console.log(`debug-zsolmap \n`,
-						`screen center coord ${mpview.getCenter()}\n`,
-						`click coord ${evt["coordinate"]}\n`, 
-						`cur zoom ${mpview.getZoom()}\n`,
-						`cur resol ${mpview.getResolution()}\n`,
-						'======================================='
-						)
+						// console.log(`debug-zsolmap map clicked \n`,
+						// `screen center coord ${mpview.getCenter()}\n`,
+						// `click coord ${evt["coordinate"]}\n`, 
+						// `cur zoom ${mpview.getZoom()}\n`,
+						// `cur resol ${mpview.getResolution()}\n`,
+						// '======================================='
+						// )
 					}
 				)
 				
@@ -1117,10 +1118,17 @@
 				
 				import_prom.then(
 				(result)=>{
-					console.log("debug-zsolmap ", result)
+					// console.log("debug-zsolmap import layer", result)
 					_this.map.addLayer(result)
 					_this.map.render()
 				})
+				
+				_this.emitEvent("createMapLayer", 
+				{
+					"name":"city", "url":"/static/city.json", "borderColor":"red",
+					"dataSourceType":"vector"
+				},
+				)
 				
 				import_prom = importAdminLayer("county")
 				
@@ -1129,6 +1137,21 @@
 					_this.map.addLayer(result)
 					_this.map.render()
 				})
+				
+				
+				_this.emitEvent("createMapLayer", 
+				{
+					"name":"county", "url":"/static/county.json", "borderColor":"blue",
+					"dataSourceType":"vector"
+				},
+				)
+				// const root_url = "/static/map/locations/nations/china"
+				// var lyr = createVectorLayerFromURL(
+				// 	root_url + "/广西壮族自治区-县-test.json", 
+				// 	{"geomStyle":{"color":"cyan", "width":"1px"}}
+				// )
+				// _this.map.addLayer(lyr)
+				// _this.map.render()
 				
 			},
 			
@@ -1174,7 +1197,7 @@
 				resol = computeResolutionByExtent(extent, this.rfScreenSize, "longer")
 				
 				// var resol_scale = resol*1.5
-				var resol_scale = resol*2.2
+				var resol_scale = resol*2.4
 				// var lat_offset = 500 * resol
 				// var lat_offset = (this.rfScreenSize[1]/2)  * resol 
 				// 
@@ -1184,7 +1207,7 @@
 				 // according distance of the feature geometry
 				 // half geographical height
 				
-				var lat_offset = Math.abs( (extent[1] - extent[3]) )/1.8
+				var lat_offset = Math.abs( (extent[1] - extent[3]) )*0.6
 				
 				// extent[1] = extent[1] - lat_offset
 				// extent[3] = extent[3] - lat_offset
@@ -1194,8 +1217,11 @@
 				mpview.setResolution(resol_scale)
 				// mpview.adjustResolution(resol_delta)
 				
-				// console.log("debug-zsolmap ", view_size)
-				var center_view_pos_pix = [view_size[0]/2, view_size[1]/2]
+				console.log("debug-zsolmap ", 
+				`extent ${extent}\n`,
+				`coord ${center_coord}`
+				)
+				// var center_view_pos_pix = [view_size[0]/2, view_size[1]/2]
 				// mpview.centerOn(
 				// 	center_coord,
 				// 	// [512,512],
@@ -1243,6 +1269,14 @@
 				// setTimeout(()=>{_loop()}, 4000);
 				// _loop()
 				
+			},
+			
+			emitEvent(name, data){
+				
+				if(name=="createMapLayer"){
+					
+					uni.$emit(name, data)
+				}
 			}
 		},
 	}

@@ -232,9 +232,9 @@ export default {
 			return this.rfStatus<1?true:false
 		},
 		
-		onClicked(ev){
-			// this.rfStatus = !this.rfStatus
-		},
+		// onClicked(ev){
+		// 	// this.rfStatus = !this.rfStatus
+		// },
 		
 		onClicked(ev){
 			

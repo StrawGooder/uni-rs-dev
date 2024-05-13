@@ -278,16 +278,22 @@ function transformDatas(ds, transTable, opts){
     {
         transFunc = transformDataByNewKeyIndex
     }
+	
+	
+	if(!Array.isArray(ds))
+	{
+		return transFunc(ds, transTable, opts)
+	}
 
     for(var i in ds)
     {
         new_datas.push(transFunc(ds[i], transTable, opts))
     }
 	
-	if(!Array.isArray(ds))
-	{
-		return new_datas[0]
-	}
+	// if(!Array.isArray(ds))
+	// {
+	// 	return new_datas[0]
+	// }
 
     return new_datas
     

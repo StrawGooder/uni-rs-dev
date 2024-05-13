@@ -4,10 +4,17 @@ import {Fill, Stroke, Style} from 'ol/style.js';
 
 import {merge as mergeObject} from "lodash";
 
+const _style_components = {
+	// "stroke": new Stroke({"color":"red", "width":"2px"})
+	"stroke":null
+}
 const _feat_styles = {
 	"click":function(){ 
 		
-		var style = new Style({fill: new Fill({"color":"#00aa009"})}) 
+		var style = new Style({
+			fill: new Fill({"color":"#00aa009"}),
+			stroke: _style_components["stroke"]
+		}) 
 		return function(feat){
 			return style
 		}
@@ -18,7 +25,11 @@ const _feat_styles = {
 	},
 	"hover":function(){ 
 		
-		var style = new Style({fill: new Fill({"color":"#0000aa9"})})
+		var style = new Style({
+			fill: new Fill({"color":"#0000aa9"}),
+			stroke: _style_components["stroke"]
+		
+		})
 		return function(feat){
 			return style
 		}
@@ -30,7 +41,10 @@ const _feat_styles = {
 	},
 	"altclick":function(feat, e){ 
 		
-		var style = new Style({fill: new Fill({"color":"#0099999"})})
+		var style = new Style({
+			fill: new Fill({"color":"#0099999"}),
+			stroke: _style_components["stroke"]
+		})
 		return function(feat){
 			return style
 		}

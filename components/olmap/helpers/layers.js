@@ -90,7 +90,7 @@ function createVectorLayerFromURL(url, style){
 	var source_obj = new VectorSource(
 		{
 			url:url,
-			format:GeoJSON
+			format: new GeoJSON()
 		}
 	)
 	// source_obj.addFeatures(new_feature_array)
@@ -112,5 +112,6 @@ function createVectorLayerFromURL(url, style){
 }
 
 export {
-	createVectorLayerFromDataObj
+	createVectorLayerFromDataObj,
+	createVectorLayerFromURL
 }

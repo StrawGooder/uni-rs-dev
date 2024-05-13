@@ -73,6 +73,7 @@
 			<view style="width:50%; display: flex;justify-content: end;">
 				<ZsButtonGroup
 				:items = "rfBtnItems"
+				@click="onClicked"
 				>	
 				</ZsButtonGroup>				
 				
@@ -150,37 +151,52 @@ export default {
 		
 		// var r = ref(2);
 		// console.log(`debug vue version ${Vue.version}`)
+		
 	},
 	
 	methods:{
 		
-		renderStart:function(h){
+		
+		onClicked(ev){
 			
-			var props = this.$props
-			
-			var dataIcon = h("uni-view");
-			var text = h("uni-view", {}, [props.text]);
-			
-			return h("uni-view", {class:this.refClass}, [dataIcon, text])
+			ev["data"]["item"] = this.getFormData()
+			this.$emit("click", ev)
 		},
 		
-		renderMiddle:function(h){
-			
-		},
 		
-		renderEnd:function(h){
+		getFormData(){
 			
-			var items = [
-				{
-					icon:"eye"
-				},
-				{
-					icon:"eye"
-				}
-			]
-			
-			return h("ZsButtonGroup", {props:{items:items}})
+			return {
+				text:this.text
+			}
 		}
+		// renderStart:function(h){
+			
+		// 	var props = this.$props
+			
+		// 	var dataIcon = h("uni-view");
+		// 	var text = h("uni-view", {}, [props.text]);
+			
+		// 	return h("uni-view", {class:this.refClass}, [dataIcon, text])
+		// },
+		
+		// renderMiddle:function(h){
+			
+		// },
+		
+		// renderEnd:function(h){
+			
+		// 	var items = [
+		// 		{
+		// 			icon:"eye"
+		// 		},
+		// 		{
+		// 			icon:"eye"
+		// 		}
+		// 	]
+			
+		// 	return h("ZsButtonGroup", {props:{items:items}})
+		// }
 		
 	},
 	

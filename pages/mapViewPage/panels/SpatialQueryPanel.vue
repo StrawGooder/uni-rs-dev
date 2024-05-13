@@ -153,9 +153,6 @@ export default {
 			var sub_url = `/广西壮族自治区-${ev_data["value"]}-县区.json`
 			var final_url = root_url + sub_url
 			
-			// function transformDatas(){
-				
-			// }
 			
 			if(ev_data["level"]==3)
 			{
@@ -173,16 +170,18 @@ export default {
 						var new_data = transformDatas(data, _geoloc_to_treedata_table, {"ignoredKeys":["child"]})
 						// var coord = [data["lnt"],data["lat"]]
 						// var extent =
-						console.log("debug-spa-query-panel ", new_data)
-						uni.$emit(
-							"locateMapViewportTo",
-							{
-								// "geoCoord":child_data["geoCenter"],
-								// "geoExtent":child_data["geoExtent"]
-								"geoCoord": new_data[0]["geoCenter"],
-								"geoExtent": new_data[0]["geoExtent"]
-							}
-						)
+						// console.log("debug-spa-query-panel ", new_data)
+						// uni.$emit(
+						// 	"locateMapViewportTo",
+						// 	{
+						// 		// "geoCoord":child_data["geoCenter"],
+						// 		// "geoExtent":child_data["geoExtent"]
+						// 		"geoCoord": new_data[0]["geoCenter"],
+						// 		"geoExtent": new_data[0]["geoExtent"]
+						// 	}
+						// )
+						
+						_this.handleMapLocationQuery( new_data[0]["geoCenter"], new_data[0]["geoExtent"] )
 						
 						var child_data = transformDatas(
 													data[0]["child"], 
@@ -221,7 +220,9 @@ export default {
 		handleTreeItemEndDblClicked(evt){
 			
 			// temp process
+			
 			var data = evt.data
+			// tree item source data
 			var source_data = evt.data["source"]
 			// var target_loc_name = data["label"]
 			
@@ -239,16 +240,32 @@ export default {
 			// if(found_i<0) return
 			
 			// this.$emit("navGeoLocTo", {data: xian_geo_loc_data[i]})
-			console.log("debug-spatial-query-panel", source_data["cityCode"], data["id"])
+			// console.log("debug-spatial-query-panel", source_data["cityCode"], data["id"])
+			// uni.$emit(
+			// 	"locateMapViewportTo",
+			// 	{
+			// 		// "geoCoord":child_data["geoCenter"],
+			// 		// "geoExtent":child_data["geoExtent"]
+			// 		"geoCoord": [...source_data["geoCenter"]],
+			// 		"geoExtent": [...source_data["geoExtent"]]
+			// 	}
+			// )	
+			
+			this.handleMapLocationQuery( source_data["geoCenter"], source_data["geoExtent"] )
+		},
+		
+		handleMapLocationQuery(coord, extent){
+			
 			uni.$emit(
 				"locateMapViewportTo",
 				{
 					// "geoCoord":child_data["geoCenter"],
 					// "geoExtent":child_data["geoExtent"]
-					"geoCoord": source_data["geoCenter"],
-					"geoExtent": source_data["geoExtent"]
+					"geoCoord": [...coord],
+					"geoExtent": [...extent]
 				}
 			)	
+			
 		}
     },
 
