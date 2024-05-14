@@ -54,6 +54,7 @@
 		mapState,
 		mapMutations
 	} from 'vuex';
+	
 	export default {
 		
 		name:"ZsOlMap",
@@ -422,6 +423,7 @@
 	
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	import { createVectorLayerFromURL } from './helpers/layers.js';
+	
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 	const recvDrawVecSrc = new VectorSource({
 		wrapX: false
@@ -580,18 +582,24 @@
 		},
 		
 		created(){
-		
-			// let _this = this;
-			// uni.getSystemInfo({
-			// 	success(res) {
-			// 		// _this.phoneHeight = res.windowHeight;
-			// 		// _this.phoneWidth = res.windowWidth
-			// 		_this.rfScreenSize = [res.windowWidth, res.windowHeight]
-			// 	},
-			// 	fail(e) {
-			// 		console.log("高度获取失败：",e)
-			// 	}
-			// });
+			
+				let _this = this
+				
+				uni.getSystemInfo({
+					success(res) {
+						// _this.phoneHeight = res.windowHeight;
+						// _this.phoneWidth = res.windowWidth
+						_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+						// _this.testViewZoom()
+					},
+					fail(e) {
+						console.log("设备屏幕尺寸获取失败：",e)
+					}
+				}
+				)
+				
+			
+			this.urfMapLayers = []
 			
 		},
 		mounted() {
@@ -971,7 +979,7 @@
 						function(evt){
 							
 							var features = evt.target.getFeatures().getArray()
-							console.log("debug-zsolmap select interation", features)
+							// console.log("debug-zsolmap select interation", features)
 							// var geom = features[0].getGeometry()
 							// var extent = geom.getExtent()
 							
@@ -1069,6 +1077,13 @@
 						_this.locateViewportTo(evData["geoCoord"], {extent:evData["geoExtent"]})
 					}
 				)
+				
+				uni.$on(
+					"showMapLayer",
+					(evData)=>{
+						_this.setLayerVisible(evData["id"],evData["enabled"])
+					}
+				)
 			},
 			
 			initViewCenterCoord(){
@@ -1083,68 +1098,76 @@
 				
 				// mpview.adjustZoom(0.5, center_coord)
 				
-				// this.testViewZoom()
+				this.testViewZoom()
+				
 				
 				this.testImportGeoLocation()
 			},
 			
 			testImportGeoLocation(){
 				
+				let _this = this
 				// setTimeout(()=>{
 				// 	this.testViewZoom()}, 
 				// 	1000
 				// )
 				
-				let _this = this
 				
-				uni.getSystemInfo({
-					success(res) {
-						// _this.phoneHeight = res.windowHeight;
-						// _this.phoneWidth = res.windowWidth
-						_this.rfScreenSize = [res.windowWidth, res.windowHeight]
-						_this.testViewZoom()
-					},
-					fail(e) {
-						console.log("设备屏幕尺寸获取失败：",e)
-					}
-				}
-				)
+				
+				// uni.getSystemInfo({
+				// 	success(res) {
+				// 		// _this.phoneHeight = res.windowHeight;
+				// 		// _this.phoneWidth = res.windowWidth
+				// 		_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+				// 		_this.testViewZoom()
+				// 	},
+				// 	fail(e) {
+				// 		console.log("设备屏幕尺寸获取失败：",e)
+				// 	}
+				// }
+				// )
 				
 				// this.testViewZoom()
 				
-		
 				
 				var import_prom = importAdminLayer("city")
 				
 				import_prom.then(
 				(result)=>{
 					// console.log("debug-zsolmap import layer", result)
-					_this.map.addLayer(result)
-					_this.map.render()
+					// _this.map.addLayer(result)
+					_this.addLayer(result, "city", "default")
+					// _this.map.render()
 				})
 				
-				_this.emitEvent("createMapLayer", 
-				{
-					"name":"city", "url":"/static/city.json", "borderColor":"red",
-					"dataSourceType":"vector"
-				},
-				)
+				// var lyr_item = {
+				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
+				// 	"dataSourceType":"vector"
+				// }
+				// _this.emitEvent("createMapLayer", 
+				// 				lyr_item,
+				// 			)
+				
+				// _this.$mapStore.commit("addLayer", lyr_item)
 				
 				import_prom = importAdminLayer("county")
 				
 				import_prom.then(
 				(result)=>{
-					_this.map.addLayer(result)
-					_this.map.render()
+					// _this.map.addLayer(result)
+					// _this.addLayer(result, "county", "default")
+					// _this.map.render()
+					_this.addLayer(result, "county", "default")
 				})
 				
-				
-				_this.emitEvent("createMapLayer", 
-				{
-					"name":"county", "url":"/static/county.json", "borderColor":"blue",
-					"dataSourceType":"vector"
-				},
-				)
+				// lyr_item = {
+				// 	"name":"county", "url":"/static/county.json", "borderColor":"blue",
+				// 	"dataSourceType":"vector"
+				// }
+				// // _this.emitEvent("createMapLayer", 
+				// // 				lyr_item
+				// // 			)
+				// _this.$mapStore.commit("addLayer", lyr_item)
 				// const root_url = "/static/map/locations/nations/china"
 				// var lyr = createVectorLayerFromURL(
 				// 	root_url + "/广西壮族自治区-县-test.json", 
@@ -1252,6 +1275,7 @@
 				
 				this.locateViewportTo(center_coord, {extent: extent})
 				
+				var mpview= this.map.getView()
 				function _loop() {
 					
 					mpview.adjustZoom(0.5, center_coord)
@@ -1269,6 +1293,104 @@
 				// setTimeout(()=>{_loop()}, 4000);
 				// _loop()
 				
+			},
+			
+			addLayer(lyr, name, group = "default", scope = "default"){
+				
+				// this.urfMapLayers.push(lyr)
+				var existedLyrCount = this.map.getAllLayers().length
+				var mpSrc = lyr.getSource()
+	
+				var mpLyrStyle = null
+				
+				var dataUrl = ""
+				
+				// var lyrKls = lyr.prototype.constructor
+				var lyrKlsName = lyr.__proto__.constructor["name"]
+				var dataSrcType = "image"
+				
+				if(lyrKlsName=="VectorLayer" ||　lyrKlsName=="VectorTiledLayer")
+				{
+					dataSrcType = "vector"
+				}
+
+				// console.log("debug-zsolmap addlayer ", lyrKls, lyrKls["name"])
+				try{
+					dataUrl = mpSrc.getUrl()
+				}catch(e){
+					//TODO handle the exception
+				}
+				
+				try{
+					mpLyrStyle = lyr.getStyle()
+				}catch(e){
+					//TODO handle the exception
+				}
+				
+				// var geomStyle = null
+				// var geomStrokeStyle = null
+				// var geomColor = "pink"
+				
+				// if(mpLyrStyle)
+				// {
+				// 	// console.log("debug-zsolmap mpLyrStyle", mpLyrStyle)
+				// 	geomStrokeStyle = mpLyrStyle.getStroke()
+				// 	// if( geomStrokeStyle ){
+						
+				// 	// }
+				// 	geomColor = geomStrokeStyle.getColor() || geomColor
+				// }
+				
+				// var defaultColor = "pink"
+				
+				// only interface createVectorLayer function was used to
+				// create a layer, leading to the 'baseStyleEx' variable 
+				// initialized
+				var lyrBaseStyle = lyr.get("baseStyleEx") || {}
+				var lyrItemExt = {
+					"name":name, 
+					"scope":scope, 
+					"group":group,
+					"url":dataUrl,
+					"borderColor": lyrBaseStyle["strokeColor"]?lyrBaseStyle["strokeColor"]:"black",
+					"fillColor": lyrBaseStyle["fillColor"]?lyrBaseStyle["fillColor"]:"black",
+					"dataSourceType":dataSrcType,
+					"layerSeqid":existedLyrCount
+					}
+				
+				lyr.set("seqidEx", existedLyrCount)
+				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
+				
+				// var exitedLyrsInGroup = []
+				// if(targetLyrGroup.length<1)
+				// {
+				// 	targetLyrGroup = new LayerGroup({properties:{"name":group}})
+				// 	this.map.addLayerGroup(targetLyrGroup)
+				// 	exitedLyrsInGroup = targetLyrGroup.getLayers()
+				// }
+				
+				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
+				// targetLyrGroup.addLayer(lyr)
+				this.map.addLayer(lyr)
+				
+				// this.map.render()
+				
+				this.$mapStore.commit("addLayer", lyrItemExt)
+				
+				
+			},
+			
+			setLayerVisible(id, enabled = true){
+				
+				console.log("debug-zsolmap setLayerVisible ", id, enabled)
+				var lyrs = this.map.getAllLayers()
+				
+				var lyr = lyrs.filter((x)=>{x.get("seqidEx")==id})
+				
+				lyr.setVisible(enabled)
+				
+				
+				this.map.render()
 			},
 			
 			emitEvent(name, data){

@@ -127,6 +127,10 @@ export default {
 		status:{
 			type:String,
 			default:"normal"
+		},
+		
+		seqid:{
+			type:Number
 		}
 		
 	},
@@ -140,7 +144,7 @@ export default {
 			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
 			rfBtnItems:
 			[
-				{"icon":"eyeFill", "name":"hide", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
+				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
 				{"icon":"refresh", "name":"refresh", "color":"green"},
 			],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
@@ -160,14 +164,16 @@ export default {
 		onClicked(ev){
 			
 			ev["data"]["item"] = this.getFormData()
-			this.$emit("click", ev)
+			// console.log("Debug-mapobjlistitem ", ev)
+			this.$emit("clickBtn", ev)
 		},
 		
 		
 		getFormData(){
 			
 			return {
-				text:this.text
+				text:this.text,
+				seqid:this.seqid
 			}
 		}
 		// renderStart:function(h){

@@ -10,11 +10,13 @@
 		title="vector info"
 		>
 			<view  :class="rfSecContainerClass">
+				<!-- rfVecItems -->
+				<!-- computedVecItems -->
 				<MapObjListItem 
 				v-for="it in rfVecItems"
 				:key="it.key"
 				v-bind="it"
-				@click="onClicked"
+				@clickBtn="onClicked"
 				/>			
 			</view>
 		
@@ -24,13 +26,13 @@
 		title="raster info"
 		>
 		
-			<view :class="rfSecContainerClass">
+		<!-- 	<view :class="rfSecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
 				v-bind="it"
 				/>			
-			</view>
+			</view> -->
 		
 		</uni-section>	
 		
@@ -85,6 +87,7 @@ import { transformDatas } from "../../../utils/dataTransform";
 // import ZsIconVue from "../../components/zs-components/zs-icon/ZsIcon.vue";
 import MapObjListItem from "../MapObjListItem.vue";
 
+import {mapState} from "vuex"
 
 const _item_data_trans_map_table = {
 								"text": {"key":"name"},
@@ -104,6 +107,9 @@ const _item_data_trans_map_table = {
 								},
 								"key":{
 									"key":"name"
+								},
+								"seqid":{
+									"key":"layerSeqid"
 								}
 							}
 export default {
@@ -169,8 +175,12 @@ export default {
 				// {text:"farm-land", iconColor:"yellow"}
 				
 			],
+			
+			// rfVecItems:{},
+			
 			rfImgItems:[],
 			
+			rfUpd:false,
 			// rfVecToItem:{},
 			// rfImgToItem:{},
 		}
@@ -178,6 +188,16 @@ export default {
 	
 	computed:{
 		
+		// ...mapState(
+		// 	{
+		// 		computedVecItems(){
+					
+		// 			// return this.$mapStore.state.layers
+		// 			return transformDatas(this.$mapStore.state.layers, _item_data_trans_map_table)
+		// 		},
+		// 	}
+			
+		// )
 		// computedVecItems:{
 			
 		// },
@@ -187,6 +207,27 @@ export default {
 		// }
 		
 	},
+	// computed:mapState({
+	// 	computedVecItems:"layers",
+	// }),
+	
+	watch:{
+		
+		rfVecItems:{
+			handler:function(newVal, oldVal){
+				
+				console.log("debug-MapObjLayerCtrlPanel watching rfVecItems", newVal)
+			},
+			deep:true
+		},
+		rfUpd:{
+			handler:function(newVal){
+				console.log("debug-MapObjLayerCtrlPanel watching 'rfUpd'", newVal)
+			},
+			immediate:true,
+			deep:true
+		}
+	},
 	
 	created(){
 		
@@ -194,14 +235,16 @@ export default {
 		// var r = ref(2);
 		// console.log(`debug vue version ${Vue.version}`)
 		
-		this.urfIdToVecItem = {
+		// this.urfIdToVecItem = {
 			
-		}
+		// }
 		
-		this.urfIdToImgItem = {
+		// this.urfIdToImgItem = {
 			
-		}
+		// }
 		
+		this.rfVecItems = transformDatas(this.$mapStore.state.layers, _item_data_trans_map_table)
+		// console.log(`debug-mapobj ${this.computedVecItems}`, this.$mapStore.state.layers)
 		// this.urfItemDataTransMapTable = 
 	},
 	
@@ -213,16 +256,22 @@ export default {
 			
 			var new_obj = transformDatas(obj, _item_data_trans_map_table)
 			
-			var id = obj[id_field]
+			// var id = obj[id_field]
+			var id = new_obj["text"]
 			
 			if(dataSrcType=="vector"){
 				
 				// if(this.urfIdToVecItem[id])
 				this.urfIdToVecItem[id] = new_obj
-				this.rfVecItems.push(new_obj)
+				// this.rfVecItems.push(new_obj)
+				// this.rfVecItems = [{"iconColor":"red", "text":"aa"}]
 				// this.rfVecItems = [...this.rfVecItems]
 				// this.rfVecItems.push(new_obj)
-				console.log("debug-MapObjLayerCtrlPanel ", this.rfVecItems)
+				this.rfVecItems[id] = new_obj
+				
+				this.$data.rfUpd = !this.rfUpd
+				
+				console.log("debug-MapObjLayerCtrlPanel ", this.rfVecItems, this.rfUpd)
 			}
 			else if(dataSrcType=="raster"){
 				
@@ -251,18 +300,22 @@ export default {
 		onClicked(ev){
 			
 			var ev_data = ev["data"]
-			var btnKey = ev_data["btnKey"]
+			var btnKey = ev["btnKey"]
 			
-			var mapObjId = ev_data["item"]["name"]
+			// var mapObjId = ev_data["item"]["name"]
 			
-			if(["shown","eye"].find(btnKey)>-1)
+			var mapObjId = ev_data["item"]["seqid"]
+			
+			// if(["shown","hidden","eye"].find(btnKey)>-1)
+			console.log("debug-MapObjLayerCtrlPanel ", ev_data)
+			if(btnKey=="shown")
 			{
 				// if( ev_data["enabled"] )
 				// {
 				// 	this.$emit("show",  {"id": mapObjId })
 				// }
 				
-				this.$emit("show",  {"id": mapObjId, "enabled": ev_data["enabled"]})
+				uni.$emit("showMapLayer",  {"id": mapObjId, "enabled": ev_data["enabled"]})
 			}
 			else
 			{

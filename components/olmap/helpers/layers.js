@@ -78,9 +78,8 @@ function createVectorLayerFromDataObj(data_obj, style){
 		style: style_obj
 	}
 	
-	var lyr = new VectorLayer(vec_opts)
 	
-	return lyr
+	return createVectorLayer(vec_opts)
 	
 }
 
@@ -104,11 +103,56 @@ function createVectorLayerFromURL(url, style){
 		style: style_obj
 	}
 	
-	var lyr = new VectorLayer(vec_opts)
+	// var lyr = new VectorLayer(vec_opts)
 	// lyr.addFeatures(new_feature_array)
 	
-	return lyr
+	return createVectorLayer(vec_opts)
 	
+}
+
+
+function createVectorLayer(opts){
+	
+	var style = opts["style"] || null
+	
+	var lyr = new VectorLayer(opts)
+	// lyr.addFeatures(new_feature_array)
+	
+	// var stroke_color = "unset"
+	// var fill_color = "unset"
+
+	var stroke_color = null
+	var fill_color = null
+	
+	if(style)
+	{
+		var basic_style = null
+		var stroke_style = null
+		var fill_style = null
+
+		if(isFunction(style))
+		{
+			basic_style = style(null,null)
+		}
+		else{
+			basic_style = style
+		}
+		
+		stroke_style = basic_style.getStroke()
+		fill_style = basic_style.getFill()
+		if(stroke_style){
+			// stroke_color = stroke_style.getColor() || ""+(stroke_color)
+			stroke_color = stroke_style.getColor()
+		}
+		if(fill_style){
+			// fill_color= fill_style.getColor()|| ""+(fill_color)
+			fill_color= fill_style.getColor()
+		}
+	}
+	
+	lyr.set("baseStyleEx", {"strokeColor":stroke_color, "fillColor":fill_color})
+	
+	return lyr
 }
 
 export {

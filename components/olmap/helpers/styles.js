@@ -17,6 +17,11 @@ const _default_text_style = {
 
 function formatText(feature, bindProp, textFormat){
 	
+	if(feature==null){
+		console.log("debug-zsolmap-style feaure is null on format")
+		return ""
+	}
+	
 	bindProp = bindProp || "name"
 	textFormat = textFormat || null
 	if(textFormat!=null)
@@ -86,7 +91,7 @@ function createTextStyleObject(feature, resolution, opts){
 
 	const align = new_opts["align"]
 
-	console.log("debug-zsolmap layer text style ", font)
+	// console.log("debug-zsolmap layer text style ", font)
 	  return new Text({
 		textAlign: align == '' ? undefined : align,
 		textBaseline: new_opts["baseline"],

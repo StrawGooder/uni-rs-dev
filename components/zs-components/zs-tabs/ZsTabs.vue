@@ -27,7 +27,9 @@
 </template>
 <script>
 	export default {
+		// reference the custom-tab-check
 		name: "ZsTabs",
+		
 		props: {
 			type: {
 				type: [String],
