@@ -69,16 +69,21 @@ export default {
 			// default:"blue"
 		},
 		
+		// status:{
+		// 	type:String,
+		// 	default:"on"
+		// },
 		status:{
-			type:String,
-			default:"on"
+			type:Number,
+			default:1
 		}
 	},
 	
 	data(){
 		return {
 			
-			rfStatus: this.status=="on"? 1 : 0 ,
+			// rfStatus: this.status=="on"? 1 : 0 ,
+			rfStatus: this.status,
 			// rfStatus: 0,
 			
 			rfClass:["hlyt"],

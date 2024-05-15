@@ -16,7 +16,7 @@
 				v-for="it in rfVecItems"
 				:key="it.key"
 				v-bind="it"
-				@clickBtn="onClicked"
+				@clickButton="onButtonClicked"
 				/>			
 			</view>
 		
@@ -110,6 +110,11 @@ const _item_data_trans_map_table = {
 								},
 								"seqid":{
 									"key":"layerSeqid"
+								},
+								"xprops":{
+									"value":(v,k,item)=>{
+										return item
+									}
 								}
 							}
 export default {
@@ -213,20 +218,20 @@ export default {
 	
 	watch:{
 		
-		rfVecItems:{
-			handler:function(newVal, oldVal){
+		// rfVecItems:{
+		// 	handler:function(newVal, oldVal){
 				
-				console.log("debug-MapObjLayerCtrlPanel watching rfVecItems", newVal)
-			},
-			deep:true
-		},
-		rfUpd:{
-			handler:function(newVal){
-				console.log("debug-MapObjLayerCtrlPanel watching 'rfUpd'", newVal)
-			},
-			immediate:true,
-			deep:true
-		}
+		// 		console.log("debug-MapObjLayerCtrlPanel watching rfVecItems", newVal)
+		// 	},
+		// 	deep:true
+		// },
+		// rfUpd:{
+		// 	handler:function(newVal){
+		// 		console.log("debug-MapObjLayerCtrlPanel watching 'rfUpd'", newVal)
+		// 	},
+		// 	immediate:true,
+		// 	deep:true
+		// }
 	},
 	
 	created(){
@@ -243,8 +248,8 @@ export default {
 			
 		// }
 		
-		this.rfVecItems = transformDatas(this.$mapStore.state.layers, _item_data_trans_map_table)
-		// console.log(`debug-mapobj ${this.computedVecItems}`, this.$mapStore.state.layers)
+		this.rfVecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
+		console.log(`debug-mapobj ${this.rfVecItems}`,this.rfVecItems)
 		// this.urfItemDataTransMapTable = 
 	},
 	
@@ -259,7 +264,8 @@ export default {
 			// var id = obj[id_field]
 			var id = new_obj["text"]
 			
-			if(dataSrcType=="vector"){
+			if(dataSrcType=="vector")
+			{
 				
 				// if(this.urfIdToVecItem[id])
 				this.urfIdToVecItem[id] = new_obj
@@ -297,30 +303,34 @@ export default {
 		
 		
 	
-		onClicked(ev){
+		onButtonClicked(ev){
 			
-			var ev_data = ev["data"]
+			var evData = ev["data"]
 			var btnKey = ev["btnKey"]
 			
-			// var mapObjId = ev_data["item"]["name"]
+			// var mapObjId = evData["item"]["name"]
 			
-			var mapObjId = ev_data["item"]["seqid"]
+			var mapObjId = ev["item"]["seqid"]
 			
 			// if(["shown","hidden","eye"].find(btnKey)>-1)
-			console.log("debug-MapObjLayerCtrlPanel ", ev_data)
+			console.log("debug-MapObjLayerCtrlPanel ", ev["item"])
+			
+			var evParamSent = {
+				"seqid":mapObjId,
+				"id":mapObjId
+			}
+			
 			if(btnKey=="shown")
 			{
-				// if( ev_data["enabled"] )
-				// {
-				// 	this.$emit("show",  {"id": mapObjId })
-				// }
 				
-				uni.$emit("showMapLayer",  {"id": mapObjId, "enabled": ev_data["enabled"]})
+				evParamSent["enabled"] = evData["enabled"]
+				
+				uni.$emit("showMapLayer",  evParamSent )
 			}
-			else
-			{
-				this.$emit("clickItem", {"id": mapObjId})
-			}
+			// else
+			// {
+			// 	this.$emit("clickItem", {"seqid": mapObjId})
+			// }
 			
 		}
 		

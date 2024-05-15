@@ -45,6 +45,10 @@ export default {
 		layoutMode:{
 			type:String,
 			default:"center"
+		},
+		
+		index:{
+			type:Number,
 		}
 		
 	},
@@ -215,7 +219,7 @@ export default {
 				props:item, 
 				on:
 				{
-					click:(ev)=>{this.onClicked(ev)},
+					click:(ev)=>{ ev["index"] = this.index;  this.onClicked(ev)},
 				},
 			}
 			)

@@ -193,18 +193,21 @@ function transformDataByNewKeyIndex(d, trans_table, opts){
 
         // for uars rank temply modification
         // old_v = new_d[old_k] || 'null'
-        old_v = new_d[old_k] || ( new_d[new_k] || 'null' )
+        // old_v = new_d[old_k] || ( new_d[new_k]!=null? new_d[new_k]:'null' )
+		old_v = new_d[old_k]!=null? new_d[old_k] : ( new_d[new_k] )
+		// old_v = new_d[old_k]!=null? new_d[old_k] : ( new_d[new_k] )
 
         // old_v = new_d[old_k] || 'null'
-
-        if(isNullOrUndefined(old_v))
+		map_value = map_config["value"]
+		
+        if(isNullOrUndefined(map_value) && isNullOrUndefined(old_v))
         // if(old_v===undefined)
         {
             console.log(`warning-transform | attemp to transform data but not found the value of old key '${old_k}' in data`)
             continue;
         }
 
-        map_value = map_config["value"]
+        // map_value = map_config["value"]
 
         new_v = old_v
 

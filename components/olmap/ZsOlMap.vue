@@ -600,6 +600,7 @@
 				
 			
 			this.urfMapLayers = []
+			this.urfLayerSeqCount=0
 			
 		},
 		mounted() {
@@ -1081,7 +1082,8 @@
 				uni.$on(
 					"showMapLayer",
 					(evData)=>{
-						_this.setLayerVisible(evData["id"],evData["enabled"])
+						_this.setLayerVisibleById(evData["id"],evData["enabled"])
+						// _this.setLayerVisibleById(evData["seqid"],evData["enabled"])
 					}
 				)
 			},
@@ -1298,7 +1300,9 @@
 			addLayer(lyr, name, group = "default", scope = "default"){
 				
 				// this.urfMapLayers.push(lyr)
-				var existedLyrCount = this.map.getAllLayers().length
+				// var existedLyrCount = this.map.getAllLayers().length
+				var lyrSeqid = this.urfLayerSeqCount
+				this.urfLayerSeqCount++
 				var mpSrc = lyr.getSource()
 	
 				var mpLyrStyle = null
@@ -1355,10 +1359,11 @@
 					"borderColor": lyrBaseStyle["strokeColor"]?lyrBaseStyle["strokeColor"]:"black",
 					"fillColor": lyrBaseStyle["fillColor"]?lyrBaseStyle["fillColor"]:"black",
 					"dataSourceType":dataSrcType,
-					"layerSeqid":existedLyrCount
+					"seqid":lyrSeqid,
+					"visible":true,
 					}
 				
-				lyr.set("seqidEx", existedLyrCount)
+				lyr.set("seqidEx", lyrSeqid)
 				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
 				
 				// var exitedLyrsInGroup = []
@@ -1375,27 +1380,48 @@
 				
 				// this.map.render()
 				
-				this.$mapStore.commit("addLayer", lyrItemExt)
+				// this.$mapStore.commit(
 				
+				// this.$store.state.map.commit(
+				this.$store.commit(
+				"addLayer", 
+				lyrItemExt
+				)
 				
 			},
 			
-			setLayerVisible(id, enabled = true){
+			setLayerVisibleById(id, enabled = true){
 				
-				console.log("debug-zsolmap setLayerVisible ", id, enabled)
+				// console.log("debug-zsolmap setLayerVisibleById ", id, enabled)
 				var lyrs = this.map.getAllLayers()
 				
-				var lyr = lyrs.filter((x)=>{x.get("seqidEx")==id})
+				var lyrs_fil = lyrs.filter((x)=>{console.log("debug-zsolmap setLayerVisibleById ", x.get("seqidEx")); return x.get("seqidEx")==id})
 				
-				lyr.setVisible(enabled)
+				// console.log("debug-zsolmap setLayerVisible ", lyrs_fil)
 				
-				
-				this.map.render()
+				if(lyrs_fil.length>0)
+				{
+					
+					lyrs_fil[0].setVisible(enabled)
+					
+					// this.$mapStore.commit(
+					// this.$store.state.map.commit(
+					this.$store.commit(
+						"setLayerPropsById",
+						// id,
+						{"id":id, 
+						"props":{"visible": enabled}
+						}
+					)
+					// this.map.render()
+				}
+				// lyr.setVisible(enabled)
 			},
 			
 			emitEvent(name, data){
 				
-				if(name=="createMapLayer"){
+				if(name=="createMapLayer")
+				{
 					
 					uni.$emit(name, data)
 				}

@@ -48,7 +48,9 @@
 			</uni-col>
 		</uni-row> -->
 		
-		<view class="zs-hlyt">
+		<view class="zs-hlyt"
+		@click="onItemClicked"
+		>
 			
 			<view class="zs-hlyt" style="width:50%">
 				<view>
@@ -73,7 +75,9 @@
 			<view style="width:50%; display: flex;justify-content: end;">
 				<ZsButtonGroup
 				:items = "rfBtnItems"
-				@click="onClicked"
+				:index="seqid"
+				@click="onButtonGroupClicked"
+				
 				>	
 				</ZsButtonGroup>				
 				
@@ -131,6 +135,10 @@ export default {
 		
 		seqid:{
 			type:Number
+		},
+		xprops:{
+			type:Object,
+			default:()=>{return {}}
 		}
 		
 	},
@@ -144,7 +152,9 @@ export default {
 			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
 			rfBtnItems:
 			[
-				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlashFill"},
+				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlashFill",
+					"status":this.xprops["visible"]==false?0:1
+				},
 				{"icon":"refresh", "name":"refresh", "color":"green"},
 			],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
@@ -161,13 +171,27 @@ export default {
 	methods:{
 		
 		
-		onClicked(ev){
+		onButtonGroupClicked(ev){
 			
-			ev["data"]["item"] = this.getFormData()
-			// console.log("Debug-mapobjlistitem ", ev)
-			this.$emit("clickBtn", ev)
+			ev["item"] = this.getFormData()
+			
+			this.$emit("clickButton", ev)
+	
 		},
 		
+		onItemClicked(ev){
+		
+			ev["item"] = this.getFormData()
+			
+			this.$emit("clickItem", ev)	
+		},
+		
+		// assembleEventData(ev){
+			
+		// 	var formData = this.getFormData()
+		// 	ev["item"] = formData
+		// 	// ev["seqid"] = formData["seqid"]
+		// },
 		
 		getFormData(){
 			

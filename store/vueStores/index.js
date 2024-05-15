@@ -1,9 +1,37 @@
 // import Vue from 'vue'
 // import Vuex from 'vuex'
 // Vue.use(Vuex)
+import Vue from "vue"
+import "./useStore.js";
+import mixin from "./mixins.js"
+import userStore from "./user.js";
+import mapStore from "./map.js";
+import Vuex from "vuex";
 
-import {setupStorePlugin as setupVueStorePlugin} from "./vueStores"
+Vue.mixin(mixin)
 
+
+function setupStorePlugin(app){
+	
+	app.use(store)
+	app.use(mapStore)
+	
+}
+
+const store = new Vuex.Store({
+	...userStore,
+	modules:{
+		// "store":userStore,
+		"user":userStore,
+		"map":mapStore
+	}
+})
+
+Vue.prototype.$store = store
+// Vue.prototype.$mapStore = mapStore
+
+
+export {setupStorePlugin}
 // Vue.use(store)
 // Vue.use(mapStore)
 

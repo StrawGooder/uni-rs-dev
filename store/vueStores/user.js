@@ -1,8 +1,9 @@
 // import Vue from 'vue'
-import Vuex from 'vuex'
+// import Vuex from 'vuex'
 // Vue.use(Vuex)
 
-const store = new Vuex.Store({
+const userStore = {
+	namespace:true,
 	state: {
 		uerInfo: {},  
 		hasLogin: false  
@@ -28,6 +29,6 @@ const store = new Vuex.Store({
 			// })  
 		}  
 	}
-})
+}
 
-export default store;
+export default userStore;
