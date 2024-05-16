@@ -332,6 +332,7 @@
 	
 	// import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
 	// import { createVectorLayerFromURL } from './helpers/layers.js';
+	// import { openDrawInteraction, closeDrawInteraction } from './drawer';
 </script>
 
 
@@ -423,27 +424,9 @@
 	
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	import { createVectorLayerFromURL } from './helpers/layers.js';
-	
+	import { openDrawInteraction, closeDrawInteraction } from './drawer';
 	// import videoconference from "@/components/video_conference/video_conference.vue";
-	const recvDrawVecSrc = new VectorSource({
-		wrapX: false
-	});
-	
-	const recvDrawVecLyr = new VectorLayer({
-		source: recvDrawVecSrc,
-		style:new style(
-			{
-				file: new fill({color:"#ffffffa"}),
-				stroke: new Stroke({color:"pink", width:2}),
-				image:new CircleStyle(
-							{
-								radius:5,
-								stroke:new Stroke({color:"yellow"})
-							}
-				),
-			}
-		)
-	});
+
 	var measureTooltipElement = null;
 	var measureTooltip = null;
 	var helpTooltipElement = null
@@ -453,90 +436,93 @@
 	
 	
 	// zs features
-	var gDrawInta = null;
-	var gDrawPointInta = null;
+	// var gDrawInta = null;
+	// var gDrawPointInta = null;
 	
-	function addDrawInteraction(map){
+	// function addDrawInteraction(map){
 	
-		// if(gDrawInta!=null)return 
-		// gDrawInta = new Draw(
+	// 	// if(gDrawInta!=null)return 
+	// 	// gDrawInta = new Draw(
 		
-		var draw_init_options = {}
+	// 	var draw_init_options = {}
 		
 		
-		gDrawInta = createDrawer(
-			"base",
-			{
-				source:recvDrawVecSrc,
-				style:makePolygonDrawStyleFunc(),
-				// style:new style(
-				// 	{
-				// 		fill: new fill({color:"#aa000022"}),
-				// 		stroke: new Stroke({color:"blue", width:2}),
-				// 		image: new CircleStyle(
-				// 			{
-				// 				radius:5,
-				// 				stroke:new Stroke({color:"red"})
-				// 			}
-				// 		)
-				// 		// "fill-color":"red",
-				// 		// "stroke-color":"blue",
-				// 		// "stroke-width":2,
-				// 		// shape : new Shape(
-				// 		// 	{
-				// 		// 		stroke: new Stroke({color:"yellow"})
-				// 		// 	}
-				// 		// )
-				// 	}
-				// ),
+	// 	gDrawInta = createDrawer(
+	// 		"base",
+	// 		{
+	// 			source:recvDrawVecSrc,
+	// 			style:makePolygonDrawStyleFunc(),
+	// 			// style:new style(
+	// 			// 	{
+	// 			// 		fill: new fill({color:"#aa000022"}),
+	// 			// 		stroke: new Stroke({color:"blue", width:2}),
+	// 			// 		image: new CircleStyle(
+	// 			// 			{
+	// 			// 				radius:5,
+	// 			// 				stroke:new Stroke({color:"red"})
+	// 			// 			}
+	// 			// 		)
+	// 			// 		// "fill-color":"red",
+	// 			// 		// "stroke-color":"blue",
+	// 			// 		// "stroke-width":2,
+	// 			// 		// shape : new Shape(
+	// 			// 		// 	{
+	// 			// 		// 		stroke: new Stroke({color:"yellow"})
+	// 			// 		// 	}
+	// 			// 		// )
+	// 			// 	}
+	// 			// ),
 
-				type:"Polygon"
+	// 			type:"Polygon"
 				
-			}
-		)	
+	// 		}
+	// 	)	
 		
-		gDrawInta.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
-		gDrawInta.on("drawend", 
-			(evt)=>{
-				console.log("debug-ol-draw ", "draw end")
-			} 
-		)
-		gDrawInta.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
-		gDrawInta.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
+	// 	gDrawInta.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
+	// 	gDrawInta.on("drawend", 
+	// 		(evt)=>{
+	// 			console.log("debug-ol-draw ", "draw end")
+	// 		} 
+	// 	)
+	// 	gDrawInta.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
+	// 	gDrawInta.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
 		
 
-		// gDrawPointInta = new Draw(
-		// {
-		// 	source:source,
-		// 	style:new style(
-		// 		{
-		// 			image: new CircleStyle(
-		// 				{
-		// 					radius:1,
-		// 					stroke:new Stroke({color:"#ffffffa"})
-		// 				}
-		// 			)
-		// 		}	
-		// 	),
-		// 	type:"Point"
-		// })
+	// 	// gDrawPointInta = new Draw(
+	// 	// {
+	// 	// 	source:source,
+	// 	// 	style:new style(
+	// 	// 		{
+	// 	// 			image: new CircleStyle(
+	// 	// 				{
+	// 	// 					radius:1,
+	// 	// 					stroke:new Stroke({color:"#ffffffa"})
+	// 	// 				}
+	// 	// 			)
+	// 	// 		}	
+	// 	// 	),
+	// 	// 	type:"Point"
+	// 	// })
 		
 		
-		map.addInteraction(gDrawInta)
-		// map.addInteraction(gDrawPointInta)
-		// console.log("debug-ol ", "boot draw inta")
-	}
+	// 	map.addInteraction(gDrawInta)
+	// 	// map.addInteraction(gDrawPointInta)
+	// 	// console.log("debug-ol ", "boot draw inta")
+	// }
 	
-	function removeDrawInteraction(map) {
-		map.removeInteraction(gDrawInta)
-		// map.removeInteraction(gDrawPointInta)
-	}
+	// function removeDrawInteraction(map) {
+	// 	map.removeInteraction(gDrawInta)
+	// 	// map.removeInteraction(gDrawPointInta)
+	// }
 	
 	export default {
 		// components:{videoconference},
 		props:{
 			hideMapImg:{
 				type:Boolean
+			},
+			afterInit:{
+				type:Function
 			}
 		},
 		data() {
@@ -623,7 +609,7 @@
 				document.head.appendChild(script)
 			}
 			
-			
+
 
 		},
 		destroyed(){
@@ -631,7 +617,8 @@
 		},
 		beforeDestroy() {
 
-			
+			closeFeatureSelection()
+			closeDrawInteraction()
 		},
 		methods: {
 			// },
@@ -817,6 +804,13 @@
 				
 				this.initInteraction()
 				
+				
+				// zs-adding
+				if(this.afterInit)
+				{
+					this.afterInit()
+				}
+				
 			},
 			//添加图层
 			loadGeoserverMap() {
@@ -997,6 +991,33 @@
 					
 				// console.log("debug-zsolmap add select")
 					
+					
+				const recvDrawVecSrc = new VectorSource({
+					wrapX: false
+				});
+				
+				const recvDrawVecLyr = new VectorLayer({
+					source: recvDrawVecSrc,
+					style:new style(
+						{
+							file: new fill({color:"#ffffffa"}),
+							stroke: new Stroke({color:"pink", width:2}),
+							image:new CircleStyle(
+										{
+											radius:5,
+											stroke:new Stroke({color:"yellow"})
+										}
+							),
+						}
+					)
+				});
+				var drawInteraction = openDrawInteraction(
+										this.map, 
+										"default", 
+										recvDrawVecLyr,
+										{"type":"base", "vectorType":"Polygon"}
+										)
+				
 			},
 			
 			initGPSLocation(){
@@ -1103,7 +1124,7 @@
 				this.testViewZoom()
 				
 				
-				this.testImportGeoLocation()
+				// this.testImportGeoLocation()
 			},
 			
 			testImportGeoLocation(){
@@ -1162,6 +1183,7 @@
 					_this.addLayer(result, "county", "default")
 				})
 				
+				// import by url
 				// lyr_item = {
 				// 	"name":"county", "url":"/static/county.json", "borderColor":"blue",
 				// 	"dataSourceType":"vector"

@@ -1,6 +1,7 @@
 // import Vue from 'vue'
 // import Vuex from 'vuex'
 import { getLocalStore } from '../localStores';
+import {isMap} from "lodash"
 // import {merge as mergeObject } from "lodash"
 
 
@@ -17,30 +18,96 @@ function findLayerById(state,i){
 		// 	}
 		// }
 		// return 
-		return state.layers.filter((x)=>{console.log("debug-mapstore ", i, x); return x["seqid"]==i})[0]
-		
-		
+		return state.layers.filter((x)=>{return x["seqid"]==i})[0]
 }
+
+function normalizeConditions(conds){
 	
+	var new_conds = []
+	
+}
+
+
+function validateConditions(obj, conds){
+	
+	if(!Array.isArray(conds))
+	{
+		conds = [conds]
+	}
+	// conds.map(
+	// 	(x)=>{
+	// 		if(x instanceof String)return {"field":x}}
+			
+	// 	)
+	const total = conds.length
+	var i=0
+	if(total<i)return false
+	// function _validate(i){
+		
+	// 	if(i>total-1)return false
+		
+	// 	return obj[conds[i]["field"]] == conds[i]["value"] && _validate(i+1)
+	// }
+	
+	function _validate(cond){
+		
+		if(i>total-1) return true
+		// i++
+		return obj[cond["field"]] == cond["value"] && _validate(conds[++i])
+	}
+	
+	return _validate(conds[i])
+	
+}
+
+// collection(array): layers
+// filters(array): query condition
+function findLayers(collection, filters){
+	
+	return collection.filter((x)=>{return validateConditions(x,filters)})
+}
+
+function hasLayer(collection, filters){
+	
+	return findLayers(collection, filters)[0]
+}
+
+
+function loadLayers(){
+	
+	var data = getLocalStore("map").loadItem("layers")
+	
+	if(Array.isArray(data)) return new Map(data)
+	else if(isMap(data)) return data
+	console.log("debug-map-vuesto", data)
+	return new Map()
+	
+}
+
+
 const mapStore = {
 	
 	state: {
-		// uerInfo: {},  
-		// hasLogin: false  ,
 		
 		// layers:[],
-		layers: getLocalStore("map").loadItem("layers") || [],
+		// layers: getLocalStore("map").loadItem("layers") || [],
 		
+		layers: loadLayers(),
 		// temp for store bucket
-		name:"map"
+		name:"map",
+		
+		indexField:"seqid",
+		
+		interactionMode:"read",
+		
+		useMode:"view",
 	
 	},
-	getter: {
+	getters: {
 		
-		computedLayers(){
-			return this.$mapStore.state.layers
+		computedLayers(state){
+			return [...state.layers.values()]
 		},
-		
 
 	},
 	mutations: {
@@ -48,13 +115,37 @@ const mapStore = {
 		addLayer(state, lyr){
 			
 			// temp adding
-			if(!findLayerById(state, lyr["seqid"]))
+			// if(!findLayerById(state, lyr["seqid"]))
+			// {
+			// 	state.layers.push(lyr)
+			// }
+			var indexVal = lyr[state.indexField]
+			if(!hasLayer(this.getters.computedLayers, {"field":state.indexField, "value": indexVal} ))
 			{
-				state.layers.push(lyr)
+				// state.layers.push(lyr)
+				state.layers.set(indexVal, lyr)
+				// new Map().set
 			}
 			// state.layers.push(lyr)
 			// console.log("debug-mapstore layers ", state.layers)
 		},
+		
+		removeLayer(state, filters){
+			
+			// var lyrs = findLayers(state.layers, filters)
+			var lyrs = findLayers(this.getters.computedLayers, filters)
+			
+			if(lyrs.length>0)
+			{
+				// var iter_lyr;
+				for(var i in lyrs)
+				{
+					iter_lyr = lyrs[i]
+					state.layers.delete(iter_lyr[state.indexField])	
+				}	
+			}
+		},
+		
 		removeLayerById(state,i){
 			state.layers = state.layers.slice(0,i).concat(state.layers.slice(i))
 		},
@@ -68,11 +159,16 @@ const mapStore = {
 			// var targetLyr = this.mutations["findLayerById"](state,i) || null
 			
 			// this.mutations["findLayerById"](state,i)
-			var targetLyr = findLayerById(state, id)
+			
+			// this.getter.computedLayers
+			// var targetLyr = findLayerById(state, id)
+			
+			// console.log(`warning-store | `, this.getters.computedLayers)
+			var targetLyr = hasLayer(this.getters.computedLayers, {"field":state.indexField, "value":id})
 			
 			if(!targetLyr)
 			{
-				console.log(`warning-store | not found map layer(index=${i}) on map store`)
+				console.log(`warning-store | not found map layer(index=${id}) on map store`, targetLyr)
 				return false
 			}
 			// var argLen = arguments.length
@@ -97,12 +193,18 @@ const mapStore = {
 	
 	actions:{
 		
+		findLayers(context, query){
+			
+			return findLayers(context.getters.computedLayers, query)
+		},
+		
 		saveToLSTO({state,commit}){
 			
 			var prom = new Promise(
-				(resolve,rejected)=>{
+				(resolve, rejected)=>{
 					
 					var lsto = getLocalStore(state.name)
+					
 					lsto.saveItem("layers", state.layers)
 				}
 			)

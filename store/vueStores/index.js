@@ -32,6 +32,7 @@ Vue.prototype.$store = store
 
 
 export {setupStorePlugin}
+export default store
 // Vue.use(store)
 // Vue.use(mapStore)
 

@@ -87,7 +87,7 @@ import { transformDatas } from "../../../utils/dataTransform";
 // import ZsIconVue from "../../components/zs-components/zs-icon/ZsIcon.vue";
 import MapObjListItem from "../MapObjListItem.vue";
 
-import {mapState} from "vuex"
+import {mapState, mapGetters} from "vuex"
 
 const _item_data_trans_map_table = {
 								"text": {"key":"name"},
@@ -193,6 +193,9 @@ export default {
 	
 	computed:{
 		
+		// ...mapGetters("/modules/map",{
+		// 	"computedLayers":"computedLayers"
+		// })
 		// ...mapState(
 		// 	{
 		// 		computedVecItems(){
@@ -248,8 +251,10 @@ export default {
 			
 		// }
 		
-		this.rfVecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
-		console.log(`debug-mapobj ${this.rfVecItems}`,this.rfVecItems)
+		// this.rfVecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
+		// console.log(`debug-mapobj this.rfVecItems`,  this.$store.getters)
+		this.rfVecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
+		console.log(`debug-mapobj this.rfVecItems`,this.rfVecItems)
 		// this.urfItemDataTransMapTable = 
 	},
 	

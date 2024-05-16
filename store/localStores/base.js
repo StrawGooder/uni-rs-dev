@@ -1,5 +1,5 @@
 // import {isPlainObjectInstance, isArray} from '../../utils/objects.js'
-import {isPlainObject as isPlainObjectInstance} from "lodash"
+import {isPlainObject as isPlainObjectInstance, isMap} from "lodash"
 // import {getAppConfig} from "../../configs/app.js"
 // const _context = window
 // isArray(arg: any)
@@ -38,14 +38,23 @@ class BaseLocalStore{
     _makeupDataSchema(value){
 
         var data_type = "string"
+		
+		var data = {"value":value}
 
-        if (isPlainObjectInstance(value) || Array.isArray(value))
+		if(isMap(value))
+		{
+			data_type = "Map"
+			// value = 
+			var new_val = []
+			 value.keys().forEach((k)=>{new_val.push([k,value.get(k)])})
+			 data["value"] = new_val
+		}
+        else if (isPlainObjectInstance(value) || Array.isArray(value))
         {
-            
             data_type = "object"
         }
-
-        var data = {"type":data_type, "value":value}
+		data["data_type"] = data_type
+        // var data = {"type":data_type, "value":value}
 
         return JSON.stringify(data)
     }
@@ -267,8 +276,15 @@ class LocalStore extends BaseLocalStore{
         }
 
         data = JSON.parse(data)
+		
+		var data_val = data["value"] || data
+		if(data["type"]=="Map")
+		{
+			data_val = new Map(data_val)
+		}
 
-        return data["value"] || data
+        // return data["value"] || data
+		return data_val
 
         // if (this._key_to_data_type[new_key]=="object")
         // {
@@ -277,6 +293,10 @@ class LocalStore extends BaseLocalStore{
         // console.log("info | load item: ", new_key, data)
         // return data
     }
+	
+	hasItem(key){
+		return _WLS.getItem( this._constructStoreKey(key) ) || null
+	}
 
 
     getItem(key){

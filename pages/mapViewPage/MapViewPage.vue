@@ -2,6 +2,8 @@
 	<view>
 		<ol-map
 		hideMapImg
+		:ref="rfmapVmName"
+		:afterInit="importMapLayers"
 		>
 		</ol-map>
 
@@ -84,7 +86,7 @@
 <script>
 	// import olMap from "@/components/olmap/olmap.vue";
 	import olMap from "@/components/olmap/ZsOlMap.vue";
-
+	
 	import MapViewBottomPanel from "./MapViewBottomPanel.vue";
 	import MapViewBasicToolbar from "./MapViewBasicToolbar.vue";
 	
@@ -93,6 +95,8 @@
 	// import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
 	// import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
 	// import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
+	
+	import { importAdminLayer } from "../../components/olmap/locations";
 	
 	export default {
 		components: {
@@ -125,21 +129,8 @@
 					
 				},
 				
-				rfTreeData:[
-	
-					{id:"1", label:"青秀区"},
-					{id:"2", label:"江南区"},
-					{id:"3", label:"兴宁区"},
-					{id:"4", label:"衡州市"},
-					{id:"5", label:"马山县"},
-					{id:"6", label:"隆安县"},
-					{id:"7", label:"上林县"},
-					{id:"8", label:"宾阳县"},
-					{id:"9", label:"良庆区"},
-					{id:"10", label:"邕宁区"},
-					{id:"11", label:"江南区"}
-					
-				],
+				rfmapVmName:"map",
+				rfmapVm:null
 			}
 		},
 		onLoad(options) {
@@ -159,11 +150,12 @@
 			// 	}
 			// )
 			
-			this.crtCurBottomPanelPos = this.maxtop
+			this.urfcurBottomPanelPos = this.maxtop
 			
 		},
 		mounted(){
 
+			// this.importMapLayers()
 			// temp for debug
 			// popup the bottom panel
 			setTimeout(()=>{this.popupBottomPanel()}, 256)
@@ -254,11 +246,11 @@
 			// pos : suggest relative unit
 			slideBottomPanelTo(pos, duration){
 				
-				if(pos==this.crtCurBottomPanelPos){
+				if(pos==this.urfcurBottomPanelPos){
 					return
 				}
 				// console.log("debug-bottomTab", pos)
-				this.crtCurBottomPanelPos = pos
+				this.urfcurBottomPanelPos = pos
 				//step 和 run 方法 查看uniapp官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法";
 				// 其实文档上写需要先初始化init，但是不init也可以使用，不知道为什么
 				this.$refs.menuWarp.step({
@@ -294,20 +286,121 @@
 					else
 					{
 						this.popupBottomPanel()
-						this.$refs[this.rfBottomPanelRefName].switchTabTo("layer")
-						
+						this.$refs[this.rfBottomPanelRefName].switchTabTo("layer")	
 					}
-				
 				}
 				
 			},
 			
 			isBottomPanelPopped(){
 				
-				return this.crtCurBottomPanelPos==this.maxtop?false:true
+				return this.urfcurBottomPanelPos==this.maxtop?false:true
+			},
+			
+			importMapLayers(){
+				
+				var _this = this
+				this.rfmapVm = this.$refs["map"]
+				// console.log("debug-mapviepage ", this.$refs, mapVm)
+				
+				var import_prom = importAdminLayer("city")
+				
+				var $store = this.$store
+				
+				// $store.dispatch("findLayer", {"name":"city"})
+				// .then(
+				// 	(lyr)=>{
+				// 		return importAdminLayer("city")
+				// 	}
+				// )
+				// .then( 
+				// 	(lyrObj)=>{
+				// 		_this.$refs["map"].addLayer(lyrObj,  "city", "default")
+				// 	} 
+				
+				// )
+				
+				// $store.dispatch("findLayers", 
+				// // {"name":"city"},
+				// {"field":"name","value":"city"}
+				// )
+				// .then(
+				// 	(lyrs)=>{
+				// 		console.log(`debug-mapviewpage `, lyrs)
+				// 		return lyrs[0]
+				// 	}
+				// )
+				
+				
+				importAdminLayer("city")
+				.then(
+					(lyrObj)=>{
+						
+						// if(!lyrModel[0]["visible"])
+						// {
+						// 	lyrObj.setVisible(false)
+						// }
+						_this.$refs["map"].addLayer(lyrObj,  "city", "default")	
+				
+						// $store.dispatch("findLayers",
+						// // {"name":"city"},
+						// {"field":"name","value":"city"}
+						// )
+						// .then(
+						// 	(lyrs)=>{
+						// 		console.log(`debug-mapviewpage `, lyrs)
+						// 		// return lyrs[0]
+						// 		if(lyrs[0] && !lyrs[0]["visible"])
+						// 		{
+						// 			lyrObj.setVisible(false)
+						// 		}
+						// 	}
+						// )
+						
+					}
+				
+				)
+				
+				// _this.$refs["map"].addLayer(lyrObj,  "city", "default")
+				// import_prom.then(
+				// 	(result)=>{
+				// 		// console.log("debug-zsolmap import layer", _this.rfmapVm)
+				// 		// _this.map.addLayer(result)
+				// 		// _this.addLayer(result, "city", "default")
+				// 		// _this.rfmapVm.addLayer(result,  "city", "default")
+				// 		_this.$refs["map"].addLayer(result,  "city", "default")
+				// 		// _this.map.render()
+						
+				// 	}
+				// )
+				
+				// var lyr_item = {
+				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
+				// 	"dataSourceType":"vector"
+				// }
+				// _this.emitEvent("createMapLayer", 
+				// 				lyr_item,
+				// 			)
+				
+				// _this.$mapStore.commit("addLayer", lyr_item)
+				
+				import_prom = importAdminLayer("county")
+				
+				import_prom.then(
+					(result)=>{
+						// _this.map.addLayer(result)
+						// _this.addLayer(result, "county", "default")
+						// _this.map.render()
+						// _this.addLayer(result, "county", "default")
+						
+						_this.rfmapVm.addLayer(result, "county", "default")
+					}	
+				)
+				
 			}
 			
 		},
+		
 
 	}
 </script>

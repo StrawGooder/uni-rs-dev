@@ -7,24 +7,24 @@ import {GeoJSON} from "ol/format";
 import {createVectorLayerFromDataObj} from "../../helpers/layers.js";
 import Map from "ol/Map.js"
 
+import store from "@/store/vueStores"
 
-
-// const _type_to_level = {
+// const _name_to_level = {
 // 	"nation":0,
 // 	"province":1,
 // 	"city":2,
 // 	"district":3
 // }
 
-const _level_to_type = ["nation","province","city","county"]
-var _type_to_level = null
+const _level_to_name = ["nation","province","city","county"]
+var _name_to_level = null
 
 function initConfig(){
 	
-	if(_type_to_level==null)
+	if(_name_to_level==null)
 	{
-		_type_to_level = {}
-		_level_to_type.forEach((x,i)=>{_type_to_level[x] = i})
+		_name_to_level = {}
+		_level_to_name.forEach((x,i)=>{_name_to_level[x] = i})
 	}
 	
 }
@@ -80,25 +80,25 @@ const _request_configs =
 
 
 
-function createLayer(type){
+function createLayer(name){
 	
-	var level = _type_to_level[type]
+	var level = _name_to_level[name]
 	if(level==null)
 	{
-		throw new Error(`attemp to create administrator layer, but got unknown type '${type}'`)
+		throw new Error(`attemp to create administrator layer, but got unknown layer name '${name}'`)
 	}
-	return createLayerByAdminLevel(level)
+	return createLayerByAdminLevel(level, {xname: name})
 }
 
 
-function createLayerByAdminLevel(level){
+function createLayerByAdminLevel(level, props){
 	
 	var src_root_url = _request_configs["url"]
 	var sub_url = sub_url = _request_configs["routes"][level]["url"]
 	
 	var final_url = src_root_url + sub_url
 	
-	var lyr_style_config = _type_to_layer_style[_level_to_type[level]]
+	var lyr_style_config = _type_to_layer_style[_level_to_name[level]]
 	
 	var prom = uni.request({
 		url:final_url,
@@ -119,6 +119,14 @@ function createLayerByAdminLevel(level){
 					style_cfg
 					)
 			
+			if(props)
+			{
+				for(var k in props)
+				{
+					lyr.set(k, props[k])
+				}
+			}
+			
 			return lyr
 		}
 	)
@@ -127,16 +135,57 @@ function createLayerByAdminLevel(level){
 }
 
 
-function importLayer(type, map){
+function importLayer(name, map){
 	
-	var lyr = createLayer(type)
+	var prom = createLayer(name)
 	
 	if(map)
 	{
 		
 	}
 	
-	return lyr
+// temp adding
+	// store.dispatch("findLayers",
+	// // {"name":"city"},
+	// {"field":"name","value":"city"}
+	// )
+	// .then(
+	// 	(lyrs)=>{
+	// 		console.log(`debug-mapviewpage `, lyrs)
+	// 		// return lyrs[0]
+	// 		if(lyrs[0] && !lyrs[0]["visible"])
+	// 		{
+	// 			lyrObj.setVisible(false)
+	// 		}
+	// 	}
+	// )
+	
+	return prom.then(
+		
+		(lyrObj)=>{
+			
+			// lyr.get("xname")
+			return store.dispatch("findLayers",
+			// {"name":"city"},
+			{"field":"name","value":name}
+			)
+			.then(
+				(lyrModels)=>{
+					
+					// console.log(`debug-mapviewpage `, lyrModels)
+					// return lyrs[0]
+					if(lyrModels[0] && !lyrModels[0]["visible"])
+					{
+						lyrObj.setVisible(false)
+					}
+					return  lyrObj
+				}
+			)
+			
+		}
+	)
+	
+	// return prom
 }
 
 
