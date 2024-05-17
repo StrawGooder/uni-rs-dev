@@ -1,37 +1,55 @@
 <template>
 	
-	<view
+<!-- 	<view
 	:style="renderStyle()"
 	:class="rfImgClass"
 	@click="onClicked"
 	>
-		<view v-if="computedContentMode=='icon'">
-		<!-- 	<image
-			:src = "loadSVG(icon)"
-			:style="renderStyle()"
-			:class="rfImgClass"
-			>
-			</image> -->
-			<ZsIcon :icon="computedIcon"></ZsIcon>
-			<!-- <ZsIcon :icon="icon"></ZsIcon> -->
-			
-		</view>
-		<view v-else-if="computedContentMode=='text'">
-			<button>
-				{{text}}
-			</button>
-		</view>
-		<view v-else>
-			<button>
-				<image
-				:src = "loadSVG(computedIcon)"
-				:style="renderStyle()">
-				</image>	
-				{{text}}
-			</button>
-		</view>		
+	</view> -->
+	<view v-if="computedContentMode=='icon'">
+	<!-- 	<image
+		:src = "loadSVG(icon)"
+		:style="renderStyle()"
+		:class="rfImgClass"
+		>
+		</image> -->
+		<!-- <ZsIcon :icon="computedIcon"></ZsIcon> -->
 		
+		<view
+		:style="renderStyle()"
+		:class="rfImgClass"
+		@click="onClicked"
+		>
+			<ZsIcon :icon="computedIcon"></ZsIcon>
+		</view>
+		<!-- <ZsIcon :icon="icon"></ZsIcon> -->
 	</view>
+	<view v-else-if="computedContentMode=='text'">
+		<button
+		:style="renderStyle()"
+		:class="rfImgClass"
+		@click="onClicked"
+		>
+			{{computedText}}
+		</button>
+	</view>
+	<view v-else
+	>
+		<button
+		:style="renderStyle()"
+		:class="rfImgClass"
+		@click="onClicked"
+		>
+			<image
+			:src = "loadSVG(computedIcon)"
+			>
+			<!-- :style="renderStyle()" -->
+			</image>	
+			{{computedText}}
+		</button>
+	</view>		
+		
+
 
 
 </template>
@@ -47,6 +65,8 @@ import ZsButtonBase from "./ZsButton.vue";
 
 export default {
 	
+	// as switcher button
+	// 2 status: 1 is on, 0 is off
 	name:"ZsButtonSta2",
 	
 	mixins:[ZsButtonBase],
@@ -69,6 +89,13 @@ export default {
 			// default:"blue"
 		},
 		
+		bgColorDisabled:{
+			type:String
+		},
+		// bgColor:{
+		// 	type:String,
+		// 	default:"cyan"
+		// },
 		// status:{
 		// 	type:String,
 		// 	default:"on"
@@ -82,18 +109,36 @@ export default {
 	data(){
 		return {
 			
-			// rfStatus: this.status=="on"? 1 : 0 ,
-			rfStatus: this.status,
-			// rfStatus: 0,
+			// rfstatus: this.status=="on"? 1 : 0 ,
+			rfstatus: this.status>0?true:false,
+			// rfstatus: 0,
 			
 			rfClass:["hlyt"],
 			rfImgClass:["svg-img"],
 			// rfImgSrc: getSVG("eye")
-			rfStyle:{}
+			rfStyle:{},
+			
+			// rfcontainerBaseStyle:{},
+			rfcontainerBaseStyle:{},
 		}
 	},
 	
 	computed:{
+		
+		
+		computedText:{
+			
+			get:function(){
+				
+				if(!this.isOff())
+				{
+					return this.text
+				}
+				
+				return this.textDisabled || this.text + "&nbsp"
+			}		
+			
+		},
 		
 		computedIcon:{
 			
@@ -105,22 +150,41 @@ export default {
 				}
 				
 				return this.iconDisabled || this.icon
-				
 			}
 		},
 		
-		computedColor:{
+		
+		// computedColor:{
 			
+		// 	get:function(){
+				
+		// 		if(!this.isOff())
+		// 		{
+		// 			return this.color
+		// 		}
+				
+		// 		return this.colorDisabled || this.color
+					
+		// 	}
+		// },
+		
+		computedColorStyle:{
 			get:function(){
 				
-				if(!this.isOff())
+				if(this.isOff())
 				{
-					return this.color
+					return {
+						"color":this.colorDisabled || this.color,
+						"backgroundColor":this.bgColorDisabled || this.bgColor
+					} 
 				}
 				
-				return this.colorDisabled || this.color
-					
+				return {
+					"color":this.color,
+					"backgroundColor":this.bgColor
+				} 
 			}
+			
 		},
 		
 		computedContentMode:{
@@ -131,13 +195,13 @@ export default {
 				// console.log("debug-zsbtn ", this.$props)
 				var mode = "icon"
 				
-				if( props.text!="" && props.icon!="")
-				{
-					mode = "text&icon"
-				}
-				else if(props.icon==null || props.icon==undefined)
+				if(props.icon==null || props.icon==undefined)
 				{
 					mode = "text"
+				}
+				else if( props.text!="")
+				{
+					mode = "text&icon"
 				}
 				return mode
 				// return "text"
@@ -192,8 +256,33 @@ export default {
 			// 	"width":item_w,
 			// 	"height":item_h
 			// }
+			this.rfcontainerBaseStyle = {}
+			var contentMode = this.computedContentMode
+			if(contentMode=="text" || contentMode=="icon&text"){
+				
+				this.rfcontainerBaseStyle = {
+					// color: this.computedColor,
+					height: `${this.size}px`,
+					// width: `${this.size}px`,
+					// fontSize : temp process, for icon(svg) size scale
+					fontSize:`${this.size-2}px`,
+					display:"inline"
+					
+				}	
+			}
+			else if(contentMode=="icon")
+			{
+				this.rfcontainerBaseStyle = {
+					// color: this.computedColor,
+					height: `${this.size}px`,
+					width: `${this.size}px`,
+					// fontSize : temp process, for icon(svg) size scale
+					fontSize:`${this.size-2}px`,
+				}	
+			}
 			
 			
+
 		},
 		
 		// getContentMode(){
@@ -216,15 +305,21 @@ export default {
 		
 		renderStyle(item){
 			
-			var style = {
-				color: this.computedColor,
-				height: `${this.size}px`,
-				width: `${this.size}px`,
-				// fontSize : temp process, for icon(svg) size scale
-				fontSize:`${this.size-2}px`,
-			}
+
+			var style = {}
+			Object.assign(this.rfcontainerBaseStyle, this.computedColorStyle)
+			// Object.assign(style, this.rfcontainerBaseStyle)
 			
-			return style
+			// notes: if the object holding the style 
+			// isn't reactive variable( option api's data scope)
+			 // and the color value was changed , need to 
+			// return new object, because vue can't react the changes
+			// passing same object,
+			// but if the object is reactive variable
+			
+			// console.log("debug-zsbtn ", this.rfcontainerBaseStyle)
+			return this.rfcontainerBaseStyle
+			// return style
 			
 		},
 		
@@ -234,25 +329,28 @@ export default {
 		// },
 		
 		isOff(){
-			return this.rfStatus<1?true:false
+			// return this.rfstatus<1?true:false
+			return !this.rfstatus
 		},
 		
 		// onClicked(ev){
-		// 	// this.rfStatus = !this.rfStatus
+		// 	// this.rfstatus = !this.rfstatus
 		// },
 		
 		onClicked(ev){
 			
-			this.rfStatus = !this.rfStatus
-			var ev_pro = {
+			this.rfstatus = !this.rfstatus
+			// console.log("debug-zsbtn ", this.rfstatus)
+			var evPro = {
 				
 				naiveEvent:ev,
 				btnKey:this.name,
+				name:this.name,
 				data:{
-					enabled:this.rfStatus
+					enabled:this.rfstatus
 				}
 			}
-			this.$emit("click", ev_pro)
+			this.$emit("click", evPro)
 
 		}
 		// loadSVG2(icon){
@@ -313,7 +411,7 @@ export default {
 </script>
 
 <style>
-	
+	/* what about the code useing meanings */
 	.svg-img::before{
 		background-color: green;
 	}

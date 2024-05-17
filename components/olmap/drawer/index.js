@@ -1,59 +1,78 @@
 import { createDrawer } from "./Drawer"
 import { makePolygonDrawStyleFunc } from "./style"
+import {Stroke,Fill, Circle, Style} from "ol/style"
+// import CircleStyle from "ol/style/Circle"
+import VectorLayer from "ol/layer/Vector"
+import VectorSource from "ol/source/Vector"
 
+import {merge as mergeObject} from "lodash"
 // const _draw_interaction = {}
 const _interaction_memo = {
 	default:null
 }
 
+// layer: store those features that was drawed by user
+// opts(object):
+// 	type: drawer type
+// 	drawStyle: setup the overlap layer style (response the user drawing action)
+//	vectorType: drawed geometry type
 function openDrawInteraction(map, name, layer, opts){
 
 	name = name || "default"
-	opts = opts || {"type":"base", "vectorType":"polygon"}
+	opts = mergeObject(opts || {}, {"type":"base", "vectorType":"Polygon"} )
+	
+	
+
 	// if(drawer!=null)return 
 	// drawer = new Draw(
 	
 	// var draw_init_options = {}
-	var drawer = _interaction_memo[name]
+	var drawer = _interaction_memo[name] || null
 	// var drawType = opt
-	
-	if(!layer){
-		var recvDrawVecLyr= new VectorLayer(
-			{
-				source: new VectorSource(
-						{
-							wrapX: false
-						}		
-				),
-				style:new style(
-					{
-						file: new fill({color:"#ffffffa"}),
-						stroke: new Stroke({color:"pink", width:2}),
-						image: new CircleStyle(
-									{
-										radius:5,
-										stroke:new Stroke({color:"yellow"})
-									}
-						),
-					}
-				)
-			}
-		);
-	}else
-	{
-		recvDrawVecLyr = layer
-	}
-	
+
 	
 	if (!drawer)
 	{
 		
+		var storedLyr = null
+		if(!layer)
+		{
+			storedLyr= new VectorLayer(
+							{
+								source: new VectorSource(
+										{
+											wrapX: false
+										}		
+								),
+								style:new Style(
+									{
+										file: new Fill({color:"#ffffffa"}),
+										stroke: new Stroke({color:"pink", width:2}),
+										image: new Circle(
+													{
+														radius:5,
+														stroke:new Stroke({color:"yellow"})
+													}
+										),
+									}
+								)
+							}
+						);
+		}else
+		{
+			storedLyr = layer
+		}
+		
+		if(opts["style"]){
+			storedLyr.setStyle( opts["style"] )	
+		}
+		
 		drawer = createDrawer(
 					opts["type"],
 					{
-						source:recvDrawVecLyr.getSource(),
-						style:makePolygonDrawStyleFunc(),
-						type:opts[vectorType]
+						source:storedLyr.getSource(),
+						style:opts["drawStyle"],
+						type:opts["vectorType"]
 						
 					}
 				)		
@@ -62,42 +81,23 @@ function openDrawInteraction(map, name, layer, opts){
 	}
 
 	
-	drawer.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
-	drawer.on("drawend", 
-		(evt)=>{
-			console.log("debug-ol-draw ", "draw end")
-		} 
-	)
-	drawer.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
-	drawer.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
+	// drawer.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
+	// drawer.on("drawend", 
+	// 	(evt)=>{
+	// 		console.log("debug-ol-draw ", "draw end")
+	// 	} 
+	// )
+	// drawer.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
+	// drawer.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
 	
 
-	// gDrawPointInta = new Draw(
-	// {
-	// 	source:source,
-	// 	style:new style(
-	// 		{
-	// 			image: new CircleStyle(
-	// 				{
-	// 					radius:1,
-	// 					stroke:new Stroke({color:"#ffffffa"})
-	// 				}
-	// 			)
-	// 		}	
-	// 	),
-	// 	type:"Point"
-	// })
 	
-	
-	// map.addInteraction(drawer)
-	// map.addInteraction(gDrawPointInta)
-	// console.log("debug-ol ", "boot draw inta")
 	return drawer
 }
 
 function closeDrawInteraction(map, name= "default") {
 	
-	var drawer = hasDrawerInteration()
+	var drawer = hasDrawInteraction()
 	if(drawer){
 		map.removeInteraction(drawer)	
 		delete _interaction_memo[name]
@@ -107,7 +107,7 @@ function closeDrawInteraction(map, name= "default") {
 }
 
 
-function hasDrawerInteration(name){
+function hasDrawInteraction(name){
 	
 	return _interaction_memo[name]
 }

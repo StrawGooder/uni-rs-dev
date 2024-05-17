@@ -100,7 +100,7 @@ const mapStore = {
 		
 		interactionMode:"read",
 		
-		useMode:"view",
+		usedMode:"view",
 	
 	},
 	getters: {

@@ -10,7 +10,19 @@
 
 			 </xfl-select>
 			</view>
-			</uni-list>
+			<!-- </uni-list> -->
+			<ZsButtonSta2
+			name="edit"
+			text="stop edit"
+			textDisabled="edit"
+			color="black"
+			bgColor="orange"
+			bgColorDisabled="white"
+			:status="0"
+			@click="onBtnGroupClick"
+			>
+				
+			</ZsButtonSta2>
 		</scroll-view>
 	
 	</view>
@@ -21,6 +33,9 @@
 		getShpOne
 	} from '@/utils/getData.js';
 	import xflSelect from '@/components/xfl-select/xfl-select.vue'; //导入
+	import ZsButtonSta2 from "@/components/zs-components/zs-button-group/ZsButtonSta2.vue"
+	
+	import {mapMutations} from "vuex"
 	export default {
 		props: ['id'],
 		data() {
@@ -31,9 +46,16 @@
 			}
 		},
 		components: {
-			xflSelect
+			xflSelect,
+			ZsButtonSta2
 		}, //注册为子组件
 		methods: {
+			
+			// ...mapMutations(
+			// 	"modules/map",
+			// 	{"setMapUseMode":"setUseMode"}
+			// ),
+			
 			//获取选中的的值
 			change(e) {
 				console.log("----------------------", e.newVal);
@@ -45,6 +67,24 @@
 					'草地',
 					'建筑物'
 				]
+			},
+			
+			onBtnGroupClick(ev){
+				
+				var btnKey = ev["btnKey"]
+				var evData = ev["data"]
+				
+				if(btnKey=="edit")
+				{
+					var enabled = evData["enabled"]
+					// uni.$emit("map::openDrawInteraction", )
+					// this.$store.setUseMode("")
+					// this.$store.setUseMode("")
+					// this.setMapUseMode(enabled?"edit":"view")
+					// uni.$emit("map:setProps", {"usedMode":enabled})
+					uni.$emit("map:setProps", {"usedMode":enabled})
+				}
+				
 			}
 		},
 		mounted() {

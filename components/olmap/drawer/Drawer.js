@@ -2,12 +2,14 @@ import Draw from "ol/interaction/Draw.js"
 import Feature from "ol/Feature"
 import {Point} from "ol/geom"
 import Map from "ol/Map"
-
-var mp = new Map()
+import {createDrawStyle} from "./style.js"
+// var mp = new Map()
 // mp.render()
 class Drawer extends Draw {
 	
 	constructor(options) {
+		
+		options["style"] = createDrawStyle("base")
 		
 		super(options)
 		
@@ -19,25 +21,13 @@ class Drawer extends Draw {
 	
 	handleUpEvent(evt){
 		
-		console.log("debug-ol ", "mouse up", evt , Date.now())
-		var pos = evt.coordinate
-		// var map = evt.map
-		
-		// // console.log("debug-ol ", "mouse up", map.getLayers() )
-		// var recv_draw_lyr = map.getLayers().getArray()[2]
-		
-		// var feat = new Feature(
-		// 	{
-		// 		"points":new Point(evt.coordinate)
-		// 	}
-		// )
-
+		// console.log("debug-ol ", "mouse up", evt , Date.now())
 		
 		// var flag = Draw.prototype.handleUpEvent.call(this, evt)
 		var flag = super.handleUpEvent(evt)
 		
 		// if(!this.shouldHandle_)return
-		// true draw event is not processed
+		// flag is true, the touch up event was not handled
 		if(flag) return
 		
 		
@@ -53,10 +43,12 @@ class Drawer extends Draw {
 			return false
 		}
 		
+		var pos = evt.coordinate
+		
 		var feat = new Feature()
 		
 		feat.setGeometry(new Point(pos))
-		feat.setProperties({"drawed_status":1})
+		feat.setProperties({"isDropped":1})
 		// recv_draw_lyr.getSource().addFeature(feat)
 		// map.render()
 		// return this.__proto__.handleUpEvent.apply(this, evt)
@@ -101,7 +93,19 @@ class Drawer extends Draw {
 	}
 }
 
-export function createDrawer(name, options){
+export function createDrawer(name, opts){
 	
-	return new Drawer(options)
+	var kls = null
+	name = name || "base"
+	if(name=="base"){
+		kls = Drawer
+	}
+	else if(name=="naive"){
+		kls = Draw
+	}
+	else{
+		throw new Error(`attemp to create '${name}' Drawer, not found it `)
+	}
+	
+	return new kls(opts)
 }

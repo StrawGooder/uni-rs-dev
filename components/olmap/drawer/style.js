@@ -15,11 +15,11 @@ import GeometryType from 'ol/geom/GeometryType.js';
 	
 // }
 
-export function makePolygonDrawStyleFunc(){
+export function makeBasePolygonDrawStyle(){
 	
 	var dropped_style = new Style(
 			{
-				file: new Fill({color:"#ffffffa"}),
+				// fill: new Fill({color:"#ffffffa"}),
 				stroke: new Stroke({color:"pink", width:2}),
 				image:new CircleStyle(
 							{
@@ -33,7 +33,7 @@ export function makePolygonDrawStyleFunc(){
 	var icon_width = 48
 	var float_style = new Style(
 			{
-				file: new Fill({color:"#ffffffa"}),
+				// fill: new Fill({color:"#ffffffa"}),
 				stroke: new Stroke({color:"blue", width:2}),
 				// image:new CircleStyle(
 				// 			{
@@ -60,9 +60,9 @@ export function makePolygonDrawStyleFunc(){
 		var gemo_type = gemo.getType()
 		if(gemo_type == GeometryType.POINT)
 		{
-			var drawed_status = feat.getProperties()["drawed_status"]
+			var isDropped = feat.getProperties()["isDropped"]
 			
-			if(drawed_status==1)
+			if(isDropped==1)
 			{
 				return dropped_style
 			}
@@ -70,4 +70,12 @@ export function makePolygonDrawStyleFunc(){
 
 		return float_style
 	}
+}
+
+
+export function createDrawStyle(type){
+	if(type=="base"){
+		return makeBasePolygonDrawStyle()
+	}
+	return makeBasePolygonDrawStyle()
 }

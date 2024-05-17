@@ -425,6 +425,7 @@
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	import { createVectorLayerFromURL } from './helpers/layers.js';
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
+	import {mapState} from "vuex";
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 
 	var measureTooltipElement = null;
@@ -523,6 +524,14 @@
 			},
 			afterInit:{
 				type:Function
+			},
+			
+			usedMode:{
+				type:String,
+				default:"view"
+			},
+			featureSelectionOn:{
+				type:Boolean
 			}
 		},
 		data() {
@@ -563,7 +572,15 @@
 				watchPositionTime: 1000, //动态改变定位间隔时间,
 				
 				
-				rfScreenSize:null
+				rfscreenSize:null,
+				rfusedMode:this.usedMode,
+				
+				rffeatSelOn:this.featureSelectionOn,
+				
+				// ...mapState(
+				// 	"modules/map", 
+				// 	{rfusedmode:"usedMode"},
+				// )
 			}
 		},
 		
@@ -575,7 +592,7 @@
 					success(res) {
 						// _this.phoneHeight = res.windowHeight;
 						// _this.phoneWidth = res.windowWidth
-						_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+						_this.rfscreenSize = [res.windowWidth, res.windowHeight]
 						// _this.testViewZoom()
 					},
 					fail(e) {
@@ -741,8 +758,7 @@
 					})
 				});
 			
-				// zs add draw layer temp
-				this.map.addLayer(recvDrawVecLyr)
+				
 				
 				// this.loadGeoserverMap()
 				this.setPoint()
@@ -799,11 +815,9 @@
 					}
 				})
 				
+				// zs-adding
 				this.initEvent()
 				this.initViewCenterCoord()
-				
-				this.initInteraction()
-				
 				
 				// zs-adding
 				if(this.afterInit)
@@ -811,6 +825,8 @@
 					this.afterInit()
 				}
 				
+				
+				this.initInteraction()
 			},
 			//添加图层
 			loadGeoserverMap() {
@@ -941,7 +957,7 @@
 					      })
 					 })
 				})
-				console.log("debug-olmap setStyle")
+				// console.log("debug-olmap setStyle")
 				this.feature.setStyle(this.stylepoint)
 				let source = new VectorSource()
 				source.addFeature(this.feature)
@@ -955,69 +971,71 @@
 				
 				// addDrawInteraction(this.map)
 				var _this = this
-				var sel = openFeatureSelection(this.map, 
-								// ()=>{
-									
-								// },
-								"hover",
-								// "altclick",
-								// "singleclick"
-								// "click",
-								{
-									layers:(lyr)=>{
-										return true
+				if(this.rffeatSelOn){
+				
+					var sel = openFeatureSelection(this.map,
+								
+									"hover",
+									// "altclick",
+									// "singleclick"
+									// "click",
+									{
+										layers:(lyr)=>{
+											return true
+										}
 									}
-								}
-								)
+									)
+						
+						sel.on("select", 
+							function(evt){
+								
+								var features = evt.target.getFeatures().getArray()
+								// console.log("debug-zsolmap select interation", features)
+								// var geom = features[0].getGeometry()
+								// var extent = geom.getExtent()
+								
+								// _this.locateViewportTo(
+								// 	computeCenter(extent),
+								// 	{
+								// 		extent:extent
+								// 	}
+								// )
+							}
+						)	
 					
-					sel.on("select", 
-						function(evt){
-							
-							var features = evt.target.getFeatures().getArray()
-							// console.log("debug-zsolmap select interation", features)
-							// var geom = features[0].getGeometry()
-							// var extent = geom.getExtent()
-							
-							// _this.locateViewportTo(
-							// 	computeCenter(extent),
-							// 	{
-							// 		extent:extent
-							// 	}
-							// )
-							
-							// geom.
-						}
-					)
+				}
+				
 					
 				// console.log("debug-zsolmap add select")
 					
-					
-				const recvDrawVecSrc = new VectorSource({
-					wrapX: false
-				});
+				// const recvDrawVecSrc = new VectorSource({
+				// 	wrapX: false
+				// });
 				
-				const recvDrawVecLyr = new VectorLayer({
-					source: recvDrawVecSrc,
-					style:new style(
-						{
-							file: new fill({color:"#ffffffa"}),
-							stroke: new Stroke({color:"pink", width:2}),
-							image:new CircleStyle(
-										{
-											radius:5,
-											stroke:new Stroke({color:"yellow"})
-										}
-							),
-						}
-					)
-				});
-				var drawInteraction = openDrawInteraction(
-										this.map, 
-										"default", 
-										recvDrawVecLyr,
-										{"type":"base", "vectorType":"Polygon"}
-										)
-				
+				// const recvDrawVecLyr = new VectorLayer({
+				// 	source: recvDrawVecSrc,
+				// 	style:new style(
+				// 		{
+				// 			file: new fill({color:"#ffffffa"}),
+				// 			stroke: new Stroke({color:"pink", width:2}),
+				// 			image:new CircleStyle(
+				// 						{
+				// 							radius:5,
+				// 							stroke:new Stroke({color:"yellow"})
+				// 						}
+				// 			),
+				// 		}
+				// 	)
+				// });
+				// var drawInteraction = openDrawInteraction(
+				// 						this.map, 
+				// 						"default", 
+				// 						recvDrawVecLyr,
+				// 						{"type":"base", "vectorType":"Polygon"}
+				// 						)
+				// zs add draw layer temp
+				// this.map.addLayer(recvDrawVecLyr)
+				this.setUsedMode(this.rfusedMode)
 			},
 			
 			initGPSLocation(){
@@ -1064,8 +1082,7 @@
 						maximumAge: 500,
 					});
 				
-			}
-			,
+			},
 			
 			initEvent(){
 				
@@ -1107,6 +1124,12 @@
 						// _this.setLayerVisibleById(evData["seqid"],evData["enabled"])
 					}
 				)
+				
+				uni.$on("map::setProps",
+					(evData)=>{
+						this.onSetProps(evData)
+					}
+				)
 			},
 			
 			initViewCenterCoord(){
@@ -1127,6 +1150,7 @@
 				// this.testImportGeoLocation()
 			},
 			
+			// noused
 			testImportGeoLocation(){
 				
 				let _this = this
@@ -1141,7 +1165,7 @@
 				// 	success(res) {
 				// 		// _this.phoneHeight = res.windowHeight;
 				// 		// _this.phoneWidth = res.windowWidth
-				// 		_this.rfScreenSize = [res.windowWidth, res.windowHeight]
+				// 		_this.rfscreenSize = [res.windowWidth, res.windowHeight]
 				// 		_this.testViewZoom()
 				// 	},
 				// 	fail(e) {
@@ -1233,20 +1257,20 @@
 				// center_coord[1] = center_coord[1] - bottom_height_mp
 				
 				var view_size = [1100,1000]
-				if(this.rfScreenSize){
-					view_size = this.rfScreenSize
+				if(this.rfscreenSize){
+					view_size = this.rfscreenSize
 				}
 				view_size = [0,0]
 				var resol;
 				
 				
-				// resol = computeResolution(this.rfScreenSize[0], Math.abs(extent[2]- extent[0]) )
-				resol = computeResolutionByExtent(extent, this.rfScreenSize, "longer")
+				// resol = computeResolution(this.rfscreenSize[0], Math.abs(extent[2]- extent[0]) )
+				resol = computeResolutionByExtent(extent, this.rfscreenSize, "longer")
 				
 				// var resol_scale = resol*1.5
 				var resol_scale = resol*2.4
 				// var lat_offset = 500 * resol
-				// var lat_offset = (this.rfScreenSize[1]/2)  * resol 
+				// var lat_offset = (this.rfscreenSize[1]/2)  * resol 
 				// 
 				// to display the feature geometry on user visible area 
 				// so popuping bottom panel height was considered, 
@@ -1438,6 +1462,46 @@
 					// this.map.render()
 				}
 				// lyr.setVisible(enabled)
+			},
+			
+			
+			setUsedMode(val){
+				
+				
+				if(val=="edit" || val==true){
+					
+					openDrawInteraction(this.map, "default", null, {})
+				}
+				else if(val=="view" || val==false){
+					
+					closeDrawInteraction(this.map, "default")
+				}
+				
+				this.rfusedMode = val
+				
+			},
+			
+			onSetProps(evData){
+				
+				evData = evData || {}
+				
+				for(pName in evData)
+				{
+					pVal = evData[pName]
+
+					if(pName=="usedMode")
+					{
+						this.setUsedMode(pVal)
+					}
+				}
+				var pName = evData["name"]
+				var pVal = evData["value"]
+				// if(pName=="usedMode")
+				// {
+				// 	this.setUsedMode(pVal)
+				// }
+				
+
 			},
 			
 			emitEvent(name, data){

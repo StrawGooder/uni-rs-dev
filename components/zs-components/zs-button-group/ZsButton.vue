@@ -1,10 +1,11 @@
 <template>
 	
-	<view
+<!-- 	<view
 	:style="renderStyle()"
 	:class="rfImgClass"
 	@click="onClicked"
 	>
+	</view> -->
 		<view 
 		v-if="computedContentMode=='icon'"
 		>
@@ -14,16 +15,33 @@
 			:class="rfImgClass"
 			>
 			</image> -->
-			<ZsIcon :icon="icon"></ZsIcon>
+			<view
+			:style="renderStyle()"
+			:class="rfImgClass"
+			@click="onClicked"
+			>
+				<ZsIcon :icon="icon">
+					
+				</ZsIcon>
+			</view>
+			
 			
 		</view>
 		<view v-else-if="computedContentMode=='text'">
-			<button>
+			<button
+			:style="renderStyle()"
+			:class="rfImgClass"
+			@click="onClicked"
+			>
 				{{text}}
 			</button>
 		</view>
 		<view v-else>
-			<button>
+			<button
+			:style="renderStyle()"
+			:class="rfImgClass"
+			@click="onClicked"
+			>
 				<image
 				:src = "loadSVG(icon)"
 				:style="renderStyle()">
@@ -32,7 +50,7 @@
 			</button>
 		</view>		
 		
-	</view>
+	
 
 
 </template>
@@ -73,6 +91,11 @@ export default {
 		color:{
 			type:String,
 			default:"blue"
+		},
+		
+		bgColor:{
+			type:String,
+			default:"white"
 		},
 		
 		size:{

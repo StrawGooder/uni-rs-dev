@@ -4,6 +4,7 @@
 		hideMapImg
 		:ref="rfmapVmName"
 		:afterInit="importMapLayers"
+		usedMode = "edit"
 		>
 		</ol-map>
 

@@ -4,7 +4,7 @@ import Vue from "vue";
 
 function getSVG(name) {
 	
-	return name_to_svg[name]
+	// return name_to_svg[name]
 }
 
 // var name_to_svg = {}
