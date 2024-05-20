@@ -82,7 +82,7 @@
 					// this.$store.setUseMode("")
 					// this.setMapUseMode(enabled?"edit":"view")
 					// uni.$emit("map:setProps", {"usedMode":enabled})
-					uni.$emit("map:setProps", {"usedMode":enabled})
+					uni.$emit("map::setProps", {"usedMode":enabled})
 				}
 				
 			}

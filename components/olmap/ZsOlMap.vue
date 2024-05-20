@@ -333,6 +333,15 @@
 	// import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
 	// import { createVectorLayerFromURL } from './helpers/layers.js';
 	// import { openDrawInteraction, closeDrawInteraction } from './drawer';
+	// import Projection from "ol/proj/Projection.js"
+	// import * as olProj from "ol/proj"
+	import {getPointResolution} from "ol/proj"
+	import {getArea,getLength} from "ol/sphere.js"
+	// import {Polygon} from "ol/geom"
+	// import Units from "ol/proj/Units.js"
+	
+	// import default as ProjUnits from "ol/proj/Units.js"
+
 </script>
 
 
@@ -414,7 +423,10 @@
 	import WKB from 'ol/format/WKB';
 	import WMTSTileGrid from 'ol/tilegrid/WMTS'
 	import WMTS from "ol/source/WMTS";
-
+	// import {get} from "ol/proj/projections.js";
+	import Projection from "ol/proj/Projection.js"
+	import * as olProj from "ol/proj"
+	import Units from "ol/proj/Units.js";
 	
 	import setting from '@/setting.js';
 	import { createDrawer } from "./drawer/Drawer.js"
@@ -426,6 +438,7 @@
 	import { createVectorLayerFromURL } from './helpers/layers.js';
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
 	import {mapState} from "vuex";
+	
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 
 	var measureTooltipElement = null;
@@ -1467,14 +1480,58 @@
 			
 			setUsedMode(val){
 				
+				// var projObj = new Projection({"code":"EPSG:4236", "units":Units.METERS})
+				// olProj.addProjection(projObj)
+				// // var pj = olProj.get("EPSG:4508")
+				// var firstPt =[104,23]
+				// var points = [[firstPt,[105,23],[105,24],[104,24],[104,23] ]]
+				// var geom = new Polygon(points)
+				// geom.setCoordinates(points)
+				// console.log("debug-zsolmap test geom area ",
+				// 	// pj,
+				// 	geom.getArea(), 
+				// 	getArea(geom),
+				// 	// projObj.getCode(),
+				// 	// projObj,
+				// 	// olProj.getPointResolution("EPSG:4508", null , firstPt)
+				// 	// olProj.getPointResolution(projObj, 1 , firstPt)
+				// 	)
 				
 				if(val=="edit" || val==true){
 					
-					openDrawInteraction(this.map, "default", null, {})
+					var drawIntr = openDrawInteraction(this.map, "default", null, {type:"base"})
+					
+					drawIntr.on("drawend", 
+					(evt)=>{
+						var feat = evt.feature
+						var geom = feat.getGeometry()
+						// var geom_cp = geom.clone()
+						// geom_cp.transform(
+						//  // "EPSG:4236", 
+						//  // "EPSG:4508",
+						//  new Projection({code:"EPSG:4236", units: Units.DEGREES}),
+						//  new Projection({code:"EPSG:4508", units: Units.METERS}),
+						//  )
+						// EPSG:4236 EPSG:4585
+						console.log("debug-zsolmap draw event ", evt, 
+						geom.getArea(), 
+						// geom_cp.getArea(),
+						// getArea(geom, {radius:6731000}),
+						// getArea(geom, {radius:6731000})*1e4,
+						getArea(geom, {radius:1}),
+						// 1e10
+						geom.getCoordinates()[0][0],
+						// geom_cp.getCoordinates(),
+						)
+						this.$emit("finishDrawingGeometry")}
+					)
+					val = "edit"
 				}
 				else if(val=="view" || val==false){
 					
 					closeDrawInteraction(this.map, "default")
+					
+					val = "view"
 				}
 				
 				this.rfusedMode = val

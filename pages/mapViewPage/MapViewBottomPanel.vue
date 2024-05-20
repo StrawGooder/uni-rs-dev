@@ -105,7 +105,8 @@ export default {
         
         return {
 			rfTabName:"mvbt",
-			rfCurTabInd:2,
+			rfCurTabInd:1,
+			// rfCurTabInd:2,
 			rfTabRefName:"tabs"
         }
     },

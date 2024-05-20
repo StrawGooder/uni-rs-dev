@@ -2,10 +2,14 @@
 	<view>
 		<ol-map
 		hideMapImg
-		:ref="rfmapVmName"
-		:afterInit="importMapLayers"
+		
 		usedMode = "edit"
+		:afterInit="importMapLayers"
+		:ref="rfmapVmName"
+		
 		>
+		<!-- usedMode = "edit" -->
+		<!-- :afterInit="importMapLayers" -->
 		</ol-map>
 
 		<view

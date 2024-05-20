@@ -100,7 +100,7 @@ export function createDrawer(name, opts){
 	if(name=="base"){
 		kls = Drawer
 	}
-	else if(name=="naive"){
+	else if(name=="default"){
 		kls = Draw
 	}
 	else{

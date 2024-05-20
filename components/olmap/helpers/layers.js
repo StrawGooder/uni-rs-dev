@@ -55,6 +55,8 @@ function createVectorLayerFromDataObj(data_obj, style){
 		}
 		
 		geom = new geom_cls(iter_feat_data["geometry"]["coordinates"])
+		
+		// console.log("debug-zsolmap area ", geom.getArea())
 		// geom.setCoordinates( iter_feat_data["geometry"]["coordinates"][0][0] )
 		
 		new_feat = new Feature()

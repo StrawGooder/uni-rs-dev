@@ -19,7 +19,7 @@ const _interaction_memo = {
 function openDrawInteraction(map, name, layer, opts){
 
 	name = name || "default"
-	opts = mergeObject(opts || {}, {"type":"base", "vectorType":"Polygon"} )
+	opts = mergeObject({"type":"base", "vectorType":"Polygon"}, opts || {} )
 	
 	
 
@@ -77,6 +77,8 @@ function openDrawInteraction(map, name, layer, opts){
 					}
 				)		
 					
+		_interaction_memo[name] = drawer
+		map.addLayer(storedLyr)
 		map.addInteraction(drawer)
 	}
 
@@ -90,16 +92,34 @@ function openDrawInteraction(map, name, layer, opts){
 	// drawer.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
 	// drawer.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
 	
-
-	
 	return drawer
 }
 
-function closeDrawInteraction(map, name= "default") {
+function closeDrawInteraction(map, name = "default") {
 	
-	var drawer = hasDrawInteraction()
+	var drawer = hasDrawInteraction(name)
 	if(drawer){
 		map.removeInteraction(drawer)	
+		
+		var src = drawer.source_
+		 
+		var lyrs =  map.getAllLayers()
+		var lyrTotal = lyrs.length
+		for(var i = lyrTotal-1; i>-1;i--)
+		{
+			if(lyrs[i].getSource()==src){
+				map.removeLayer(lyrs[i])
+				console.log("debug-zsolmap-drawer remove draw stored layer")
+				break;
+			}
+		}
+		
+		// var targetLry = map.getAllLayers().filter((x)=>x.getSource()==src)[0]
+		// if(targetLry){
+		// 	map.removeLayer(targetLry)
+		// 	console.log("debug-zsolmap-drawer remove draw stored layer")
+		// }
+		
 		delete _interaction_memo[name]
 	}
 	
