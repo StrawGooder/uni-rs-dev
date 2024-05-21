@@ -67,13 +67,17 @@ function openDrawInteraction(map, name, layer, opts){
 			storedLyr.setStyle( opts["style"] )	
 		}
 		
+		// temp process
+		var drawTheme = opts["drawTheme"] || null
 		drawer = createDrawer(
-					opts["type"],
+					drawTheme==null?opts["type"]:"default",
 					{
 						source:storedLyr.getSource(),
 						style:opts["drawStyle"],
-						type:opts["vectorType"]
-						
+						// custom prop
+						styleTheme:drawTheme,
+						type:opts["vectorType"],
+	
 					}
 				)		
 					

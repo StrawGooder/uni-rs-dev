@@ -1,8 +1,12 @@
 
-import {Style, Fill, Stroke,Icon} from "ol/style"
-import CircleStyle from "ol/style/Circle"
+import {Style, Fill, Stroke,Icon,Text} from "ol/style";
+import CircleStyle from "ol/style/Circle";
+import RegularShape from "ol/style/RegularShape";
 import GeometryType from 'ol/geom/GeometryType.js';
+import {Point,LineString,Polygon} from "ol/geom";
+import {getArea,getLength} from "ol/sphere";
 
+import { movePoint,determineQuadrant } from "./utils";
 // class PolygonDrawStyle extends Style {
 	
 // 	constructor(opts){
@@ -15,7 +19,7 @@ import GeometryType from 'ol/geom/GeometryType.js';
 	
 // }
 
-export function makeBasePolygonDrawStyle(){
+function makeBasePolygonDrawStyle(){
 	
 	var dropped_style = new Style(
 			{
@@ -73,9 +77,264 @@ export function makeBasePolygonDrawStyle(){
 }
 
 
+
+function makeMetricsDrawStyle(){
+	
+	const style = new Style({
+	  fill: new Fill({
+		color: 'rgba(255, 255, 255, 0.2)',
+	  }),
+	  stroke: new Stroke({
+		color: 'rgba(0, 0, 0, 0.5)',
+		lineDash: [10, 10],
+		width: 2,
+	  }),
+	  image: new CircleStyle({
+		radius: 5,
+		stroke: new Stroke({
+		  color: 'rgba(0, 0, 0, 0.7)',
+		}),
+		fill: new Fill({
+		  color: 'rgba(255, 255, 255, 0.2)',
+		}),
+	  }),
+	});
+
+
+	const labelStyle = new Style({
+	  text: new Text({
+		font: '14px Calibri,sans-serif',
+		fill: new Fill({
+		  color: 'rgba(255, 255, 255, 1)',
+		}),
+		backgroundFill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.7)',
+		}),
+		padding: [3, 3, 3, 3],
+		textBaseline: 'bottom',
+		offsetY: -15,
+		text:""
+	  }),
+	  image: new RegularShape({
+		radius: 8,
+		points: 3,
+		angle: Math.PI,
+		displacement: [0, 10],
+		fill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.7)',
+		}),
+	  }),
+	});
+	
+	const tipStyle = new Style({
+	  text: new Text({
+		font: '12px Calibri,sans-serif',
+		fill: new Fill({
+		  color: 'rgba(255, 255, 255, 1)',
+		}),
+		backgroundFill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.4)',
+		}),
+		padding: [2, 2, 2, 2],
+		textAlign: 'left',
+		offsetX: 15,
+	  }),
+	});
+
+	const segmentStyle = new Style({
+	  text: new Text({
+		font: '12px Calibri,sans-serif',
+		fill: new Fill({
+		  color: 'rgba(255, 255, 255, 1)',
+		}),
+		backgroundFill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.4)',
+		}),
+		padding: [2, 2, 2, 2],
+		textBaseline: 'bottom',
+		offsetY: -12,
+	  }),
+	  image: new RegularShape({
+		radius: 6,
+		points: 3,
+		angle: Math.PI,
+		displacement: [0, 8],
+		fill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.4)',
+		}),
+	  }),
+	});
+	const segmentStyles = [segmentStyle];
+
+	const modifyStyle = new Style({
+	  image: new CircleStyle({
+		radius: 5,
+		stroke: new Stroke({
+		  color: 'rgba(0, 0, 0, 0.7)',
+		}),
+		fill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.4)',
+		}),
+	  }),
+	  text: new Text({
+		text: 'Drag to modify',
+		font: '12px Calibri,sans-serif',
+		fill: new Fill({
+		  color: 'rgba(255, 255, 255, 1)',
+		}),
+		backgroundFill: new Fill({
+		  color: 'rgba(0, 0, 0, 0.7)',
+		}),
+		padding: [2, 2, 2, 2],
+		textAlign: 'left',
+		offsetX: 15,
+	  }),
+	});
+
+	const formatLength = function (line) {
+	  const length = getLength(line);
+	  let output;
+	  if (length > 100) {
+		output = Math.round((length / 1000) * 100) / 100 + ' km';
+	  } else {
+		output = Math.round(length * 100) / 100 + ' m';
+	  }
+	  return output;
+	};
+
+	const formatArea2 = function (x) {
+	  const area = x
+	  let output;
+	  if (area > 10000) {
+		output = Math.round((area / 1000000) * 100) / 100 + ' km\xB2';
+	  } else {
+		output = Math.round(area * 100) / 100 + ' m\xB2';
+	  }
+	  return output;
+	};
+	
+	const formatArea = function (polygon) {
+	  const area = formatArea2(getArea(polygon));
+	};
+	
+	function styleFunction(feature, segments, drawType, tip) {
+		
+
+		const styles = [];
+		const geometry = feature.getGeometry();
+		const type = geometry.getType();
+		let metricInfoShowPos, label, line, coutureLen = 0;
+		var area=0
+		var centroid;
+		
+		var pointTotal = 0
+		if (!drawType || drawType === type || type === 'Point') {
+			styles.push(style);
+			if (type === 'Polygon') {
+			  metricInfoShowPos = geometry.getInteriorPoint();
+			  centroid = geometry.getInteriorPoint().getCoordinates()
+			  // label = formatArea(geometry);
+			  var points = geometry.getCoordinates()[0]
+			  line = new LineString(points);
+			  pointTotal = points.length
+			  if(pointTotal<=3)
+			  {
+				  label = ""
+			  }else
+			  {	
+				  area = getArea(geometry)
+				  label = formatArea2(area)
+				  // label = formatArea(geometry);
+			  }
+			  
+	
+			  coutureLen = formatLength(line);
+			  
+			  metricInfoShowPos = points[pointTotal-2]
+			  
+			} 
+			else if (type === 'LineString') {
+			  
+			  // const points = geometry.getCoordinates()
+			  // const firstPoint = points[0]
+			  // const lastPoint = points[points.length-1]
+			  // points.push(firstPoint)
+			  // // console.log("Debug-zsolmap ", points)
+			  // var polyGeom = new LineString(points);
+			  // label = formatLength(polyGeom);
+			  // point = new Point(lastPoint);
+			  // line = geometry;
+			  // coutureLen = geometry.getLength()
+			}
+		}
+		
+		var offsetY = 0.2 * Math.sqrt(area)
+		
+		if (segments && line) {
+			let count = 0;
+			line.forEachSegment(function (a, b) {
+			  const segment = new LineString([a, b]);
+			  const label = formatLength(segment);
+			  if (segmentStyles.length - 1 < count) {
+				segmentStyles.push(segmentStyle.clone());
+			  }
+			  
+			  // midPointOnLine 
+			  var labelShowPos= segment.getCoordinateAt(0.5)
+			  
+			  // var offsetY = 0.2 * Math.sqrt(area)
+			  var quadrant = determineQuadrant(labelShowPos, centroid)
+			  labelShowPos = movePoint(labelShowPos, offsetY, quadrant)
+			  
+			  // const segmentPoint = new Point(labelShowPos);
+			  
+			  segmentStyles[count].setGeometry(new Point(labelShowPos));
+			  segmentStyles[count].getText().setText(label);
+			  styles.push(segmentStyles[count]);
+			  count++;
+			});
+			
+		}
+		
+		if (label || coutureLen) {
+			
+			labelStyle.setGeometry( new Point(metricInfoShowPos) );
+			// labelStyle.getText().setText(label);
+			
+			labelStyle.getText().setText(`area:${label||0}\ncontour:${coutureLen}`);
+			
+			if(determineQuadrant(metricInfoShowPos, centroid)>2){
+				labelStyle.getText().setOffsetY(45)
+			}
+			else{
+				labelStyle.getText().setOffsetY(-15)
+			}
+			// console.log("debug-zsolmap ", labelStyle)
+			// labelStyle.setText(label);
+			styles.push(labelStyle);
+		}
+		// if (
+		// tip &&
+		// type === 'Point' &&
+		// !modify.getOverlay().getSource().getFeatures().length
+		// ) {
+		// tipPoint = geometry;
+		// tipStyle.getText().setText(tip);
+		// styles.push(tipStyle);
+		// }
+			return styles;
+		}
+	
+	return styleFunction
+}
+
+
 export function createDrawStyle(type){
 	if(type=="base"){
 		return makeBasePolygonDrawStyle()
+	}
+	else if(type=="metrics"){
+		return makeMetricsDrawStyle()
 	}
 	return makeBasePolygonDrawStyle()
 }

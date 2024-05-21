@@ -9,7 +9,7 @@ class Drawer extends Draw {
 	
 	constructor(options) {
 		
-		options["style"] = createDrawStyle("base")
+		// options["style"] = createDrawStyle("base")
 		
 		super(options)
 		
@@ -106,6 +106,16 @@ export function createDrawer(name, opts){
 	else{
 		throw new Error(`attemp to create '${name}' Drawer, not found it `)
 	}
+	
+	// zs-adding 20240509
+	var styleTheme = opts["styleTheme"]
+	if(styleTheme)
+	{
+		var oldStyle =opts["style"]
+		opts["style"] = createDrawStyle(styleTheme) || oldStyle
+		delete opts["styleTheme"]
+	}
+	// opts["style"] = createDrawStyle("base")
 	
 	return new kls(opts)
 }

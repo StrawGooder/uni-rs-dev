@@ -545,6 +545,11 @@
 			},
 			featureSelectionOn:{
 				type:Boolean
+			},
+			
+			drawTheme:{
+				type:String,
+				default:"base"
 			}
 		},
 		data() {
@@ -1499,7 +1504,11 @@
 				
 				if(val=="edit" || val==true){
 					
-					var drawIntr = openDrawInteraction(this.map, "default", null, {type:"base"})
+					var drawIntr = openDrawInteraction(this.map, "default", null, 
+									{type:"base",
+									drawTheme:this.drawTheme
+									},
+									)
 					
 					drawIntr.on("drawend", 
 					(evt)=>{
