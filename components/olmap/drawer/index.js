@@ -70,7 +70,7 @@ function openDrawInteraction(map, name, layer, opts){
 		// temp process
 		var drawTheme = opts["drawTheme"] || null
 		drawer = createDrawer(
-					drawTheme==null?opts["type"]:"default",
+					drawTheme==null||drawTheme=="base"?opts["type"]:"default",
 					{
 						source:storedLyr.getSource(),
 						style:opts["drawStyle"],

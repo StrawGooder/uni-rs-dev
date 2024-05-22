@@ -11,18 +11,39 @@
 			 </xfl-select>
 			</view>
 			<!-- </uni-list> -->
-			<ZsButtonSta2
-			name="edit"
-			text="stop edit"
-			textDisabled="edit"
-			color="black"
-			bgColor="orange"
-			bgColorDisabled="white"
-			:status="0"
-			@click="onBtnGroupClick"
+
+			<view
+			class="zs-hlyt"
 			>
+				<ZsButtonSta2
+				name="edit"
+				text="stop edit"
+				textDisabled="edit"
+				color="black"
+				bgColor="orange"
+				bgColorDisabled="white"
+				:status="0"
+				@click="onBtnGroupClick"
+				>
+					
+				</ZsButtonSta2>	
+				<xfl-select 
+				:list="drawStyleDataList" 
+				:clearable="false" 
+				:showItemNum="10" 
+				:listShow="false" 
+				:isCanInput="false"
+				:style_Container="'height: 30px; font-size: 16px;width:100px'" 
+				:placeholder="'placeholder'"
+				:initValue="'base'" 
+				:selectHideType="'hideAll'" 
+				v-model="list[0]" 
+				@change="changeEditStyle"
 				
-			</ZsButtonSta2>
+				>
+				<!-- style="width:100px" -->
+				</xfl-select>
+			</view>
 		</scroll-view>
 	
 	</view>
@@ -42,7 +63,9 @@
 			return {
 				// listColumns:['图斑编号','图斑类型','图斑面积'],
 				device: '',
-				list: [], //要展示的数据	
+				list: [], //要展示的数据	,
+				
+				drawStyleDataList:["base", "metric"]
 			}
 		},
 		components: {
@@ -85,6 +108,13 @@
 					uni.$emit("map::setProps", {"usedMode":enabled})
 				}
 				
+			},
+			
+			changeEditStyle(event){
+				
+				var val = event["newVal"]
+				uni.$emit("map::setProps", {"drawTheme":val})
+				// console.log("debug-spaanal ", val)
 			}
 		},
 		mounted() {

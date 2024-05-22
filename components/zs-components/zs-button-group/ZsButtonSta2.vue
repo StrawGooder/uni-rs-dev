@@ -266,8 +266,10 @@ export default {
 					// width: `${this.size}px`,
 					// fontSize : temp process, for icon(svg) size scale
 					fontSize:`${this.size-2}px`,
-					display:"inline"
-					
+					// adapting the content(text)
+					display:"inline",
+					// padding:"2px",
+					padding:"0.25em"
 				}	
 			}
 			else if(contentMode=="icon")

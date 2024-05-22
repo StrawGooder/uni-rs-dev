@@ -592,7 +592,7 @@
 				
 				rfscreenSize:null,
 				rfusedMode:this.usedMode,
-				
+				rfDrawTheme:this.drawTheme,
 				rffeatSelOn:this.featureSelectionOn,
 				
 				// ...mapState(
@@ -1506,7 +1506,7 @@
 					
 					var drawIntr = openDrawInteraction(this.map, "default", null, 
 									{type:"base",
-									drawTheme:this.drawTheme
+									drawTheme:this.rfDrawTheme
 									},
 									)
 					
@@ -1547,6 +1547,15 @@
 				
 			},
 			
+			setDrawTheme(val){
+				
+				this.rfDrawTheme = val
+				if(this.rfUseMode=="edit"){
+					this.setUseMode("view")
+					this.setUseMode("edit")
+				}
+			},
+			
 			onSetProps(evData){
 				
 				evData = evData || {}
@@ -1558,6 +1567,9 @@
 					if(pName=="usedMode")
 					{
 						this.setUsedMode(pVal)
+					}
+					if(pName=="drawTheme"){
+						this.setDrawTheme(pVal)
 					}
 				}
 				var pName = evData["name"]
