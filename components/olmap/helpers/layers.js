@@ -66,7 +66,11 @@ function createVectorLayerFromDataObj(data_obj, style){
 		new_feature_array.push(new_feat)
 	}
 	
-	var source_obj = new VectorSource()
+	var source_obj = new VectorSource(
+		{
+			wrapX:true,
+		}
+	)
 	source_obj.addFeatures(new_feature_array)
 	
 
@@ -90,6 +94,12 @@ function createVectorLayerFromURL(url, style){
 	
 	var source_obj = new VectorSource(
 		{
+			// zs-adding 
+			// set wrapX for feature selection effect
+			// undefined can't be selected,
+			// false cant be selected
+			wrapX:false,
+			// wrapX:true,
 			url:url,
 			format: new GeoJSON()
 		}
