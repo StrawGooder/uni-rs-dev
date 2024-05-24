@@ -398,6 +398,8 @@
 	// import * as olProj from "ol/proj"
 	import {getPointResolution} from "ol/proj"
 	import {getArea,getLength} from "ol/sphere.js"
+	// import {intersects} from "ol/extent.js"
+	// import { bufferExtent } from './helpers/geo.js';
 	// import {Polygon} from "ol/geom"
 	// import Units from "ol/proj/Units.js"
 	
@@ -496,10 +498,13 @@
 	import { importAdminLayer } from './locations/index.js';
 	
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
-	import { createVectorLayerFromURL } from './helpers/layers.js';
+	import { createVectorLayerFromURL, addCoordsToLayer, addFeatures } from './helpers/layers.js';
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
+	import { bufferExtent , extentToContour} from './helpers/geo.js';
+	import {intersects} from "ol/extent.js"
 	import {mapState} from "vuex";
-	
+	import {VERSION} from "ol"
+	console.log("debug-zsolmap openlayer version ", VERSION)
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 
 	var measureTooltipElement = null;
@@ -713,8 +718,8 @@
 		},
 		beforeDestroy() {
 
-			closeFeatureSelection()
-			closeDrawInteraction()
+			closeFeatureSelection(this.map)
+			closeDrawInteraction(this.map)
 		},
 		methods: {
 			// },
@@ -894,6 +899,22 @@
 					}
 				})
 				
+				// temp add a test vector layer for test
+				const tempVector = new VectorLayer({
+					source: new VectorSource({
+						wrapX:true
+					}),
+					style:new style(
+						{
+							stroke:new Stroke({
+								color:"red",
+								width:"1px"
+							})
+						}
+					)
+				})
+				this.map.addLayer(tempVector)
+				
 				// zs-adding
 				this.initEvent()
 				this.initViewCenterCoord()
@@ -1055,9 +1076,9 @@
 					var sel = openFeatureSelection(this.map,
 								
 									// "hover",
-									"altclick",
+									// "altclick",
 									// "singleclick"
-									// "click",
+									"click",
 									{
 										// layers:(lyr)=>{
 										// 	return true
@@ -1190,25 +1211,67 @@
 						
 						var geomPosInter = this.map.getCoordinateFromPixelInternal(pixelPos)
 						var diffGeomPos = [geomPosInter[0] - geomPos[0], geomPosInter[1] - geomPos[1]]
-						console.log("debug-zsolmap forEachFeatureAtPixel filter", geomPosInter, geomPos, diffGeomPos, pixelPos, feats)
+						// console.log("debug-zsolmap forEachFeatureAtPixel filter", geomPosInter, geomPos, diffGeomPos, pixelPos, feats)
 						// try to use geometry coordinate
 						var layers = this.map.getAllLayers()
-						var lastLyr = layers[layers.length-2]
+						var lyrTotal = layers.length
+						var lastLyr = layers[lyrTotal-2]
 						var lastLyrSrc = lastLyr.getSource()
 						var extentSize = 0.01
-						const extent = [geomPos[0],geomPos[1],geomPos[0]+extentSize,geomPos[1]+extentSize]
-						// lastLyrSrc.forEachFeatureIntersectingExtent(
-						// 	extent,
-						// 	(ev)=>{
-						// 		console.log("debug-zsolmap forEachFeatureAtPixel filter", ev)
-						// 		}
-						// 	)
+						const curResol = this.map.getView().getResolution()
+						const distBuf = curResol * 5
+						var extentBuf = [geomPos[0],geomPos[1],geomPos[0],geomPos[1]]
+						extentBuf = bufferExtent(extentBuf, distBuf)
 						
-						var feat = lastLyrSrc.getFeaturesAtCoordinate(geomPos)
+						var tempVecLayer = layers[lyrTotal-3]
+						addCoordsToLayer(extentToContour(extentBuf), tempVecLayer, "Polygon")
+						// this.map.render()
+						// lastLyr.setVisible(!lastLyr.getVisible())
+						lastLyrSrc.forEachFeatureIntersectingExtent(
+							extentBuf,
+							(ev)=>{
+								const geom = ev.getGeometry()
+								// console.log("debug-zsolmap forEachFeatureAtPixel filter", ev)
+								var  collided = true 
+								collided = intersects(extentBuf, geom.getExtent())
+								
+								var geom_sim = geom.getSimplifiedGeometryInternal(curResol*20)
+								// addCoordsToLayer(geom_sim.getCoordinates()[0], tempVecLayer, "Polygon")
+								
+								// geom_sim.getCoordinates()[0][0]
+								var geom_sim_extent = geom_sim.getExtent()
+								var geom_extent = geom.getExtent()
+								// console.log("debug-zsolmap ", geom_extent, geom_sim_extent,
+								// [geom_sim_extent[0]-geom_extent[0],geom_sim_extent[1]-geom_extent[1],
+								// geom_sim_extent[2]-geom_extent[2],geom_sim_extent[3]-geom_extent[3],]
+								// )
+								// addCoordsToLayer(extentToContour(geom_sim_extent), tempVecLayer, "Polygon")
+								// var new_feat = new Feature()
+								// new_feat.setGeometry(feat)
+								// feat = new_feat
+								// addFeatures(geom_sim,  tempVecLayer)
+								
+								// addCoordsToLayer(extentToContour(lastLyr.getExtent()), tempVecLayer, "Polygon")
+								
+								
+								// collided = intersects(extentBuf, geom_sim.getExtent())
+								var featName = ev.getProperties()["name"]
+								if(collided){
+									console.log("debug-zsolmap forEachFeatureAtPixel coliided", featName)
+								}
+								else
+								{
+									console.log("debug-zsolmap forEachFeatureAtPixel no collided", featName)
+								}
+							}
+							)
 						
-						if(feat){
-							console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
-						}
+						
+						// var feat = lastLyrSrc.getFeaturesAtCoordinate(geomPos)
+						
+						// if(feat){
+						// 	console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
+						// }
 						
 						
 						// user internal implementation
@@ -1216,8 +1279,8 @@
 						var matchedResult = layerRenderer.forEachFeatureAtCoordinate(
 						  geomPos,
 						  this.map.frameState_,
-						  100,
-						  (holder, managed, feature, a, b, c)=>{ console.log("debug-zsolmap forEachFeatureAtPixel internal renderer", feature) },
+						  1,
+						  (holder, managed, feature, a, b, c)=>{ console.log("debug-zsolmap layer internal renderer forEachFeatureAtCoordinate", feature) },
 						  []
 						);
 						
@@ -1251,7 +1314,7 @@
 						'======================================='
 						)
 						
-						uni.$emit("map:menu:show", evt)
+						// uni.$emit("map:menu:show", evt)
 					}
 				)
 				
@@ -1584,7 +1647,7 @@
 				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
 				// targetLyrGroup.addLayer(lyr)
 				this.map.addLayer(lyr)
-				
+				this.map.render()
 				// this.map.render()
 				
 				// this.$mapStore.commit(
@@ -1702,7 +1765,7 @@
 			onSetProps(evData){
 				
 				evData = evData || {}
-				
+				var pName,pVal;
 				for(pName in evData)
 				{
 					pVal = evData[pName]

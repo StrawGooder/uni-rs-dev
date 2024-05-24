@@ -2,7 +2,8 @@
 import {Style, Fill, Stroke,Icon,Text} from "ol/style";
 import CircleStyle from "ol/style/Circle";
 import RegularShape from "ol/style/RegularShape";
-import GeometryType from 'ol/geom/GeometryType.js';
+// import GeometryType from 'ol/geom/GeometryType.js';
+// import {Geometry} from 'ol/geom';
 import {Point,LineString,Polygon} from "ol/geom";
 import {getArea,getLength, offset as computeOffsetPoint} from "ol/sphere";
 
@@ -18,6 +19,13 @@ import { movePoint,determineQuadrant,computePerpendicularSlotK,computeSlopeK } f
 // 	}
 	
 // }
+const GeometryType = {
+	POINT:"Point",
+	POLYGON:"Polygon",
+	MULTIPOLYGON:"MultiPolygon",
+	LINESTRING:"LineString",
+	RING:"LinearRing"
+}
 
 const areaScale = 1
 const lenScale = 100
@@ -38,7 +46,7 @@ function makeBasePolygonDrawStyle(){
 			}
 	)
 	
-	var icon_width = 48
+	var icon_width = 16
 	var float_style = new Style(
 			{
 				// fill: new Fill({color:"#ffffffa"}),
@@ -66,6 +74,7 @@ function makeBasePolygonDrawStyle(){
 		var gemo = feat.getGeometry()
 		// console.log("debug-ol-style ", gemo.getType(), GeometryType.POINT, feat.getProperties())
 		var gemo_type = gemo.getType()
+		// console.log("debug-ol-style ", gemo.getType())
 		if(gemo_type == GeometryType.POINT)
 		{
 			var isDropped = feat.getProperties()["isDropped"]

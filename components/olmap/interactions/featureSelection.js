@@ -65,7 +65,7 @@ const _interaction_memo = {
 	"altclick":null,
 }
 
-
+// just for test
 class ZsFeatureSelection extends Select{
 	
 		
@@ -98,7 +98,7 @@ class ZsFeatureSelection extends Select{
 			 * @return {boolean|undefined} Continue to iterate over the features.
 			 */
 			function (feature, layer) {
-				console.log("debug-zsolmap featselect meet condition filter", )
+				// console.log("debug-zsolmap featselect meet condition filter", )
 			  if (this.filter_(feature, layer)) {
 				this.addFeatureLayerAssociation_(feature, layer);
 				selected.push(feature);
@@ -182,7 +182,7 @@ function openFeatureSelection(map, mode="mode", opts = null){
 
 	var ret_sel = null
 	
-	var sel_opts =  mergeObject({"hitTolerance":0}, opts)
+	var sel_opts =  mergeObject({"hitTolerance":10}, opts)
 	// mode = mode || "click"
 	
 	if(mode=="click")

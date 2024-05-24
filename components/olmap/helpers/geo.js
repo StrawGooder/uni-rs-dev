@@ -61,8 +61,26 @@ function computeCenter(extent){
 	return [(extent[0] + extent[2])/2., (extent[1] + extent[3])/2.]
 }
 
+
+export function bufferExtent(extent, dist){
+	
+	return [extent[0]-dist, extent[1]-dist, extent[2]+dist,  extent[3]+dist ]
+	
+}
+
+export function extentToContour(extent){
+	
+	const xmin = extent[0]
+	const ymin = extent[1]
+	const xmax = extent[2]
+	const ymax = extent[3]
+	
+	return [[xmin,ymin],[xmin,ymax],[xmax,ymax],[xmax,ymin]]
+}
+
 export {
 	computeCenter,
 	computeResolutionByExtent,
 	computeResolution,
+	
 }

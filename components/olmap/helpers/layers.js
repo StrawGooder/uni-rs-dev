@@ -1,33 +1,37 @@
 import VectorLayer from "ol/layer/Vector"
 import VectorSource from "ol/source/Vector"
 import Feature from "ol/Feature"
-import {MultiPolygon,Point} from "ol/geom"
+import {MultiPolygon,Point,Polygon,LineString,LinearRing} from "ol/geom"
 import {GeoJSON} from "ol/format"
 import {Fill,Stroke,Style,Text} from "ol/style"
 import {merge as mergeObject, isFunction} from "lodash"
 import {createStyle} from "./styles"
+import { extentToContour } from "./geo"
 
 const _geom_type_to_cls = {
+	"Polygon":Polygon,
 	"MultiPolygon":MultiPolygon,
-	"Point":Point
+	"LineString":LineString,
+	"Point":Point,
+	"LinearRing":LinearRing
 }
 
-const _default_text_opts = {
+// const _default_text_opts = {
 	
-	"bindProp":"name",
-	"textFormat":null,
+// 	"bindProp":"name",
+// 	"textFormat":null,
 
-	"color":"black",
-	"size":"64px",
-	"height":"64px",
-	"weight":"normal",
-	"fontType":"Arial",
-	"outlineWidth":1,
+// 	"color":"black",
+// 	"size":"64px",
+// 	"height":"64px",
+// 	"weight":"normal",
+// 	"fontType":"Arial",
+// 	"outlineWidth":1,
 
-}
+// }
 
 // geojson data object
-function createVectorLayerFromDataObj(data_obj, style){
+export function createVectorLayerFromDataObj(data_obj, style){
 	
 	var iter_feat_data 
 	
@@ -56,6 +60,9 @@ function createVectorLayerFromDataObj(data_obj, style){
 		
 		geom = new geom_cls(iter_feat_data["geometry"]["coordinates"])
 		
+		// var coords = extentToContour(geom.getExtent())
+		// coords.push(coords[0])
+		// geom = new Polygon([coords])
 		// console.log("debug-zsolmap area ", geom.getArea())
 		// geom.setCoordinates( iter_feat_data["geometry"]["coordinates"][0][0] )
 		
@@ -68,9 +75,14 @@ function createVectorLayerFromDataObj(data_obj, style){
 	
 	var source_obj = new VectorSource(
 		{
-			wrapX:true,
+			// wrapX:true,
+			// wrapX:false
+			
 		}
 	)
+	
+	
+	// new_feature_array.forEach((x)=>{source_obj.addFeature(x)})
 	source_obj.addFeatures(new_feature_array)
 	
 
@@ -90,7 +102,7 @@ function createVectorLayerFromDataObj(data_obj, style){
 }
 
 
-function createVectorLayerFromURL(url, style){
+export function createVectorLayerFromURL(url, style){
 	
 	var source_obj = new VectorSource(
 		{
@@ -123,7 +135,7 @@ function createVectorLayerFromURL(url, style){
 }
 
 
-function createVectorLayer(opts){
+export function createVectorLayer(opts){
 	
 	var style = opts["style"] || null
 	
@@ -167,7 +179,99 @@ function createVectorLayer(opts){
 	return lyr
 }
 
-export {
-	createVectorLayerFromDataObj,
-	createVectorLayerFromURL
+
+export function addCoordsToLayer(coords, layer, geom_type, props){
+	
+	var geom_cls = null;
+	var geom_type;
+	var geom;
+	var coords_new = coords.splice(0)
+	// var warning_msg;
+	
+	// Array.splice
+	
+	geom_cls = _geom_type_to_cls[geom_type]
+	
+	if(!geom_cls)
+	{
+		warning_msg = `attemp add coordinates to layer, but got unknown geometry type ${geom_type} on ${i+1}th feature`
+		// throw new Error(warning_msg)
+		// console.log("warning-ol ", warning_msg)
+		throw new Error(warning_msg)
+	}
+	
+	if(geom_type=="Polygon" 
+	|| geom_type=="MultiPolygon"
+	)
+	{
+		coords_new.push(coords_new[0])
+		coords_new = [coords_new]
+	}
+	geom = new geom_cls(coords_new)
+	
+	// console.log("debug-zsolmap addCoordsToLayer ", coords_new)
+	// geom.setCoordinates( iter_feat_data["geometry"]["coordinates"][0][0] )
+	
+	
+	const new_feat = new Feature()
+	new_feat.setProperties(props || {})
+	new_feat.setGeometry(geom)
+	
+	// addFeature(new_feat, layer)
+	
+	return addFeatures(new_feat, layer)
 }
+
+export function addFeatures(feat, layer){
+	
+	// // temp
+	// if(feat.__proto__.constructor!="Feature"){
+	// 	var new_feat = new Feature()
+	// 	new_feat.setGeometry(feat)
+	// 	feat = new_feat
+	// }
+	
+	var iters = []
+	
+	var src = layer.getSource()
+	if(!Array.isArray(feat)){
+		// src.addFeature(feat)
+		iters.push(feat)
+	}
+	
+	iters.forEach((x)=>{
+		
+		// temp
+		var feat;
+		if(x.__proto__.constructor.name!="Feature"){
+			var new_feat = new Feature()
+			new_feat.setGeometry(x)
+			feat = new_feat
+		}
+		else{
+			feat = x
+		}
+		// console.log("debug-zsolmap iter addFeatures ", feat)
+		src.addFeature(feat)
+		
+	})
+	// src.addFeatures(feat)
+	return true
+}
+
+// export function addFeatures(feat, layer){
+	
+// 	// temp
+// 	if(feat.__proto__.constructor!="Feature"){
+// 		var new_feat = new Feature()
+// 		new_feat.setGeometry(feat)
+// 		feat = new_feat
+// 	}
+	
+// 	var src = layer.getSource()
+// 	if(!Array.isArray(feat)){
+// 		src.addFeature(feat)
+// 	}
+// 	src.addFeatures(feat)
+// 	return true
+// }

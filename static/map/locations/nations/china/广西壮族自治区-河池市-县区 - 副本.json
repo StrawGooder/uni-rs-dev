@@ -1,0 +1,396 @@
+{
+    "msg": "ok",
+    "data": [
+    {
+        "lnt": 108.081146,
+        "adminType": "city",
+        "englishabbrevation": "Hechi",
+        "nameabbrevation": "河池",
+        "level": 11,
+        "cityCode": "156451200",
+        "bound": "106.568412,25.613664999999997,109.153964,23.557816",
+        "name": "河池市",
+        "english": "Hechi City",
+        "lat": 24.695665,
+        "parents":
+        {
+            "country":
+            {
+                "adminType": "country",
+                "cityCode": "156000000",
+                "name": "中华人民共和国"
+            },
+            "province":
+            {
+                "adminType": "province",
+                "cityCode": "156450000",
+                "name": "广西壮族自治区"
+            }
+        },
+        "child": [
+        {
+            "lnt": 107.03817,
+            "adminType": "county",
+            "englishabbrevation": "Fengshan",
+            "nameabbrevation": "凤山",
+            "level": 12,
+            "cityCode": "156451223",
+            "bound": "106.682752,24.825782,107.283102,24.254272999999998",
+            "name": "凤山县",
+            "english": "Fengshan County",
+            "lat": 24.54982,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 107.169584,
+            "adminType": "county",
+            "englishabbrevation": "Tian'e",
+            "nameabbrevation": "天峨",
+            "level": 12,
+            "cityCode": "156451222",
+            "bound": "106.568412,25.482431,107.329353,24.606267",
+            "name": "天峨县",
+            "english": "Tian'e County",
+            "lat": 25.001923,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 108.900692,
+            "adminType": "county",
+            "englishabbrevation": "Luocheng",
+            "nameabbrevation": "罗城县",
+            "level": 12,
+            "cityCode": "156451225",
+            "bound": "108.47559,25.198976,109.156674,24.614341",
+            "name": "罗城仫佬族自治县",
+            "english": "Luocheng Mulam Autonomous County",
+            "lat": 24.780496,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 108.632719,
+            "adminType": "county",
+            "englishabbrevation": "Yizhou",
+            "nameabbrevation": "宜州",
+            "level": 12,
+            "cityCode": "156451203",
+            "bound": "108.043329,24.86714,109.04455399999999,24.002029999999998",
+            "name": "宜州区",
+            "english": "Yizhou District",
+            "lat": 24.488207,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 107.369976,
+            "adminType": "county",
+            "englishabbrevation": "Donglan",
+            "nameabbrevation": "东兰",
+            "level": 12,
+            "cityCode": "156451224",
+            "bound": "107.085555,24.850315,107.72998,24.222206999999997",
+            "name": "东兰县",
+            "english": "Donglan County",
+            "lat": 24.513583,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 108.03315,
+            "adminType": "county",
+            "englishabbrevation": "Jinchengjiang Dist",
+            "nameabbrevation": "金城江",
+            "level": 12,
+            "cityCode": "156451202",
+            "bound": "107.548137,24.929522,108.230756,24.358826",
+            "name": "金城江区",
+            "english": "Jinchengjiang District",
+            "lat": 24.69249,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 107.538194,
+            "adminType": "county",
+            "englishabbrevation": "Nandan",
+            "nameabbrevation": "南丹",
+            "level": 12,
+            "cityCode": "156451221",
+            "bound": "107.003677,25.613376,107.909545,24.696286",
+            "name": "南丹县",
+            "english": "Nandan County",
+            "lat": 24.978366,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 107.255536,
+            "adminType": "county",
+            "englishabbrevation": "Bama",
+            "nameabbrevation": "巴马县",
+            "level": 12,
+            "cityCode": "156451227",
+            "bound": "106.855846,24.401629,107.54579,23.832523",
+            "name": "巴马瑶族自治县",
+            "english": "Bama Yao Autonomous County",
+            "lat": 24.144066,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 108.254276,
+            "adminType": "county",
+            "englishabbrevation": "Huanjiang",
+            "nameabbrevation": "环江县",
+            "level": 12,
+            "cityCode": "156451226",
+            "bound": "107.83520399999999,25.540536,108.71593299999999,24.728858",
+            "name": "环江毛南族自治县",
+            "english": "Huanjiang Maonan Autonomous County",
+            "lat": 24.82893,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 107.994127,
+            "adminType": "county",
+            "englishabbrevation": "Dahua",
+            "nameabbrevation": "大化县",
+            "level": 12,
+            "cityCode": "156451229",
+            "bound": "107.33236099999999,24.372158,108.039783,23.556317999999997",
+            "name": "大化瑶族自治县",
+            "english": "Dahua Yao Autonomous County",
+            "lat": 23.739081,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        },
+        {
+            "lnt": 108.101337,
+            "adminType": "county",
+            "englishabbrevation": "Du'an",
+            "nameabbrevation": "都安县",
+            "level": 12,
+            "cityCode": "156451228",
+            "bound": "107.760983,24.580527999999997,108.506952,23.794594999999997",
+            "name": "都安瑶族自治县",
+            "english": "Du'an Yao Autonomous County",
+            "lat": 23.933753,
+            "parents":
+            {
+                "country":
+                {
+                    "adminType": "country",
+                    "cityCode": "156000000",
+                    "name": "中华人民共和国"
+                },
+                "province":
+                {
+                    "adminType": "province",
+                    "cityCode": "156450000",
+                    "name": "广西壮族自治区"
+                },
+                "city":
+                {
+                    "adminType": "city",
+                    "cityCode": "156451200",
+                    "name": "河池市"
+                }
+            }
+        }]
+    }],
+    "returncode": "100"
+}
