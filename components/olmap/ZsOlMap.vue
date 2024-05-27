@@ -20,6 +20,7 @@
 		:ref = "rfMapContElem"
 		style="overflow: scroll;"
 		class="zs-noscrollbar"
+	
 		>
 			
 	<!-- 		<view id="olMap"
@@ -299,14 +300,29 @@
 				var pixPos = evt.pixel
 				
 				// this.rfmenuPos = [pixPos[0],pixPos[1]]
-				var scrollOffset = this.getViewScrollOffset()
-				this.rfmenuPos = [
-					pixPos[0] - scrollOffset[0],
-					pixPos[1] - scrollOffset[1]
-				]
+				// var scrollOffset = this.getViewScrollOffset()
+				// this.rfmenuPos = [
+				// 	pixPos[0] - scrollOffset[0],
+				// 	pixPos[1] - scrollOffset[1]
+				// ]
+				this.setMenuPos(evt.pixel)
+				
 				this.rfmenuVisible=true
 				
 				console.log("debug-zsolmap menu show ", pixPos, this.rfmenuPos)
+			},
+			
+			hideMenuUni(evt){
+				this.rfmenuVisible=false
+			},
+			
+			setMenuPos(pos){
+				
+				var scrollOffset = this.getViewScrollOffset()
+				this.rfmenuPos = [
+					pos[0] - scrollOffset[0],
+					pos[1] - scrollOffset[1]
+				]
 			},
 			
 			onMenuItemClicked(evt){
@@ -325,6 +341,14 @@
 				
 				// uni.$emit("map:operation:trigger", {opFunc:key, ctx:evt, origin:evt})
 				uni.$emit("map:operation:trigger", {name:key, origin:evt, sender:"OperationMenu"})
+			},
+			
+			onMousedown(){
+				console.log("debug-zsolmap mouse down", )
+			},
+			onLongpress(){
+				
+				console.log("debug-zsolmap long press", )
 			}
 			
 			// },
@@ -376,7 +400,6 @@
 		},
 		created(){
 		
-			// 计算屏幕高度 ，宽度
 	
 			this.getShpDate()
 			
@@ -384,6 +407,9 @@
 			this.urfviewScrollOffset = [0,0]
 			this.urfcurMapEvent = null
 			uni.$on("map:menu:show", this.showMenuUni)
+			uni.$on("map:menu:hide", this.hideMenuUni)
+			
+			
 		},
 	};
 	// import Draw from "ol/interaction/Draw.js";
@@ -413,7 +439,7 @@
 
 	import 'ol/ol.css';
 	
-	
+	import "./extends";
 	import Map from 'ol/Map';
 	import View from 'ol/View';
 	import {
@@ -504,6 +530,7 @@
 	import {intersects} from "ol/extent.js"
 	import {mapState} from "vuex";
 	import {VERSION} from "ol"
+	import {createActionTrigger} from "@/utils/actions.js"
 	console.log("debug-zsolmap openlayer version ", VERSION)
 	// import videoconference from "@/components/video_conference/video_conference.vue";
 
@@ -513,87 +540,7 @@
 	var helpTooltip = null;
 	var mapMouseMove = null;
 	var feature = null;
-	
-	
-	// zs features
-	// var gDrawInta = null;
-	// var gDrawPointInta = null;
-	
-	// function addDrawInteraction(map){
-	
-	// 	// if(gDrawInta!=null)return 
-	// 	// gDrawInta = new Draw(
-		
-	// 	var draw_init_options = {}
-		
-		
-	// 	gDrawInta = createDrawer(
-	// 		"base",
-	// 		{
-	// 			source:recvDrawVecSrc,
-	// 			style:makePolygonDrawStyleFunc(),
-	// 			// style:new style(
-	// 			// 	{
-	// 			// 		fill: new fill({color:"#aa000022"}),
-	// 			// 		stroke: new Stroke({color:"blue", width:2}),
-	// 			// 		image: new CircleStyle(
-	// 			// 			{
-	// 			// 				radius:5,
-	// 			// 				stroke:new Stroke({color:"red"})
-	// 			// 			}
-	// 			// 		)
-	// 			// 		// "fill-color":"red",
-	// 			// 		// "stroke-color":"blue",
-	// 			// 		// "stroke-width":2,
-	// 			// 		// shape : new Shape(
-	// 			// 		// 	{
-	// 			// 		// 		stroke: new Stroke({color:"yellow"})
-	// 			// 		// 	}
-	// 			// 		// )
-	// 			// 	}
-	// 			// ),
 
-	// 			type:"Polygon"
-				
-	// 		}
-	// 	)	
-		
-	// 	gDrawInta.on("drawstart", (evt)=>{console.log("debug-ol-draw ", "draw start", evt)})
-	// 	gDrawInta.on("drawend", 
-	// 		(evt)=>{
-	// 			console.log("debug-ol-draw ", "draw end")
-	// 		} 
-	// 	)
-	// 	gDrawInta.on("drawabort", (evt)=>{console.log("debug-ol-draw ", "draw abort")})
-	// 	gDrawInta.on("change:active", (evt)=>{console.log("debug-ol-draw ", "draw change")})
-		
-
-	// 	// gDrawPointInta = new Draw(
-	// 	// {
-	// 	// 	source:source,
-	// 	// 	style:new style(
-	// 	// 		{
-	// 	// 			image: new CircleStyle(
-	// 	// 				{
-	// 	// 					radius:1,
-	// 	// 					stroke:new Stroke({color:"#ffffffa"})
-	// 	// 				}
-	// 	// 			)
-	// 	// 		}	
-	// 	// 	),
-	// 	// 	type:"Point"
-	// 	// })
-		
-		
-	// 	map.addInteraction(gDrawInta)
-	// 	// map.addInteraction(gDrawPointInta)
-	// 	// console.log("debug-ol ", "boot draw inta")
-	// }
-	
-	// function removeDrawInteraction(map) {
-	// 	map.removeInteraction(gDrawInta)
-	// 	// map.removeInteraction(gDrawPointInta)
-	// }
 	
 	export default {
 		// components:{videoconference},
@@ -688,6 +635,13 @@
 			
 			this.urfMapLayers = []
 			this.urfLayerSeqCount=0
+			this.urfclickDown = false
+			this.urfclickStartTime = -1
+			this.urfclickPos = null
+			
+			this.featSelector = null
+			// this.urflongPressMonitor = createActionTrigger("LongTimeMonitor", this.onLongPressed, 3000)
+			// this.urflongPressMonitor.addListener("rejected", ()=>{console.log("debug-zsolmap long time monitor")})
 			
 		},
 		mounted() {
@@ -711,7 +665,6 @@
 			}
 			
 
-
 		},
 		destroyed(){
 			console.log("destroyed")
@@ -722,7 +675,54 @@
 			closeDrawInteraction(this.map)
 		},
 		methods: {
+			
+			// onLongPressed(args){
+				
+			// 	if(!this.urfclickdown){
+			// 		console.log("debug-zsolmap long press ", args)
+					
+			// 		uni.$emit("map:menu:show", {pixel:args, "subject":"" } )
+			// 	}
+				
 			// },
+			onTouchEnd(evt){
+				
+				this.handleLongPress(evt)
+				
+			},
+			
+			handleLongPress(evt){
+				
+				const delta = Date.now() - this.urfclickStartTime
+				const timeMin = 1500
+				const timeMax = 3000
+				console.log("debug-zsolmap touchend ", delta)
+				if(
+				delta>=timeMin 
+				&& delta<=timeMax
+				){
+					uni.$emit("map:menu:show", {pixel:evt.pixel || [evt.pageX, evt.pageY], "subject":"" } )
+				}
+			},
+			
+			handleMenuPopup(evt){
+				
+				
+				var feat = this.featSelector.getFeatures()[0]
+				var subject = "map"
+				if( feat ){
+					subject = "feature"
+				}
+				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
+				
+				uni.$emit("map:menu:show", 
+				{
+					pixel:pixPos, 
+					posistion:pixPos, 
+					"subject":subject ,
+				} ,
+				)
+			},
 			//修改定位点角度
 			oncompasschanges(newValue, oldValue, ownerInstance, instance) {
 				if (this.init_map_complete == 1) {
@@ -731,6 +731,7 @@
 						this.feature.changed()
 				}
 			},
+			
 			//将接口的一维数组转成二维数组
 			pages(list) {
 				const pages = []
@@ -1077,8 +1078,8 @@
 								
 									// "hover",
 									// "altclick",
-									// "singleclick"
-									"click",
+									"singleclick",
+									// "click",
 									{
 										// layers:(lyr)=>{
 										// 	return true
@@ -1090,9 +1091,27 @@
 							function(evt){
 								
 								var features = evt.target.getFeatures().getArray()
-								console.log("debug-zsolmap select interation", features,
-								'\n Select Event',
-								evt)
+								// console.log("debug-zsolmap select interation",
+								// '\n Select Event',
+								// evt)
+								
+								var feat = features[0]
+								// var feat = evt.selected
+								// if(!feat)return
+								
+								var featName = feat.getProperties()["name"]
+								
+								// var style = sel.getLayer(feat).getStyle()
+								// if(typeof style =='function'){
+								// 	style = style(feat)
+								// }
+								// var textStyle = style.getText()
+								
+								// var selStyle = sel.getStyle()
+								// // textStyle.setText("nihao")
+								// selStyle.setText(textStyle)
+								
+								console.log("debug-zsolmap select interation coliided", featName, evt)
 								// var geom = features[0].getGeometry()
 								// var extent = geom.getExtent()
 								
@@ -1104,6 +1123,8 @@
 								// )
 							}
 						)	
+						
+					this.featSelector = sel
 					
 				}
 				
@@ -1188,6 +1209,117 @@
 				
 			},
 			
+			initEventTemp(){
+				// this.map.on("click",
+							// 	(evt)=>{
+							// 		this.map.xforEachFeatureAtPixel(evt.pixel, 
+							// 			function(feat,layer){
+											
+							// 				// console.log("debug-zsolmap xforEachFeatureAtPixel",)
+											
+							// 				var featName = feat.getProperties()["name"]
+							// 				console.log("debug-zsolmap xforEachFeatureAtPixel coliided", featName)
+							// 				// if(collided){
+							// 				// 	console.log("debug-zsolmap forEachFeatureAtPixel coliided", featName)
+							// 				// }
+							// 				// else
+							// 				// {
+							// 				// 	console.log("debug-zsolmap forEachFeatureAtPixel no collided", featName)
+							// 				// }
+							// 			}
+							// 		)
+							// 	}
+							// )
+							
+				// 			this.map.on("click", 
+				// 				(evt)=>{
+									
+				// 					var feats = this.map.getFeaturesAtPixel(evt.pixel)
+									
+				// 					var pixelPos = evt.pixel
+				// 					var geomPos = evt.coordinate
+				// 					const pixOffset = 0
+				// 					// var feats = this.map.getFeaturesAtPixel(
+									
+				// 					// [pixelPos[0] + pixOffset, pixelPos[1] + pixOffset ]
+				// 					// )
+									
+				// 					var geomPosInter = this.map.getCoordinateFromPixelInternal(pixelPos)
+				// 					var diffGeomPos = [geomPosInter[0] - geomPos[0], geomPosInter[1] - geomPos[1]]
+				// 					// console.log("debug-zsolmap forEachFeatureAtPixel filter", geomPosInter, geomPos, diffGeomPos, pixelPos, feats)
+				// 					// try to use geometry coordinate
+				// 					var layers = this.map.getAllLayers()
+				// 					var lyrTotal = layers.length
+				// 					var lastLyr = layers[lyrTotal-2]
+				// 					var lastLyrSrc = lastLyr.getSource()
+				// 					var extentSize = 0.01
+				// 					const curResol = this.map.getView().getResolution()
+				// 					const distBuf = curResol * 5
+				// 					var extentBuf = [geomPos[0],geomPos[1],geomPos[0],geomPos[1]]
+				// 					extentBuf = bufferExtent(extentBuf, distBuf)
+									
+				// 					var tempVecLayer = layers[lyrTotal-3]
+				// 					addCoordsToLayer(extentToContour(extentBuf), tempVecLayer, "Polygon")
+				// 					// this.map.render()
+				// 					// lastLyr.setVisible(!lastLyr.getVisible())
+				// 					lastLyrSrc.forEachFeatureIntersectingExtent(
+				// 						extentBuf,
+				// 						(ev)=>{
+				// 							const geom = ev.getGeometry()
+				// 							// console.log("debug-zsolmap forEachFeatureAtPixel filter", ev)
+				// 							var  collided = true 
+				// 							collided = intersects(extentBuf, geom.getExtent())
+											
+				// 							var geom_sim = geom.getSimplifiedGeometryInternal(curResol*20)
+				// 							// addCoordsToLayer(geom_sim.getCoordinates()[0], tempVecLayer, "Polygon")
+											
+				// 							// geom_sim.getCoordinates()[0][0]
+				// 							var geom_sim_extent = geom_sim.getExtent()
+				// 							var geom_extent = geom.getExtent()
+				// 							// console.log("debug-zsolmap ", geom_extent, geom_sim_extent,
+				// 							// [geom_sim_extent[0]-geom_extent[0],geom_sim_extent[1]-geom_extent[1],
+				// 							// geom_sim_extent[2]-geom_extent[2],geom_sim_extent[3]-geom_extent[3],]
+				// 							// )
+				// 							// addCoordsToLayer(extentToContour(geom_sim_extent), tempVecLayer, "Polygon")
+				// 							// var new_feat = new Feature()
+				// 							// new_feat.setGeometry(feat)
+				// 							// feat = new_feat
+				// 							// addFeatures(geom_sim,  tempVecLayer)
+											
+				// 							// addCoordsToLayer(extentToContour(lastLyr.getExtent()), tempVecLayer, "Polygon")
+											
+											
+				// 							// collided = intersects(extentBuf, geom_sim.getExtent())
+				// 							var featName = ev.getProperties()["name"]
+				// 							if(collided){
+				// 								console.log("debug-zsolmap forEachFeatureAtPixel coliided", featName)
+				// 							}
+				// 							else
+				// 							{
+				// 								console.log("debug-zsolmap forEachFeatureAtPixel no collided", featName)
+				// 							}
+				// 						}
+				// 						)
+									
+									
+				// 					// var feat = lastLyrSrc.getFeaturesAtCoordinate(geomPos)
+									
+				// 					// if(feat){
+				// 					// 	console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
+				// 					// }
+									
+				// 					// user internal implementation
+				// 					var layerRenderer = lastLyr.getRenderer()
+				// 					var matchedResult = layerRenderer.forEachFeatureAtCoordinate(
+				// 					  geomPos,
+				// 					  this.map.frameState_,
+				// 					  1,
+				// 					  (holder, managed, feature, a, b, c)=>{ console.log("debug-zsolmap layer internal renderer forEachFeatureAtCoordinate", feature) },
+				// 					  []
+				// 					);
+				// 				}
+				// 			)
+			},
 			initEvent(){
 				
 				var _this = this
@@ -1196,112 +1328,13 @@
 				var center_coord = [107.324739,24.033756999999998]
 				var mpview = _this.map.getView()
 				
-				this.map.on("click", 
-					(evt)=>{
-						
-						var feats = this.map.getFeaturesAtPixel(evt.pixel)
-						
-						var pixelPos = evt.pixel
-						var geomPos = evt.coordinate
-						const pixOffset = 0
-						// var feats = this.map.getFeaturesAtPixel(
-						
-						// [pixelPos[0] + pixOffset, pixelPos[1] + pixOffset ]
-						// )
-						
-						var geomPosInter = this.map.getCoordinateFromPixelInternal(pixelPos)
-						var diffGeomPos = [geomPosInter[0] - geomPos[0], geomPosInter[1] - geomPos[1]]
-						// console.log("debug-zsolmap forEachFeatureAtPixel filter", geomPosInter, geomPos, diffGeomPos, pixelPos, feats)
-						// try to use geometry coordinate
-						var layers = this.map.getAllLayers()
-						var lyrTotal = layers.length
-						var lastLyr = layers[lyrTotal-2]
-						var lastLyrSrc = lastLyr.getSource()
-						var extentSize = 0.01
-						const curResol = this.map.getView().getResolution()
-						const distBuf = curResol * 5
-						var extentBuf = [geomPos[0],geomPos[1],geomPos[0],geomPos[1]]
-						extentBuf = bufferExtent(extentBuf, distBuf)
-						
-						var tempVecLayer = layers[lyrTotal-3]
-						addCoordsToLayer(extentToContour(extentBuf), tempVecLayer, "Polygon")
-						// this.map.render()
-						// lastLyr.setVisible(!lastLyr.getVisible())
-						lastLyrSrc.forEachFeatureIntersectingExtent(
-							extentBuf,
-							(ev)=>{
-								const geom = ev.getGeometry()
-								// console.log("debug-zsolmap forEachFeatureAtPixel filter", ev)
-								var  collided = true 
-								collided = intersects(extentBuf, geom.getExtent())
-								
-								var geom_sim = geom.getSimplifiedGeometryInternal(curResol*20)
-								// addCoordsToLayer(geom_sim.getCoordinates()[0], tempVecLayer, "Polygon")
-								
-								// geom_sim.getCoordinates()[0][0]
-								var geom_sim_extent = geom_sim.getExtent()
-								var geom_extent = geom.getExtent()
-								// console.log("debug-zsolmap ", geom_extent, geom_sim_extent,
-								// [geom_sim_extent[0]-geom_extent[0],geom_sim_extent[1]-geom_extent[1],
-								// geom_sim_extent[2]-geom_extent[2],geom_sim_extent[3]-geom_extent[3],]
-								// )
-								// addCoordsToLayer(extentToContour(geom_sim_extent), tempVecLayer, "Polygon")
-								// var new_feat = new Feature()
-								// new_feat.setGeometry(feat)
-								// feat = new_feat
-								// addFeatures(geom_sim,  tempVecLayer)
-								
-								// addCoordsToLayer(extentToContour(lastLyr.getExtent()), tempVecLayer, "Polygon")
-								
-								
-								// collided = intersects(extentBuf, geom_sim.getExtent())
-								var featName = ev.getProperties()["name"]
-								if(collided){
-									console.log("debug-zsolmap forEachFeatureAtPixel coliided", featName)
-								}
-								else
-								{
-									console.log("debug-zsolmap forEachFeatureAtPixel no collided", featName)
-								}
-							}
-							)
-						
-						
-						// var feat = lastLyrSrc.getFeaturesAtCoordinate(geomPos)
-						
-						// if(feat){
-						// 	console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
-						// }
-						
-						
-						// user internal implementation
-						var layerRenderer = lastLyr.getRenderer()
-						var matchedResult = layerRenderer.forEachFeatureAtCoordinate(
-						  geomPos,
-						  this.map.frameState_,
-						  1,
-						  (holder, managed, feature, a, b, c)=>{ console.log("debug-zsolmap layer internal renderer forEachFeatureAtCoordinate", feature) },
-						  []
-						);
-						
-						// console.log("debug-zsolmap forEachFeatureAtPixel filter", feats)
-						// this.map.forEachFeatureAtPixel(
-						// 			// mapBrowserEvent.pixel,
-						// 			evt.pixel,
-						// 			function (feature, layer) {
-						// 				console.log("debug-zsolmap forEachFeatureAtPixel filter", )
-						// 			 //  if (this.filter_(feature, layer)) {
-						// 				// this.addFeatureLayerAssociation_(feature, layer);
-						// 				// selected.push(feature);
-						// 				// return !this.multi_;
-						// 			 //  }
-						// 			}.bind(this),
-						// );
-						// console.log("debug-zsolmap ", evt)
-						// console.log("debug-zsolmap ", mpview.getCenter(), evt["coordinate"])
-					}
-				)
-				this.map.on("dblclick", 
+
+				
+				this.map.on(
+					// "CONTEXTMENU",
+					"contextmenu",
+					// "dblclick", 
+					// "click", 
 					(evt)=>{
 						// console.log("debug-zsolmap onClicked", evt)
 						console.log(`debug-zsolmap map clicked \n`,
@@ -1310,13 +1343,112 @@
 						`click pix ${evt["pixel"]}\n`,
 						`cur zoom ${mpview.getZoom()}\n`,
 						`cur resol ${mpview.getResolution()}\n`,
+						evt,
 						
 						'======================================='
 						)
+						evt.originalEvent.preventDefault()
 						
-						// uni.$emit("map:menu:show", evt)
+						uni.$emit("map:menu:show", evt)
 					}
 				)
+				
+				this.map.on(
+					"singleclick",
+					(evt)=>{
+						
+						// uni.$emit("map:menu:hide", evt)
+						
+						// this.urfclickStartTime = Date.now()
+						// this.urfclickdown = true
+						
+						this.onTouchEnd(evt)
+				
+					}
+				)
+				
+				this.map.on("click", (evt)=>{uni.$emit("map:menu:hide", evt)})
+				
+				// app
+				this.map.getTargetElement().addEventListener(
+				"touchstart",
+					(evt)=>{
+						console.log("debug-zsolmap touchstart ", evt)
+						this.urfclickStartTime = Date.now()
+						// this.urfclickdown = true
+						// this.urflongPressMonitor.update(evt.pixel)
+					}
+					
+				)
+				
+				// this.map.getTargetElement().addEventListener(
+				// "touchend",
+				// 	// (evt)=>{
+				// 	// 	console.log("debug-zsolmap touchend ")
+				// 	// 	// this.urfclickdown = false
+				// 	// 	// this.urflongPressMonitor.update(evt.pixel)
+				// 	// },
+				// 	this.onTouchEnd,
+				// )
+				
+				this.map.getTargetElement().addEventListener(
+				"mousedown",
+					(evt)=>{
+						console.log("debug-zsolmap touchstart ", evt)
+						this.urfclickStartTime = Date.now()
+						// this.urflongPressMonitor.update([evt.pageX,evt.pageY])
+						// this.urfclickdown = true
+					}
+				)
+				
+				this.map.getTargetElement().addEventListener(
+				"mouseup",
+					// (evt)=>{
+					// 	console.log("debug-zsolmap touchend ")
+					// 	// this.urfclickdown = false
+					// 	// this.urflongPressMonitor.update([evt.pageX,evt.pageY])
+					// },
+					this.onTouchEnd,
+				)
+				
+				// this.map.on("pointdrag", 
+				// (evt)=>{
+				// 	console.log("debug-zsolmap drag")
+				// 	this.urflongPressMonitor.update(evt.pixel)
+				// }
+				// )
+				
+				// this.map.getTargetElement().addEventListener(
+				// "mouseup",
+				// 	(evt)=>{
+						
+				// 		console.log("debug-zsolmap mouseup ")
+						
+				// 		this.urflongPressMonitor.update(evt.pixel)
+						
+				// 	}
+				// )
+				
+				// this.map.getTargetElement().addEventListener(
+				// "mousedown",
+				// 	(evt)=>{
+						
+				// 		console.log("debug-zsolmap mousedown ")
+						
+				// 		this.urflongPressMonitor.update(evt.pixel)
+						
+				// 	}
+				// )
+				
+				
+				// this.map.on(
+				// 	"mouseup",
+				// 	(evt)=>{
+				// 		console.log("debug-zsolmap mouseup ")
+				// 	}
+				// )
+				
+				// this.map.getCanvas()
 				
 				uni.$on(
 					"locateMapViewportTo",

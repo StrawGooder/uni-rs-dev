@@ -7,7 +7,7 @@ import {Fill,Stroke,Style,Text} from "ol/style"
 import {merge as mergeObject, isFunction} from "lodash"
 import {createStyle} from "./styles"
 import { extentToContour } from "./geo"
-
+import {Map} from "ol"
 const _geom_type_to_cls = {
 	"Polygon":Polygon,
 	"MultiPolygon":MultiPolygon,
@@ -101,15 +101,16 @@ export function createVectorLayerFromDataObj(data_obj, style){
 	
 }
 
-
+// zs-adding 
+	// it didn't work
+// set wrapX for feature selection effect
+// undefined can't be selected,
+// false cant be selected
 export function createVectorLayerFromURL(url, style){
 	
 	var source_obj = new VectorSource(
 		{
-			// zs-adding 
-			// set wrapX for feature selection effect
-			// undefined can't be selected,
-			// false cant be selected
+
 			wrapX:false,
 			// wrapX:true,
 			url:url,

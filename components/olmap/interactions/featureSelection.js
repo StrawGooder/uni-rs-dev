@@ -8,28 +8,33 @@ import {Fill, Stroke, Style} from 'ol/style.js';
 import {merge as mergeObject} from "lodash";
 
 const _style_components = {
-	// "stroke": new Stroke({"color":"red", "width":"2px"})
-	"stroke":null
+	"stroke": new Stroke({"color":"orange", "width":"1px"})
+	// "stroke":null
 }
 const _feat_styles = {
 	"click":function(){ 
 		
-		var style = new Style({
-			fill: new Fill({"color":"#00aa009"}),
-			stroke: _style_components["stroke"]
-		}) 
-		return function(feat){
-			return style
-		}
+				var style = new Style(
+					{
+						fill: new Fill({"color":"rgb(0 50 200 / 50%)"}),
+						stroke: _style_components["stroke"]
+					}
+				) 
+				// return function(feat){
+				// 	return style
+				// }
+				return style
+			
+		
 		// var style = feat.getStyle(); 
 		// style.setColor("#00aa00ff") 
-		// // new Style({fill: new Fill({"color":"#00aa009"})}) 
+		// // new Style({fill: new Fill({"color":"#00aa00"})}) 
 		// return style
 	},
 	"hover":function(){ 
 		
 		var style = new Style({
-			fill: new Fill({"color":"#0000aa9"}),
+			fill: new Fill({"color":"#aa220011"}),
 			stroke: _style_components["stroke"]
 		
 		})
@@ -39,7 +44,7 @@ const _feat_styles = {
 		
 		// var style = feat.getStyle(); 
 		// style.setColor("#00aa00ff") 
-		// new Style({fill: new Fill({"color":"#0000aa9"})})
+		// new Style({fill: new Fill({"color":"#aa220011"})})
 		// return style
 	},
 	"altclick":function(feat, e){ 
@@ -68,9 +73,35 @@ const _interaction_memo = {
 // just for test
 class ZsFeatureSelection extends Select{
 	
+	constructor(options){
+		// options["keepLabel"] = options["keepLabel"] || false
+		super(options)
 		
+		this.keepLabel_ = options["keepLabel"] || false
+	}
+	
+	applySelectedStyle_(feature){
+		
+		super.applySelectedStyle_(feature)
+		
+		// var feat = evt.selected
+		// if(!feat)return
+		
+		// var featName = feat.getProperties()["name"]
+		if(!this.keepLabel_)return
+		
+		var style = this.getLayer(feature).getStyle()
+		if(typeof style =='function'){
+			style = style(feature)
+		}
+		var textStyle = style.getText()
+	
+		const selectedStyle = feature.getStyle()
+		selectedStyle.setText(textStyle)
+	}
+	
 	handleEvent(mapBrowserEvent){
-		
+		// just copy from Select's handleEvent function
 		if (!this.condition_(mapBrowserEvent)) {
 			// console.log("debug-zsolmap featselect not meet condition", )
 			  return true;
@@ -90,7 +121,8 @@ class ZsFeatureSelection extends Select{
 		  // the pixel.
 		  clear(this.featureLayerAssociation_);
 		  console.log("debug-zsolmap featselect meet condition set", )
-		  map.forEachFeatureAtPixel(
+		  // map.forEachFeatureAtPixel(
+		  map.xforEachFeatureAtPixel(
 			mapBrowserEvent.pixel,
 			/**
 			 * @param {import("../Feature.js").FeatureLike} feature Feature.
@@ -126,8 +158,9 @@ class ZsFeatureSelection extends Select{
 		  }
 		} else {
 		  // Modify the currently selected feature(s).
-		  console.log("debug-zsolmap featselect meet condition noset", )
-		  map.forEachFeatureAtPixel(
+		  // console.log("debug-zsolmap featselect meet condition noset", )
+		  // map.forEachFeatureAtPixel(
+		  map.xforEachFeatureAtPixel(
 			mapBrowserEvent.pixel,
 			/**
 			 * @param {import("../Feature.js").FeatureLike} feature Feature.
@@ -182,7 +215,7 @@ function openFeatureSelection(map, mode="mode", opts = null){
 
 	var ret_sel = null
 	
-	var sel_opts =  mergeObject({"hitTolerance":10}, opts)
+	var sel_opts =  mergeObject({"hitTolerance":10, "keepLabel":true}, opts)
 	// mode = mode || "click"
 	
 	if(mode=="click")

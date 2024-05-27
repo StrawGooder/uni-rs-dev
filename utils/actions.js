@@ -224,23 +224,28 @@ class Stabilizer{
     constructor(callfunc, time, opts){
 
         this.curVal = null
-        // this.prevVal = null
+		this.prevVal = null
+        
         this.time = time || 1000
         this.callfunc = callfunc
         // this.active = false
 
         // this.isChange=true
-        this.change = -1
+        this.change = 0
         this.timer = null
 		
 		this.opts = opts || {
-			rejected_stop:false
+			whenRejectedStop:true,
+			retryTimes:1,
 		}
 		
 		this.event_listener_map = {
 			"rejected":[],
 			"reached":[],
 		}
+		
+		// this.retryCount = 0
+		
 		
     }
 
@@ -261,13 +266,13 @@ class Stabilizer{
 
         // this.prevVal = this.curVal
         this._bootTimeout()
-        this.curVal = val
-        this.change++
-
+		this.change++
+		this.prevVal = this.curVal
+		this.curVal = val
+		
+		// this._bootTimeout()
     }
 	
-	
-
     tryEmit(){
 
         // var same = this.prevVal == this.curVal
@@ -277,21 +282,23 @@ class Stabilizer{
 			return true
         }
  
-		// else{
-
-
-		// }
+	
 		this.activeListener("rejected")
+		
 		this.reset()
-		if( !this.opts["rejected_stop"] )
+		if( this.canToNextRound())
 		{
+			// this.reset()
+			
 			this._bootTimeout()	
-		}			
+		}	
+		// else{
+		// 	this.reset()
+		// }
+				
 		
 		
-		return false       // else{
-        //     this._bootTimeout()
-        // }
+		return false       
     }
 	
 	addListener(event_name, callfunc){
@@ -355,16 +362,19 @@ class Stabilizer{
     isContentTriggerCondition(){
         return this.change<1
     }
+	
+	canToNextRound(){
+		
+		return !this.opts["whenRejectedStop"] || this.change<this.opts["retryTimes"]
+	}
 
     reset(){
 
         this.timer = null
-        this.change = 0
+        // this.change = 0
 
     }
 	
-
-
     emit(){
 
         // this.active = true
@@ -375,6 +385,7 @@ class Stabilizer{
 	
 }
 
+
 class TimesTrigger extends Stabilizer {
 	
 	constructor(callfunc, time, opts){
@@ -382,7 +393,7 @@ class TimesTrigger extends Stabilizer {
 		super(callfunc, time, opts)
 		// this.opts = opts || {}
 		this.max_times = this.opts["times"] || 1
-		this.opts["rejected_stop"] = true
+		this.opts["whenRejectedStop"] = true
 		this.count = 0
 		this.old_count = 0
 		
@@ -464,6 +475,23 @@ class TimesTrigger extends Stabilizer {
 }
 
 
+class OnceStabilizer extends Stabilizer{
+	
+}
+
+class LongTimeMonitor extends OnceStabilizer{
+	
+	// constructor(){
+		
+	// }
+
+	isContentTriggerCondition(){
+		
+	    return this.curVal == this.prevVal
+	}
+}
+
+
 class Delay{
 
     constructor(callfunc, time){
@@ -515,6 +543,7 @@ class Delay{
 }
 
 
+
 const Delayer = Delay
 const TimeCounter = Colddown
 const ColddownCounter = Colddown
@@ -531,6 +560,9 @@ function getActionTrigger(type){
 
         return Stabilizer
     }
+	else if("LongTimeMonitor"){
+		return LongTimeMonitor
+	}
 	else if ("TimesTrigger"==type){
 		return TimesTrigger
 	}
