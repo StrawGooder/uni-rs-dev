@@ -130,7 +130,7 @@ class ZsFeatureSelection extends Select{
 			 * @return {boolean|undefined} Continue to iterate over the features.
 			 */
 			function (feature, layer) {
-				// console.log("debug-zsolmap featselect meet condition filter", )
+				console.log("debug-zsolmap featselect meet condition filter", feature)
 			  if (this.filter_(feature, layer)) {
 				this.addFeatureLayerAssociation_(feature, layer);
 				selected.push(feature);
@@ -208,78 +208,83 @@ class ZsFeatureSelection extends Select{
 	}
 }
 
-function openFeatureSelection(map, mode="mode", opts = null){
-	
-	
-	opts = opts || {}
+export function openFeatureSelection(map, mode="click", opts = null){
 
-	var ret_sel = null
+	var ret_interaction = null
 	
-	var sel_opts =  mergeObject({"hitTolerance":10, "keepLabel":true}, opts)
+	// var init_opts =  mergeObject({"hitTolerance":10, "keepLabel":true}, opts)
+	var init_opts =  mergeObject({"hitTolerance":10, "keepLabel":true, "styleTheme":"click"}, opts || {})
+	
 	// mode = mode || "click"
 	
 	if(mode=="click")
 	{
-		sel_opts["style"] = _feat_styles["click"]()
-		sel_opts["condition"] = click
+		init_opts["condition"] = click
 	}
 	else if(mode=="singleclick")
 	{
-		sel_opts["style"] = _feat_styles["click"]()
-		sel_opts["condition"] = null
+		
+		init_opts["condition"] = null
 	}
 	else if(mode=="hover")
 	{
-		sel_opts["style"] = _feat_styles["hover"]()
-		sel_opts["condition"] = pointerMove
+		init_opts["condition"] = pointerMove
 	}
 	else if(mode=="altclick")
 	{
-		sel_opts["style"] = _feat_styles["altclick"]()
-		sel_opts["condition"] = function(mapBrowserEvent){
+		
+		init_opts["condition"] = function(mapBrowserEvent){
 			return altKeyOnly(mapBrowserEvent) && click(mapBrowserEvent)
 		}	
 	}
+	else{
+		
+		throw new Error(`attemp to create '${mode}' mode FeatureSelection Interaction, but not found class`)
+	}
 	
+	init_opts["style"] = init_opts["style"] || _feat_styles[init_opts["styleTheme"]]()
 	
 	if(isFeatureSelectionEnabled(mode)){
 		closeFeatureSelection(mode)
 	}
 	
+	// ret_interaction = new Select(init_opts)
+	ret_interaction = new ZsFeatureSelection(init_opts)
+	_interaction_memo[mode] = ret_interaction
 	
-	// ret_sel = new Select(sel_opts)
-	ret_sel = new ZsFeatureSelection(sel_opts)
-	_interaction_memo[mode] = ret_sel
+	map.addInteraction(ret_interaction)
 	
-	map.addInteraction(ret_sel)
-	
-	return ret_sel
+	return ret_interaction
 }
 
 
-function closeFeatureSelection(map, mode){
+export function closeFeatureSelection(map, mode){
 	
-	
-	if(isFeatureSelectionEnabled(mode))
+	mode = mode || "click"
+	var obj = _interaction_memo[mode]
+	if(obj)
 	{
-		map.removeInteraction(_interaction_memo[mode])
-		delete _interaction_memo[mode]
+		// var obj = _interaction_memo[mode]
+		obj.getFeatures().pop()
+		map.removeInteraction(obj)
+		delete _interaction_memo[mode];
+		
+		console.log("debug-zsolmap close closeFeatureSelection")
 		return true
 	}
-	
 	
 	return false
 }
 
 
-function isFeatureSelectionEnabled(mode){
+export function isFeatureSelectionEnabled(mode){
 	mode = mode || "click"
 	return _interaction_memo[mode] == null ? false : true
 	
 }
 
-export {
-	openFeatureSelection, 
-	closeFeatureSelection, 
-	isFeatureSelectionEnabled
+export function getFeatureSelection(mode){
+	mode = mode || "click"
+	console.log("debug-zsolmap getFeatureSelection ", mode, _interaction_memo)
+	return _interaction_memo[mode]
 }

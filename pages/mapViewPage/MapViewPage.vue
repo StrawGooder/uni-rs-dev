@@ -3,7 +3,7 @@
 		<ol-map
 		hideMapImg
 		
-		usedMode = "view"
+		usedMode = "edit"
 		drawTheme="base"
 		:afterInit="importMapLayers"
 		:ref="rfmapVmName"

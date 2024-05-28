@@ -63,7 +63,7 @@
 		mapMutations
 	} from 'vuex';
 	
-	import Menu from './interactions/Menu.vue';
+	import Menu from './menu/Menu.vue';
 	
 	export default {
 		
@@ -519,13 +519,15 @@
 	
 	import setting from '@/setting.js';
 	import { createDrawer } from "./drawer/Drawer.js"
-	import { openFeatureSelection, closeFeatureSelection } from './interactions/featureSelection.js';
-	import {makePolygonDrawStyleFunc} from "./drawer/style.js"
+	
 	import { importAdminLayer } from './locations/index.js';
 	
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	import { createVectorLayerFromURL, addCoordsToLayer, addFeatures } from './helpers/layers.js';
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
+	import { openFeatureSelection, closeFeatureSelection, getFeatureSelection } from './interactions/featureSelection.js';
+	// import {makePolygonDrawStyleFunc} from "./drawer/style.js"
+	import {openFeatureModification, closeFeatureModification, getFeatureModification} from  "./interactions/featureModification.js";
 	import { bufferExtent , extentToContour} from './helpers/geo.js';
 	import {intersects} from "ol/extent.js"
 	import {mapState} from "vuex";
@@ -605,7 +607,7 @@
 				
 				rfscreenSize:null,
 				rfusedMode:this.usedMode,
-				rfDrawTheme:this.drawTheme,
+				rfdrawTheme:this.drawTheme,
 				rffeatSelOn:this.featureSelectionOn,
 				
 				// ...mapState(
@@ -639,7 +641,10 @@
 			this.urfclickStartTime = -1
 			this.urfclickPos = null
 			
-			this.featSelector = null
+			this.urffeatSelector = null
+			
+			this.urfcurInteractionType = null
+			this.urfinteractionStack = []
 			// this.urflongPressMonitor = createActionTrigger("LongTimeMonitor", this.onLongPressed, 3000)
 			// this.urflongPressMonitor.addListener("rejected", ()=>{console.log("debug-zsolmap long time monitor")})
 			
@@ -708,10 +713,12 @@
 			handleMenuPopup(evt){
 				
 				
-				var feat = this.featSelector.getFeatures()[0]
+				var feat = this.urffeatSelector.getFeatures()[0]
 				var subject = "map"
+				var menuName = "MapMenu"
 				if( feat ){
 					subject = "feature"
+					menuName = "MapFeatureSelectedMenu"
 				}
 				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
 				
@@ -720,6 +727,7 @@
 					pixel:pixPos, 
 					posistion:pixPos, 
 					"subject":subject ,
+					name:menuName,
 				} ,
 				)
 			},
@@ -1074,57 +1082,6 @@
 				var _this = this
 				if(this.rffeatSelOn || true){
 				
-					var sel = openFeatureSelection(this.map,
-								
-									// "hover",
-									// "altclick",
-									"singleclick",
-									// "click",
-									{
-										// layers:(lyr)=>{
-										// 	return true
-										// }
-									}
-									)
-						
-						sel.on("select", 
-							function(evt){
-								
-								var features = evt.target.getFeatures().getArray()
-								// console.log("debug-zsolmap select interation",
-								// '\n Select Event',
-								// evt)
-								
-								var feat = features[0]
-								// var feat = evt.selected
-								// if(!feat)return
-								
-								var featName = feat.getProperties()["name"]
-								
-								// var style = sel.getLayer(feat).getStyle()
-								// if(typeof style =='function'){
-								// 	style = style(feat)
-								// }
-								// var textStyle = style.getText()
-								
-								// var selStyle = sel.getStyle()
-								// // textStyle.setText("nihao")
-								// selStyle.setText(textStyle)
-								
-								console.log("debug-zsolmap select interation coliided", featName, evt)
-								// var geom = features[0].getGeometry()
-								// var extent = geom.getExtent()
-								
-								// _this.locateViewportTo(
-								// 	computeCenter(extent),
-								// 	{
-								// 		extent:extent
-								// 	}
-								// )
-							}
-						)	
-						
-					this.featSelector = sel
 					
 				}
 				
@@ -1161,6 +1118,7 @@
 				// zs add draw layer temp
 				// this.map.addLayer(recvDrawVecLyr)
 				this.setUsedMode(this.rfusedMode)
+				this.setupInteraction({"type":"modify"})
 			},
 			
 			initGPSLocation(){
@@ -1329,7 +1287,29 @@
 				var mpview = _this.map.getView()
 				
 
-				
+				this.map.on("dblclick",
+					(evt)=>{
+						
+						// const found_feats = _this.map.xgetFeaturesAtPixel(evt.pixel)
+						var sel = getFeatureSelection("singleclick")
+						if(sel){
+							var sel_feats = sel.getFeatures()
+							// when same feature was dblclicked
+							// the map enter 'modify' mode
+							if(sel_feats.item(0) || sel_feats.length>0)
+							{
+								// _this.setupInteraction({"type":"modify"})
+								const found_feats = _this.map.xgetFeaturesAtPixel(evt.pixel)
+								if(sel_feats.item(0)==found_feats[0]){
+									this.setupInteraction({"type":"modify"})
+								}
+							}
+						}
+						
+						console.log("debug-zsolmap dblclick spatial query ",sel.getFeatures(), evt)
+						evt.originalEvent.preventDefault()
+					}
+				)
 				this.map.on(
 					// "CONTEXTMENU",
 					"contextmenu",
@@ -1373,7 +1353,7 @@
 				this.map.getTargetElement().addEventListener(
 				"touchstart",
 					(evt)=>{
-						console.log("debug-zsolmap touchstart ", evt)
+						// console.log("debug-zsolmap touchstart ", evt)
 						this.urfclickStartTime = Date.now()
 						// this.urfclickdown = true
 						// this.urflongPressMonitor.update(evt.pixel)
@@ -1480,7 +1460,7 @@
 					}
 				)
 				
-				uni.$on("map::setProps",
+				uni.$on("map:setProps",
 					(evData)=>{
 						this.onSetProps(evData)
 					}
@@ -1839,55 +1819,245 @@
 				// 	// olProj.getPointResolution("EPSG:4508", null , firstPt)
 				// 	// olProj.getPointResolution(projObj, 1 , firstPt)
 				// 	)
+				this.rfusedMode = val
 				
 				if(val=="edit" || val==true){
 					
-					var drawIntr = openDrawInteraction(this.map, "default", null, 
-									{type:"base",
-									drawTheme:this.rfDrawTheme
-									},
-									)
-					
-					drawIntr.on("drawend", 
-					(evt)=>{
-						var feat = evt.feature
-						var geom = feat.getGeometry()
-						// var geom_cp = geom.clone()
-						// geom_cp.transform(
-						//  // "EPSG:4236", 
-						//  // "EPSG:4508",
-						//  new Projection({code:"EPSG:4236", units: Units.DEGREES}),
-						//  new Projection({code:"EPSG:4508", units: Units.METERS}),
-						//  )
-						
-						// console.log("debug-zsolmap draw event ", evt, 
-						// geom.getArea(), 
-						// // geom_cp.getArea(),
-						// // getArea(geom, {radius:6731000}),
-						// // getArea(geom, {radius:6731000})*1e4,
-						// getArea(geom, {radius:1}),
-						// // 1e10
-						// geom.getCoordinates()[0][0],
-						// // geom_cp.getCoordinates(),
-						// )
-						this.$emit("finishDrawingGeometry")}
-					)
+					// this.setInteractionType("draw")
 					val = "edit"
+					this.rfusedMode = val
+					// this.setInteractionType("draw")
+					this.setInteractionType(null)
 				}
 				else if(val=="view" || val==false){
 					
-					closeDrawInteraction(this.map, "default")
 					
 					val = "view"
+					this.rfusedMode = val
+					// closeDrawInteraction(this.map, "default")
+					this.setInteractionType(null)
 				}
 				
-				this.rfusedMode = val
+				// this.rfusedMode = val
 				
+			},
+			
+			setupFeatureSelection(){
+
+				var sel = openFeatureSelection(this.map,
+						
+							// "hover",
+							// "altclick",
+							"singleclick",
+							// "click",
+							{
+								// layers:(lyr)=>{
+								// 	return true
+								// }
+							}
+							)
+							
+				sel.on("select", 
+					function(evt){
+						
+						var features = evt.target.getFeatures().getArray()
+						// console.log("debug-zsolmap select interation",
+						// '\n Select Event',
+						// evt)
+						
+						var feat = features[0]
+						// var feat = evt.selected
+						// if(!feat)return
+						
+						var featName = feat.getProperties()["name"]
+						
+						// var style = sel.getLayer(feat).getStyle()
+						// if(typeof style =='function'){
+						// 	style = style(feat)
+						// }
+						// var textStyle = style.getText()
+						
+						// var selStyle = sel.getStyle()
+						// // textStyle.setText("nihao")
+						// selStyle.setText(textStyle)
+						
+						console.log("debug-zsolmap select interation coliided", featName, evt)
+						// var geom = features[0].getGeometry()
+						// var extent = geom.getExtent()
+						
+						// _this.locateViewportTo(
+						// 	computeCenter(extent),
+						// 	{
+						// 		extent:extent
+						// 	}
+						// )
+					}
+				)	
+
+				// this.urffeatSelector = sel	
+				return sel
+
+			},
+			
+			setupInteraction(opts){
+				opts = opts || {}
+				this.setInteractionType(opts["type"])
+			},
+			setInteractionType(val){
+				
+				var featSel;
+				if(val=="select"){
+			
+					// this.urffeatSelector = this.setupFeatureSelection()
+					featSel = this.setupFeatureSelection()
+				}
+				
+				if(this.rfusedMode=="edit")
+				{
+				
+					if(val=="select")
+					{
+						
+						closeDrawInteraction(this.map, "default")
+						// this.urffeatModification = openFeatureModification(this.map, "default", {
+						// 	// features:this.urffeatSelector.getFeatures()
+						// 	features:featSel.getFeatures()
+						// })
+					}
+					else if(val=="modify"){
+						
+						// var sel = getFeatureSelection("singleclick")
+						var sel = this.setupFeatureSelection(this.map, "singleclick")
+						// this.urffeatModification = 
+						var modifier = openFeatureModification(this.map, "default", {
+							// features:this.urffeatSelector.getFeatures()
+							// features:featSel.getFeatures()
+							features:sel?sel.getFeatures() : null
+						})
+						// modifier
+						sel.getFeatures().addEventListener("add",
+						// sel.getFeatures().on("add", 
+							(feat)=>{
+								
+								
+								feat = feat.element
+								if(feat)
+								{
+									// var feat_pt = new Point(feat.coordinates()[0])
+									console.log("debug-zsolmap add points",feat, sel.getFeatures().item(0))
+									var pts = feat.getGeometry().getCoordinates()[0]
+									var pt_num = pts.length
+									for(var i =0;i<pt_num;i=i+5)
+									{
+										const feat_pt = new Point(pts[i])
+										modifier.addFeature_(feat_pt)
+									}console.log("debug-zsolmap add points",feat)
+								}
+								
+							}
+						)
+						// var feat = sel.getFeatures().item(0)
+						// if(feat)
+						// {
+						// 	// var feat_pt = new Point(feat.coordinates()[0])
+						// 	var pts = feat.coordinates()[0]
+						// 	var pt_num = pts.length
+						// 	for(var i =0;i<pt_num;i=i+5)
+						// 	{
+						// 		const feat_pt = new Point(feat.coordinates()[i])
+						// 		modifier.addFeature_(feat_pt)
+						// 	}
+						// 	console.log("debug-zsolmap add points",)
+						// }
+						
+						
+					}
+					else if(val=="draw")
+					{
+						// if(this.urffeatSelector){
+						// 	this.urffeatSelector.getFeatures().pop()
+						// }
+						// if(featSel){
+						// 	featSel.getFeatures().pop()
+						// }
+						
+						var drawIntr = openDrawInteraction(this.map, "default", null,
+										{
+											type:"base",
+											drawTheme:this.rfdrawTheme
+										},
+										)
+						
+						drawIntr.on("drawend", 
+						(evt)=>{
+							var feat = evt.feature
+							var geom = feat.getGeometry()
+							// var geom_cp = geom.clone()
+							// geom_cp.transform(
+							//  // "EPSG:4236", 
+							//  // "EPSG:4508",
+							//  new Projection({code:"EPSG:4236", units: Units.DEGREES}),
+							//  new Projection({code:"EPSG:4508", units: Units.METERS}),
+							//  )
+							
+							// console.log("debug-zsolmap draw event ", evt, 
+							// geom.getArea(), 
+							// // geom_cp.getArea(),
+							// // getArea(geom, {radius:6731000}),
+							// // getArea(geom, {radius:6731000})*1e4,
+							// getArea(geom, {radius:1}),
+							// // 1e10
+							// geom.getCoordinates()[0][0],
+							// // geom_cp.getCoordinates(),
+							// )
+							this.$emit("finishDrawingGeometry")}
+						)
+						
+						closeFeatureSelection(this.map, "singleclick")
+						closeFeatureModification(this.map)
+					}
+					else if(val=="$back"){
+						
+						var stackSize = this.urfinteractionStack.length
+						if(stackSize<2){
+							this.urfinteractionStack = []
+							this.setInteractionType("select")
+						}
+						else{
+							// this.urfinteractionStack = this.urfinteractionStack.slice(0, stack_size -1)
+							this.urfinteractionStack.pop()
+							this.setInteractionType(this.urfinteractionStack[stackSize-2])
+						}
+					}
+					
+					if(val && val[0]!="$"){
+						this.urfinteractionStack.push(val)
+					}
+				
+				}
+				else if(this.rfusedMode=="view")
+				{
+					closeFeatureModification(this.map)
+					closeDrawInteraction(this.map)
+					// closeFeatureSelection(this.map, "singleclick")
+					if(val!="select"){
+						closeFeatureSelection(this.map, "singleclick")
+					}
+				}
+				
+				// if(val && val[0]!="$"){
+				// 	this.urfinteractionStack.push(val)
+				// }
+				
+				console.log("debug-zsolmap interaction stack ", this.urfinteractionStack,
+				`top: ${this.urfinteractionStack[-1]}`,
+				)
+				// this.urfinteractionStack.push(val)
 			},
 			
 			setDrawTheme(val){
 				
-				this.rfDrawTheme = val
+				this.rfdrawTheme = val
 				if(this.rfUseMode=="edit"){
 					this.setUseMode("view")
 					this.setUseMode("edit")
@@ -1908,6 +2078,9 @@
 					}
 					if(pName=="drawTheme"){
 						this.setDrawTheme(pVal)
+					}
+					if(pName=="interaction"){
+						this.setupInteraction(pVal)
 					}
 				}
 				// var pName = evData["name"]

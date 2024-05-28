@@ -3,9 +3,20 @@ import { bufferExtent,extentToContour } from "../helpers/geo"
 export function setup(olclass){
 	
 	extendForEachFeatureAtPixel(olclass)
-	
+	extendGetFeaturesAtPixel(olclass)
 }
 
+
+
+// function forEachFeatureAtPixel(){
+	
+	
+// }
+
+// function getFeaturesAtPixel(){
+	
+	
+// }
 
 function extendForEachFeatureAtPixel(olclass){
 	
@@ -110,6 +121,21 @@ function extendForEachFeatureAtPixel(olclass){
 
 }
 
+
+function extendGetFeaturesAtPixel(olclass){
+	
+	olclass.prototype.xgetFeaturesAtPixel = function(pixelPos){
+		
+		var results = []
+		this.xforEachFeatureAtPixel(pixelPos, 
+			(feat,layer)=>{
+				results.push(feat)
+			}
+		)
+		return results
+	}
+	
+}
 
 
 

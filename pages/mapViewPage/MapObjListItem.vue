@@ -152,7 +152,7 @@ export default {
 			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
 			rfBtnItems:
 			[
-				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlashFill",
+				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlash",
 					"status":this.xprops["visible"]==false?0:1
 				},
 				{"icon":"refresh", "name":"refresh", "color":"green"},
