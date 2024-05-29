@@ -120,7 +120,7 @@ class ZsFeatureSelection extends Select{
 		  // pixel, or clear the selected feature(s) if there is no feature at
 		  // the pixel.
 		  clear(this.featureLayerAssociation_);
-		  console.log("debug-zsolmap featselect meet condition set", )
+		  // console.log("debug-zsolmap featselect meet condition set", )
 		  // map.forEachFeatureAtPixel(
 		  map.xforEachFeatureAtPixel(
 			mapBrowserEvent.pixel,
@@ -130,7 +130,8 @@ class ZsFeatureSelection extends Select{
 			 * @return {boolean|undefined} Continue to iterate over the features.
 			 */
 			function (feature, layer) {
-				console.log("debug-zsolmap featselect meet condition filter", feature)
+				
+				console.log("debug-zsolmap feat select", feature, feature.getGeometry())
 			  if (this.filter_(feature, layer)) {
 				this.addFeatureLayerAssociation_(feature, layer);
 				selected.push(feature);
@@ -142,6 +143,7 @@ class ZsFeatureSelection extends Select{
 			  hitTolerance: this.hitTolerance_,
 			}
 		  );
+		  // console.log("debug-zsolmap feat select selected", selected[0].getGeometry())
 		  for (let i = features.getLength() - 1; i >= 0; --i) {
 			const feature = features.item(i);
 			const index = selected.indexOf(feature);
@@ -156,6 +158,8 @@ class ZsFeatureSelection extends Select{
 		  if (selected.length !== 0) {
 			features.extend(selected);
 		  }
+		  
+		  
 		} else {
 		  // Modify the currently selected feature(s).
 		  // console.log("debug-zsolmap featselect meet condition noset", )
@@ -191,6 +195,9 @@ class ZsFeatureSelection extends Select{
 			features.remove(deselected[j]);
 		  }
 		  features.extend(selected);
+		  
+		  
+		  
 		}
 		if (selected.length > 0 || deselected.length > 0) {
 		  this.dispatchEvent(

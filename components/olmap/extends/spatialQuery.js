@@ -72,12 +72,15 @@ function extendForEachFeatureAtPixel(olclass){
 				extentBuf,
 				(feat)=>{
 					
+					// console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
 					collided_feat = feat
+					const geom = feat.getGeometry()
+					// console.log("debug-zsolmap forEachFeatureAtPixel filter", feat, geom)
+					
 					if(callback && typeof callback === 'function'){
 						callback(feat, iter_lyr)
 					}
-					// const geom = feat.getGeometry()
-					// // console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
+					
 					// var  collided = true 
 					// collided = intersects(extentBuf, geom.getExtent())
 					
@@ -111,7 +114,7 @@ function extendForEachFeatureAtPixel(olclass){
 					// }
 
 				}
-				)
+			)
 			
 		}
 		

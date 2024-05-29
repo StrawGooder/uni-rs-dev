@@ -701,7 +701,7 @@
 				const delta = Date.now() - this.urfclickStartTime
 				const timeMin = 1500
 				const timeMax = 3000
-				console.log("debug-zsolmap touchend ", delta)
+				// console.log("debug-zsolmap touchend ", delta)
 				if(
 				delta>=timeMin 
 				&& delta<=timeMax
@@ -1306,7 +1306,7 @@
 							}
 						}
 						
-						console.log("debug-zsolmap dblclick spatial query ",sel.getFeatures(), evt)
+						// console.log("debug-zsolmap dblclick spatial query ",sel.getFeatures(), evt)
 						evt.originalEvent.preventDefault()
 					}
 				)
@@ -1374,7 +1374,7 @@
 				this.map.getTargetElement().addEventListener(
 				"mousedown",
 					(evt)=>{
-						console.log("debug-zsolmap touchstart ", evt)
+						// console.log("debug-zsolmap touchstart ", evt)
 						this.urfclickStartTime = Date.now()
 						// this.urflongPressMonitor.update([evt.pageX,evt.pageY])
 						// this.urfclickdown = true
@@ -1935,27 +1935,36 @@
 							features:sel?sel.getFeatures() : null
 						})
 						// modifier
-						sel.getFeatures().addEventListener("add",
-						// sel.getFeatures().on("add", 
-							(feat)=>{
+	// 					sel.getFeatures().addEventListener("add",
+	// 					// sel.getFeatures().on("add", 
+	// 						(feat)=>{
 								
+	// 							feat = feat.element
+	// 							if(feat)
+	// 							{
+	// 								// var feat_pt = new Point(feat.coordinates()[0])
+	// 								// console.log("debug-zsolmap add points",feat, sel.getFeatures().item(0))
+	// 								var pts = feat.getGeometry().getCoordinates()[0][0]
+	// 								var pt_num = pts.length
+	// 								var pt_geom ;
+	// 								var feat_pt;
+	// 								var step = 1
+	// 								var mdf_overlay_src = modifier.getOverlay().getSource()
+	// 								mdf_overlay_src.clear()
+	// 								for(var i =0;i<pt_num;i=i+step)
+	// 								{
+	// 									pt_geom = new Point(pts[i])
+	// 									// console.log("debug-zsolmap add points", pts[i])
+	// 									feat_pt = new Feature()
+	// 									feat_pt.setGeometry(pt_geom)
+	// 									feat_pt.setProperties({"modify_point_hit_obj":"nothing"})
+	// 									mdf_overlay_src.addFeature(feat_pt)
+	// 								}
+	
+	// 							}
 								
-								feat = feat.element
-								if(feat)
-								{
-									// var feat_pt = new Point(feat.coordinates()[0])
-									console.log("debug-zsolmap add points",feat, sel.getFeatures().item(0))
-									var pts = feat.getGeometry().getCoordinates()[0]
-									var pt_num = pts.length
-									for(var i =0;i<pt_num;i=i+5)
-									{
-										const feat_pt = new Point(pts[i])
-										modifier.addFeature_(feat_pt)
-									}console.log("debug-zsolmap add points",feat)
-								}
-								
-							}
-						)
+	// 						}
+	// 					)
 						// var feat = sel.getFeatures().item(0)
 						// if(feat)
 						// {
