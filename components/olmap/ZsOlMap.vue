@@ -525,9 +525,10 @@
 	import { computeCenter,computeResolutionByExtent,computeResolution } from './helpers/geo.js';
 	import { createVectorLayerFromURL, addCoordsToLayer, addFeatures } from './helpers/layers.js';
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
-	import { openFeatureSelection, closeFeatureSelection, getFeatureSelection } from './interactions/featureSelection.js';
+	import { openFeatureSelection, closeFeatureSelection, getFeatureSelection,
+	 openFeatureModification, closeFeatureModification, getFeatureModification} from './interactions';
 	// import {makePolygonDrawStyleFunc} from "./drawer/style.js"
-	import {openFeatureModification, closeFeatureModification, getFeatureModification} from  "./interactions/featureModification.js";
+	// import {openFeatureModification, closeFeatureModification, getFeatureModification} from  "./interactions/featureModification.js";
 	import { bufferExtent , extentToContour} from './helpers/geo.js';
 	import {intersects} from "ol/extent.js"
 	import {mapState} from "vuex";
@@ -1654,12 +1655,21 @@
 				var extent = [108,25.613664999999997,109.153964,23.557816]
 				var _this = this
 				var total = 5
+				
+				
+				
 			
 				var center_coord = computeCenter(extent)
 				
-				this.locateViewportTo(center_coord, {extent: extent})
+				// this.locateViewportTo(center_coord, {extent: extent})
 				
-				var mpview= this.map.getView()
+			
+				var mpview = this.map.getView()
+				
+				// temp
+				mpview.setZoom(11)
+				mpview.setCenter([109.09033049526474,25.42893144809194])
+				
 				function _loop() {
 					
 					mpview.adjustZoom(0.5, center_coord)
@@ -1860,28 +1870,47 @@
 				sel.on("select", 
 					function(evt){
 						
-						var features = evt.target.getFeatures().getArray()
+						// var features = evt.target.getFeatures().getArray()
 						// console.log("debug-zsolmap select interation",
 						// '\n Select Event',
 						// evt)
 						
-						var feat = features[0]
+						var sel_feat = evt.selected[0]
+						// var feat = features[0]
 						// var feat = evt.selected
 						// if(!feat)return
 						
-						var featName = feat.getProperties()["name"]
+						if(sel_feat){
+							
+							var featName = sel_feat.getProperties()["name"]
+							
+							// var style = sel.getLayer(feat).getStyle()
+							// if(typeof style =='function'){
+							// 	style = style(feat)
+							// }
+							// var textStyle = style.getText()
+							
+							// var selStyle = sel.getStyle()
+							// // textStyle.setText("nihao")
+							// selStyle.setText(textStyle)
+							
+							console.log("debug-zsolmap select interation selected", featName, evt)		
+						}
 						
-						// var style = sel.getLayer(feat).getStyle()
-						// if(typeof style =='function'){
-						// 	style = style(feat)
-						// }
-						// var textStyle = style.getText()
 						
-						// var selStyle = sel.getStyle()
-						// // textStyle.setText("nihao")
-						// selStyle.setText(textStyle)
+						var desel_feat = evt.deselected[0]
 						
-						console.log("debug-zsolmap select interation coliided", featName, evt)
+						if(desel_feat){
+							
+							var featName = desel_feat.getProperties()["name"]
+							console.log("debug-zsolmap select interation deselected", featName, evt)
+							
+						}
+						// var feat = features[0]
+						// var feat = evt.selected
+						// if(!feat)return
+						
+						
 						// var geom = features[0].getGeometry()
 						// var extent = geom.getExtent()
 						

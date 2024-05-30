@@ -61,7 +61,6 @@ function extendForEachFeatureAtPixel(olclass){
 			if(!iter_lyr.getVisible() || collided_feat){
 				continue
 			}
-			
 			// console.log("debug-zsolmap ", lyr_visited)
 			
 			lyr_visited[i] = true
@@ -71,7 +70,10 @@ function extendForEachFeatureAtPixel(olclass){
 			iter_lyr_src.forEachFeatureIntersectingExtent(
 				extentBuf,
 				(feat)=>{
-					
+					// only single select feature
+					if(collided_feat){
+						return
+					}
 					// console.log("debug-zsolmap forEachFeatureAtPixel filter", feat)
 					collided_feat = feat
 					const geom = feat.getGeometry()

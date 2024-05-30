@@ -7,71 +7,8 @@ import {Fill, Stroke, Style} from 'ol/style.js';
 
 import {merge as mergeObject} from "lodash";
 
-const _style_components = {
-	"stroke": new Stroke({"color":"orange", "width":"1px"})
-	// "stroke":null
-}
-const _feat_styles = {
-	"click":function(){ 
-		
-				var style = new Style(
-					{
-						fill: new Fill({"color":"rgb(0 50 200 / 50%)"}),
-						stroke: _style_components["stroke"]
-					}
-				) 
-				// return function(feat){
-				// 	return style
-				// }
-				return style
-			
-		
-		// var style = feat.getStyle(); 
-		// style.setColor("#00aa00ff") 
-		// // new Style({fill: new Fill({"color":"#00aa00"})}) 
-		// return style
-	},
-	"hover":function(){ 
-		
-		var style = new Style({
-			fill: new Fill({"color":"#aa220011"}),
-			stroke: _style_components["stroke"]
-		
-		})
-		return function(feat){
-			return style
-		}
-		
-		// var style = feat.getStyle(); 
-		// style.setColor("#00aa00ff") 
-		// new Style({fill: new Fill({"color":"#aa220011"})})
-		// return style
-	},
-	"altclick":function(feat, e){ 
-		
-		var style = new Style({
-			fill: new Fill({"color":"#0099999"}),
-			stroke: _style_components["stroke"]
-		})
-		return function(feat){
-			return style
-		}
-		// var style = feat.getStyle(); 
-		// style.setColor("#00aa00ff") 
-		// // new Style({fill: new Fill({"color":"#0099999"})})
-		// return style
-	},
-	
-}
-
-const _interaction_memo = {
-	"click":null,
-	"hover":null,
-	"altclick":null,
-}
-
 // just for test
-class ZsFeatureSelection extends Select{
+export class ZsFeatureSelection extends Select{
 	
 	constructor(options){
 		// options["keepLabel"] = options["keepLabel"] || false
@@ -131,7 +68,7 @@ class ZsFeatureSelection extends Select{
 			 */
 			function (feature, layer) {
 				
-				console.log("debug-zsolmap feat select", feature, feature.getGeometry())
+				// console.log("debug-zsolmap feat select", feature, feature.getGeometry())
 			  if (this.filter_(feature, layer)) {
 				this.addFeatureLayerAssociation_(feature, layer);
 				selected.push(feature);
@@ -213,85 +150,4 @@ class ZsFeatureSelection extends Select{
 		return true;
 		
 	}
-}
-
-export function openFeatureSelection(map, mode="click", opts = null){
-
-	var ret_interaction = null
-	
-	// var init_opts =  mergeObject({"hitTolerance":10, "keepLabel":true}, opts)
-	var init_opts =  mergeObject({"hitTolerance":10, "keepLabel":true, "styleTheme":"click"}, opts || {})
-	
-	// mode = mode || "click"
-	
-	if(mode=="click")
-	{
-		init_opts["condition"] = click
-	}
-	else if(mode=="singleclick")
-	{
-		
-		init_opts["condition"] = null
-	}
-	else if(mode=="hover")
-	{
-		init_opts["condition"] = pointerMove
-	}
-	else if(mode=="altclick")
-	{
-		
-		init_opts["condition"] = function(mapBrowserEvent){
-			return altKeyOnly(mapBrowserEvent) && click(mapBrowserEvent)
-		}	
-	}
-	else{
-		
-		throw new Error(`attemp to create '${mode}' mode FeatureSelection Interaction, but not found class`)
-	}
-	
-	init_opts["style"] = init_opts["style"] || _feat_styles[init_opts["styleTheme"]]()
-	
-	if(isFeatureSelectionEnabled(mode)){
-		closeFeatureSelection(mode)
-	}
-	
-	// ret_interaction = new Select(init_opts)
-	ret_interaction = new ZsFeatureSelection(init_opts)
-	_interaction_memo[mode] = ret_interaction
-	
-	map.addInteraction(ret_interaction)
-	
-	return ret_interaction
-}
-
-
-export function closeFeatureSelection(map, mode){
-	
-	mode = mode || "click"
-	var obj = _interaction_memo[mode]
-	if(obj)
-	{
-		// var obj = _interaction_memo[mode]
-		obj.getFeatures().pop()
-		map.removeInteraction(obj)
-		delete _interaction_memo[mode];
-		
-		console.log("debug-zsolmap close closeFeatureSelection")
-		return true
-	}
-	
-	return false
-}
-
-
-export function isFeatureSelectionEnabled(mode){
-	mode = mode || "click"
-	return _interaction_memo[mode] == null ? false : true
-	
-}
-
-export function getFeatureSelection(mode){
-	mode = mode || "click"
-	console.log("debug-zsolmap getFeatureSelection ", mode, _interaction_memo)
-	return _interaction_memo[mode]
 }
