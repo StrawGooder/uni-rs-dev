@@ -61,6 +61,8 @@ export function openFeatureModification(map, mode="base", opts = null){
 	
 	map.addInteraction(ret_intera)
 	
+	
+	
 	return ret_intera
 }
 
@@ -70,6 +72,7 @@ export function closeFeatureModification(map, mode){
 	var obj = _interaction_memo[mode]
 	if(obj)
 	{
+		map.removeInteraction(obj)
 		delete _interaction_memo[mode]
 		return true
 	}

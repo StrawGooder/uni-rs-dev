@@ -34,7 +34,8 @@ import {
   toUserExtent,
 } from 'ol/proj.js';
 import {getUid} from 'ol/util.js';
-
+import {projectedDistanceToSegmentDataSquared} from "./helper.js";
+import VectorSource from "ol/source/Vector.js"
 /**
  * @param {SegmentData} a The first segment data.
  * @param {SegmentData} b The second segment data.
@@ -70,7 +71,7 @@ function quickInsertVertexCondition(mapBrowserEvent){
 function normalInsertVertexCondition(mapBrowserEvent){
 	const b = mapBrowserEvent.type=="pointerdown"
 	const a = altKeyOnly(mapBrowserEvent)
-	// console.log("debug-zsolmap insertVertexCondition ",a ,b, mapBrowserEvent)
+	console.log("debug-zsolmap insertVertexCondition ",a ,b, mapBrowserEvent)
 	return a && b
 }
 
@@ -89,13 +90,12 @@ class ZsModify extends Modify{
 		// var insertVertexOpMode= opts["insertVertexOpMode"] || "quick"
 		if(insertVertexOpMode=="quick"){
 			
-				opts["insertVertexCondition"] = normalInsertVertexCondition
+				opts["insertVertexCondition"] = quickInsertVertexCondition
 		}
 		else
 		{
-			opts["insertVertexCondition"] = quickInsertVertexCondition
+			opts["insertVertexCondition"] = normalInsertVertexCondition
 		}
-		
 		
 		
 		opts["deleteCondition"] = function(mapBrowserEvent){
@@ -120,9 +120,18 @@ class ZsModify extends Modify{
 			this.onFeatureRemoved.bind(this)
 		)
 		
+		// this.features_.addEventListener(
+		// 	"change",
+		// 	()=>{
+		// 	this.console.log("debug-zsolmap modify feature changed", this.rBush_.getAll().length);
+			
+		// 	}
+		// )
+		
 		this.curOpFeat = null
 		
 		this.canDragVertex = false
+		this.isDragging = false
 		
 		this.hitVertextTolerance = 0.5
 		
@@ -140,12 +149,23 @@ class ZsModify extends Modify{
 		this.insertVertexOpMode_ = insertVertexOpMode
 	}
 	
-	onFeatureAdded(evt){
-		
-		const feat = evt.element
-		
-		this.onFeatureAdded_(feat, evt)
-	}
+
+	
+	// addFeature_(feature) {
+	//   const geometry = feature.getGeometry();
+	//   if (geometry) {
+	//     const writer = this.SEGMENT_WRITERS_[geometry.getType()];
+	//     if (writer) {
+	//       writer(feature, geometry);
+	// 	  console.log("debug-zsolmap items ", this.rBush_.getAll().length)
+	//     }
+	//   }
+	//   const map = this.getMap();
+	//   if (map && map.isRendered() && this.getActive()) {
+	//     this.handlePointerAtPixel_(this.lastPixel_, map);
+	//   }
+	//   feature.addEventListener(EventType.CHANGE, this.boundHandleFeatureChange_);
+	// }
 	
 	handleEvent(mapBrowserEvent) {
 	  if (!mapBrowserEvent.originalEvent) {
@@ -175,25 +195,28 @@ class ZsModify extends Modify{
 	  }
 	
 		// zs-adding
-	  if (mapBrowserEvent.type == MapBrowserEventType.SINGLECLICK) {
+	  if (mapBrowserEvent.type == MapBrowserEventType.SINGLECLICK) 
+	  {
 	    this.ignoreNextSingleClick_ = false;
 		
 		// this.lastTouchEndPixelPos_ = mapBrowserEvent.pixel
 		// return true
-		console.log("debug-zsolmap modify singleclick ", mapBrowserEvent.coordinate, mapBrowserEvent.type, mapBrowserEvent.originalEvent)
+		// console.log("debug-zsolmap modify singleclick ", mapBrowserEvent.coordinate, mapBrowserEvent.type, mapBrowserEvent.originalEvent)
+		// console.log("debug-zsolmap modify items ", this.rBush_.getAll().length)
 		// meanns that touch pixel position is on polygon border line
 		
 		// console.log("debug-zsolmap modify singleclick addtouch", recordTouchEndFeature.getGeometry())
-
+		
+		// zs-adding
 		if(this.vertexFeature_){
 			
-			
-
-			// this.lastTouchEndFeature_  = recordTouchEndFeature
+			// console.log("debug-zsolmap modify singleclick ", mapBrowserEvent.coordinate, mapBrowserEvent.type, mapBrowserEvent.originalEvent)
+			// this.deleteVertexOnCoord(mapBrowserEvent.coordinate)
+			// return 
 			var overlyrSrc = this.getOverlay().getSource()
 			
 			var recordTouchEndFeature  = new Feature()
-			overlyrSrc.addFeature(recordTouchEndFeature)
+			
 			const closestSegmentCoord = this.vertexFeature_.getGeometry().getCoordinates()
 			recordTouchEndFeature.setGeometry(new Point( closestSegmentCoord ))
 			
@@ -209,6 +232,7 @@ class ZsModify extends Modify{
 				// overlyrSrc
 				recordTouchEndFeature.setProperties({"modify_point_hit_obj":"nothing"})
 			}
+			overlyrSrc.addFeature(recordTouchEndFeature)
 
 			this.lastTouchEndPixelPos_ = mapBrowserEvent.pixel
 			// this.lastTouchEndPixelPos_ = this.getMap().getPixelFromCoordinate(closestSegmentCoord)
@@ -216,10 +240,11 @@ class ZsModify extends Modify{
 			this.prepareInsertedVertex(mapBrowserEvent.pixel, mapBrowserEvent)
 		}
 	  }
-	  
 	  else if(mapBrowserEvent.type == MapBrowserEventType.DBLCLICK){
 		  // this.handlePointerAtPixel_(mapBrowserEvent.pixel, this.getMap(),  mapBrowserEvent.coordinate);
 		  console.log("debug-zsolmap modify double click ", mapBrowserEvent.type)
+		  
+		  // this.deleteVertexOnCoord(mapBrowserEvent.coordinate)
 	  }
 	  // else if(mapBrowserEvent.originalEvent=="contextmenu"){
 		 //  console.log("debug-zsolmap modify context ", mapBrowserEvent.type, mapBrowserEvent.originalEvent)
@@ -235,6 +260,11 @@ class ZsModify extends Modify{
 	handleDragEvent(mapBrowserEvent){
 		
 		// if(!this.canDragVertex) return false
+		if(!this.isDragging){
+				this.deletePointOnOverlay(mapBrowserEvent.coordinate)
+		}
+		
+		this.isDragging = true
 		return super.handleDragEvent(mapBrowserEvent)
 		// this.lastPixel_
 	}
@@ -271,7 +301,7 @@ class ZsModify extends Modify{
 		// // }
 		// // return true
 
-		console.log("debug-zsolmap modify interaction handleDownEvent ", collided)
+		// console.log("debug-zsolmap modify interaction handleDownEvent ", collided)
 		return super.handleDownEvent(mapBrowserEvent)
 		// return false
 		// if(mapBrowserEvent.)
@@ -280,8 +310,9 @@ class ZsModify extends Modify{
 	
 	handleUpEvent(mapBrowserEvent){
 		
+		
 		this.canDragVertex = false
-		console.log("debug-zsolmap modify interaction handleUpEvent ")
+		// console.log("debug-zsolmap modify interaction handleUpEvent ")
 		// if(this.insertVertexCondition_(mapBrowserEvent)){
 		// 	this.prepareInsertedVertex(mapBrowserEvent.pixel, mapBrowserEvent)
 		// }
@@ -305,36 +336,52 @@ class ZsModify extends Modify{
 // // ])
 // 		)
 		// return false
+		if(this.isDragging){
+			this.addPointOnOverlay(mapBrowserEvent.coordinate)
+		}
+		this.isDragging = false
+		
 		return super.handleUpEvent(mapBrowserEvent)
+	}
+	
+	onFeatureAdded(evt){
+		
+		const feat = evt.element
+		
+		this.onFeatureAdded_(feat, evt)
 	}
 	
 	onFeatureAdded_(feat, evt){
 	
 		this.curOpFeat = feat
 		
-		const modifier = this
+		// const modifier = this
 		if(feat)
 		{
 			// var feat_pt = new Point(feat.coordinates()[0])
 			// console.log("debug-zsolmap add points",feat, sel.getFeatures().item(0))
 			var pts = feat.getGeometry().getCoordinates()[0][0]
 			var pt_num = pts.length
-			var pt_geom ;
-			var feat_pt;
+			// var pt_geom ;
+			// var feat_pt;
 			var step = 1
-			var mdf_overlay_src = modifier.getOverlay().getSource()
+			var mdf_overlay_src = this.getOverlay().getSource()
 			mdf_overlay_src.clear()
 			for(var i =0;i<pt_num;i=i+step)
 			{
-				pt_geom = new Point(pts[i])
-				// console.log("debug-zsolmap add points", pts[i])
-				feat_pt = new Feature()
-				feat_pt.setGeometry(pt_geom)
-				feat_pt.setProperties({"modify_point_hit_obj":"nothing"})
-				mdf_overlay_src.addFeature(feat_pt)
+				// pt_geom = new Point(pts[i])
+				// // console.log("debug-zsolmap add points", pts[i])
+				// feat_pt = new Feature()
+				// feat_pt.setGeometry(pt_geom)
+				// feat_pt.setProperties({"modify_point_hit_obj":"nothing"})
+				// mdf_overlay_src.addFeature(feat_pt)
+				this.addPointOnOverlay(pts[i], mdf_overlay_src)
 				// break
 			}
+			
 		}	
+		
+		console.log("debug-zsolmap modify items add ", this.rBush_.getAll().length)
 	}
 	
 	
@@ -348,6 +395,7 @@ class ZsModify extends Modify{
 	
 	onFeatureRemoved_(feat){
 		
+		console.log("debug-zsolmap modify items remove", this.rBush_.getAll().length) 
 	}
 	
 	
@@ -600,7 +648,270 @@ class ZsModify extends Modify{
 			}
 			return false;
 	}
+
+
 	
+	deleteVertexOnCoord(pixelCoordinate, hitTolerance, projection){
+		
+		// super
+		const map = this.getMap()
+		projection = projection || map.getView().getProjection()
+		let tempExtent = [0,0,0,0]
+		const viewExtent = fromUserExtent(
+		  createExtent(pixelCoordinate, tempExtent),
+		  projection
+		);
+		
+		// this.pixelTolerance_ = 10
+		const buffer = map.getView().getResolution() * this.pixelTolerance_;
+		const box = toUserExtent(
+		  bufferExtent(viewExtent, buffer, tempExtent),
+		  projection
+		);
+		
+		
+		const sortByDistance = function (a, b) {
+		  return (
+		    projectedDistanceToSegmentDataSquared(pixelCoordinate, a, projection) -
+		    projectedDistanceToSegmentDataSquared(pixelCoordinate, b, projection)
+		  );
+		};
+		
+	
+		const clickedPixelPos = map.getPixelFromCoordinate(pixelCoordinate)
+		
+		
+		const items = this.rBush_.getAll()
+		
+		// console.log("debug-zsolmap modify ", items.length)
+		
+		let nodes = this.rBush_.getInExtent(box);
+		// console.log("debug-zsolmpa modify delete vertex target nodes ", nodes, box)
+		// the found node is closest node4
+		var node_sort = nodes.sort(sortByDistance).slice(0, 2)
+		const node  = node_sort[0]
+		const segment = node.segment
+		const pixelPosA =   map.getPixelFromCoordinate( segment[0] )
+		const pixelPosB = map.getPixelFromCoordinate( segment[1] )
+		
+		
+		const  clickToADist = squaredCoordinateDistance(pixelPosA, clickedPixelPos)
+		const  clickToBDist = squaredCoordinateDistance(pixelPosB, clickedPixelPos)
+		
+		let minDist
+		let minPixInd
+		if(clickToADist>clickToBDist){
+			minDist = clickToBDist
+			minPixInd = 1
+		}
+		else{
+			minDist = clickToADist
+			minPixInd = 0
+		}
+		
+		if(minDist>this.pixelTolerance_){
+			return false
+		}
+		
+		node_sort = node_sort.sort((a,b)=>{return a.index<b.index})
+		
+		// left right
+		this.dragSegments_ = [ 
+			[node_sort[0], 0],
+			[node_sort[1], 1]
+		]
+		// node_sort.forEach((it)=>{
+		// 	this.dragSegments_.push([it,1])
+		// })
+		
+		// console.log("debug-zsolmap delete vertex ", node_sort[0])
+		const deleted = this.removePoint()
+		console.log("debug-zsolmap delete vertex ", deleted)
+		if(deleted){
+			
+			this.deletePointOnOverlay(pixelCoordinate)
+		}
+		
+		return deleted
+	}
+	
+	deletePointOnOverlay(pixelCoordinate, projection){
+	
+		const map = this.getMap()
+		projection = projection || map.getView().getProjection()
+		let tempExtent = [0,0,0,0]
+		const viewExtent = fromUserExtent(
+		  createExtent(pixelCoordinate, tempExtent),
+		  projection
+		);
+		
+		// this.pixelTolerance_ = 10
+		const buffer = map.getView().getResolution() * this.pixelTolerance_;
+		const box = toUserExtent(
+		  bufferExtent(viewExtent, buffer, tempExtent),
+		  projection
+		);
+		
+		const overlyrSrc = this.getOverlay().getSource()
+		
+		const deletedFeatOnOverlay = []
+		// overlyrSrc.forEachFeatureInExtent(
+		overlyrSrc.forEachFeatureIntersectingExtent(
+			box,
+			(feat)=>{
+				
+				// const geom = feat.getGeometry()
+				// const geom_ext = createExtent(geom.getCoordinates())
+				 // bufferExtent()geom.getCoordinates()
+				 // if(intersect){
+					// const intersect = intersects(box, geom_ext)
+					// deletedFeatOnOverlay.push(feat)
+					// console.log("debug-zsolmap deleted overlay feature ", intersect)	 
+				 // }
+				 deletedFeatOnOverlay.push(feat)
+				
+				return true
+			}
+		)
+		console.log("debug-zsolmap deleted overlay feature ", deletedFeatOnOverlay[0])
+		overlyrSrc.removeFeature(deletedFeatOnOverlay[0])
+	}
+	
+	addPointOnOverlay(point, lyrSrc){
+		
+		// lyr = lyr || this.getOverlay()
+		
+		lyrSrc =  lyrSrc || this.getOverlay().getSource()
+
+		const pt_geom = new Point(point)
+		// console.log("debug-zsolmap add points", pts[i])
+		const feat_pt = new Feature()
+		feat_pt.setGeometry(pt_geom)
+		feat_pt.setProperties({"modify_point_hit_obj":"nothing"})
+		lyrSrc.addFeature(feat_pt)
+			// break
+		
+	}
+	
+	
+	removeVertex_() {
+	  const dragSegments = this.dragSegments_;
+	  const segmentsByFeature = {};
+	  let deleted = false;
+	  let component, coordinates, dragSegment, geometry, i, index, left;
+	  let newIndex, right, segmentData, uid;
+	  
+	  for (i = dragSegments.length - 1; i >= 0; --i) {
+	    dragSegment = dragSegments[i];
+	    segmentData = dragSegment[0];
+		
+	    uid = getUid(segmentData.feature);
+	    if (segmentData.depth) {
+	      // separate feature components
+	      uid += '-' + segmentData.depth.join('-');
+	    }
+	    if (!(uid in segmentsByFeature)) {
+	      segmentsByFeature[uid] = {};
+	    }
+	    if (dragSegment[1] === 0) {
+	      segmentsByFeature[uid].right = segmentData;
+	      segmentsByFeature[uid].index = segmentData.index;
+	    } else if (dragSegment[1] == 1) {
+	      segmentsByFeature[uid].left = segmentData;
+	      segmentsByFeature[uid].index = segmentData.index + 1;
+	    }
+	  }
+	  for (uid in segmentsByFeature) {
+	    right = segmentsByFeature[uid].right;
+	    left = segmentsByFeature[uid].left;
+	    index = segmentsByFeature[uid].index;
+	    newIndex = index - 1;
+	    if (left !== undefined) {
+	      segmentData = left;
+	    } else {
+	      segmentData = right;
+	    }
+	    if (newIndex < 0) {
+	      newIndex = 0;
+	    }
+	    geometry = segmentData.geometry;
+	    coordinates = geometry.getCoordinates();
+	    component = coordinates;
+	    deleted = false;
+	    switch (geometry.getType()) {
+	      case 'MultiLineString':
+	        if (coordinates[segmentData.depth[0]].length > 2) {
+	          coordinates[segmentData.depth[0]].splice(index, 1);
+	          deleted = true;
+	        }
+	        break;
+	      case 'LineString':
+	        if (coordinates.length > 2) {
+	          coordinates.splice(index, 1);
+	          deleted = true;
+	        }
+	        break;
+	      case 'MultiPolygon':
+	        component = component[segmentData.depth[1]];
+	      /* falls through */
+	      case 'Polygon':
+	        component = component[segmentData.depth[0]];
+	        if (component.length > 4) {
+	          if (index == component.length - 1) {
+	            index = 0;
+	          }
+	          component.splice(index, 1);
+	          deleted = true;
+	          if (index === 0) {
+	            // close the ring again
+	            component.pop();
+	            component.push(component[0]);
+	            newIndex = component.length - 1;
+	          }
+	        }
+	        break;
+	      default:
+	      // pass
+	    }
+	
+	    if (deleted) {
+	      this.setGeometryCoordinates_(geometry, coordinates);
+	      const segments = [];
+	      if (left !== undefined) {
+	        this.rBush_.remove(left);
+	        segments.push(left.segment[0]);
+	      }
+	      if (right !== undefined) {
+	        this.rBush_.remove(right);
+	        segments.push(right.segment[1]);
+	      }
+	      if (left !== undefined && right !== undefined) {
+	        /** @type {SegmentData} */
+	        const newSegmentData = {
+	          depth: segmentData.depth,
+	          feature: segmentData.feature,
+	          geometry: segmentData.geometry,
+	          index: newIndex,
+	          segment: segments,
+	        };
+	
+	        this.rBush_.insert(
+	          boundingExtent(newSegmentData.segment),
+	          newSegmentData
+	        );
+	      }
+	      this.updateSegmentIndices_(geometry, index, segmentData.depth, -1);
+	      if (this.vertexFeature_) {
+	        this.overlay_.getSource().removeFeature(this.vertexFeature_);
+	        this.vertexFeature_ = null;
+	      }
+	      dragSegments.length = 0;
+	    }
+	  }
+	  return deleted;
+	}
+	
+
 }
 
 

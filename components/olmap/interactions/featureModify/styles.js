@@ -122,7 +122,7 @@ const _feat_styles = {
 					}
 					else if(point_interaction_status=="touchend"){
 					
-						console.log("debug-zsolmap modify style ", point_interaction_status, feat.getGeometry().getCoordinates())
+						// console.log("debug-zsolmap modify style ", point_interaction_status, feat.getGeometry().getCoordinates())
 						
 						return touch_end_style
 					}

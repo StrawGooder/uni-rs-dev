@@ -77,7 +77,7 @@ export function createVectorLayerFromDataObj(data_obj, style){
 		{
 			// wrapX:true,
 			// wrapX:false
-			
+			useSpatialIndex:true
 		}
 	)
 	
@@ -114,7 +114,8 @@ export function createVectorLayerFromURL(url, style){
 			wrapX:false,
 			// wrapX:true,
 			url:url,
-			format: new GeoJSON()
+			format: new GeoJSON(),
+			useSpatialIndex:true
 		}
 	)
 	// source_obj.addFeatures(new_feature_array)
