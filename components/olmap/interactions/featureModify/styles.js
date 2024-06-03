@@ -120,7 +120,7 @@ const _feat_styles = {
 					if(point_interaction_status=="nothing"){
 						return normal_style
 					}
-					else if(point_interaction_status=="touchend"){
+					else if(point_interaction_status=="lastTouch"){
 					
 						// console.log("debug-zsolmap modify style ", point_interaction_status, feat.getGeometry().getCoordinates())
 						

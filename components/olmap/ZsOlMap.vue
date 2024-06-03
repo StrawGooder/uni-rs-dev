@@ -41,9 +41,17 @@
 			:position = "rfmenuPos"
 			@clickItem="onMenuItemClicked"
 			>
-				<!-- style="position:absolute;top:0px" -->
+				
 			</Menu>
-			
+			<!-- style="position:absolute;top:0px" -->
+			<!-- <MenuView
+			:menuName="rfmenuName"
+			:visible = "rfmenuVisible"
+			:position = "rfmenuPos"
+			@clickItem="onMenuItemClicked"
+			>
+				
+			</MenuView> -->
 		</view>
 
 	</view>
@@ -64,12 +72,14 @@
 	} from 'vuex';
 	
 	import Menu from './menu/Menu.vue';
+	import MenuView from './menu/MenuView.vue';
 	
 	export default {
 		
 		name:"ZsOlMap",
 		computed: mapState(['hasLogin', 'uerInfo']),
 		components:{
+			// MenuView,
 			Menu
 		},
 		data() {
@@ -116,7 +126,8 @@
 				
 				rfmenuItems:[{text:"copy", key:"copy"},{"text":"paste","key":"paste"}],
 				rfmenuPos:[0,0],
-				rfmenuVisible:false
+				rfmenuVisible:false,
+				rfmenuName:"Menu"
 			}
 		},
 	
@@ -308,6 +319,7 @@
 				this.setMenuPos(evt.pixel)
 				
 				this.rfmenuVisible=true
+				this.rfmenuName = evt["name"]
 				
 				console.log("debug-zsolmap menu show ", pixPos, this.rfmenuPos)
 			},
@@ -649,6 +661,7 @@
 			// this.urflongPressMonitor = createActionTrigger("LongTimeMonitor", this.onLongPressed, 3000)
 			// this.urflongPressMonitor.addListener("rejected", ()=>{console.log("debug-zsolmap long time monitor")})
 			
+			this.urfcurPopupMenuName = null
 		},
 		mounted() {
 			if (typeof window.ol === 'function') {
@@ -693,6 +706,7 @@
 			// },
 			onTouchEnd(evt){
 				
+				
 				this.handleLongPress(evt)
 				
 			},
@@ -707,21 +721,37 @@
 				delta>=timeMin 
 				&& delta<=timeMax
 				){
-					uni.$emit("map:menu:show", {pixel:evt.pixel || [evt.pageX, evt.pageY], "subject":"" } )
+					// uni.$emit("map:menu:show", {pixel:evt.pixel || [evt.pageX, evt.pageY], "subject":"" } )
+					
+					this.handleMenuPopup(evt)
 				}
 			},
 			
 			handleMenuPopup(evt){
 				
-				
-				var feat = this.urffeatSelector.getFeatures()[0]
+				// var originEvt = evt.originEvent
+				// if(originEvt){
+					
+				// }
+				var feat =  getFeatureSelection("singleclick").getFeatures().getArray()[0]
 				var subject = "map"
 				var menuName = "MapMenu"
-				if( feat ){
+				
+				menuName = "MapBackdropEditMenu"
+				if( feat )
+				{
 					subject = "feature"
-					menuName = "MapFeatureSelectedMenu"
+					menuName = "FeaturePolygonEditMenu"
+					
+					var featModifier = getFeatureModification("default")
+					if(featModifier.isTouchPointOnPolygonBoundary())
+					{
+						menuName = "FeaturePolygonVertexEditMenu"
+					}
 				}
 				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
+				
+				this.urfcurPopupMenuName = menuName
 				
 				uni.$emit("map:menu:show", 
 				{
@@ -729,7 +759,7 @@
 					posistion:pixPos, 
 					"subject":subject ,
 					name:menuName,
-				} ,
+				},
 				)
 			},
 			//修改定位点角度
@@ -1330,7 +1360,11 @@
 						)
 						evt.originalEvent.preventDefault()
 						
-						uni.$emit("map:menu:show", evt)
+						// uni.$emit("map:menu:show", evt)
+						
+						// this.onTouchEnd(evt)
+						
+						this.handleMenuPopup(evt)
 					}
 				)
 				
@@ -1343,7 +1377,7 @@
 						// this.urfclickStartTime = Date.now()
 						// this.urfclickdown = true
 						
-						this.onTouchEnd(evt)
+						// this.onTouchEnd(evt)
 				
 					}
 				)
@@ -1884,16 +1918,6 @@
 							
 							var featName = sel_feat.getProperties()["name"]
 							
-							// var style = sel.getLayer(feat).getStyle()
-							// if(typeof style =='function'){
-							// 	style = style(feat)
-							// }
-							// var textStyle = style.getText()
-							
-							// var selStyle = sel.getStyle()
-							// // textStyle.setText("nihao")
-							// selStyle.setText(textStyle)
-							
 							console.log("debug-zsolmap select interation selected", featName, evt)		
 						}
 						
@@ -1958,11 +1982,13 @@
 						// var sel = getFeatureSelection("singleclick")
 						var sel = this.setupFeatureSelection(this.map, "singleclick")
 						// this.urffeatModification = 
-						var modifier = openFeatureModification(this.map, "default", {
-							// features:this.urffeatSelector.getFeatures()
-							// features:featSel.getFeatures()
-							features:sel?sel.getFeatures() : null
-						})
+						var modifier = openFeatureModification(this.map, "default", 
+										{
+											// features:this.urffeatSelector.getFeatures()
+											// features:featSel.getFeatures()
+											features:sel?sel.getFeatures() : null
+										},
+									)
 						// modifier
 	// 					sel.getFeatures().addEventListener("add",
 	// 					// sel.getFeatures().on("add", 
@@ -2133,16 +2159,50 @@
 				
 				// var evtName = evt["opFunc"]
 				var evtName = evt["name"]
+				var evtSender = evt["sender"]
+				var evtParam = evt["params"]
+				// var evtName = evt["target"]
 				
-				if(evtName=="copy"){
+				if(evtSender=="FeatuePolygonVertexEditMenu"){
+					
+					var featModifier = getFeatureModification("default")
+					// var curPosCoord = this.curPix
+					if(evtName=="deleteVertex"){
+						featModifier.removeClosestVertex()
+					}
+					else if(evtName=="createVertex"){
+						featModifier.createClosestVertex()
+					}
+					else if(evtName=="setVertexInsertMode"){
+						featModifier.setInsertMode(evtParam["mode"] || "normal")
+					}
 					
 				}
-				else if(evtName=="paste"){
+				else if(evtSender=="FeatuePolygonEditMenu"){
+					
+					if(evtName=="deleteFeature"){
+						
+					}
+					else if(evtName=="copyFeature"){
+						
+					}
+					// else if(evtName=="dragFeature"){
+						
+					// }	
 					
 				}
-				else if(evtName=="analy"){
+				else if(evtSender=="MapBackdropMenu"){
+					
+					if(evtName=="setLocation"){
+						
+					}
+					else if(evtName=="getImgInfo"){
+						
+					}
 					
 				}
+				
+				
 			},
 			
 			emitEvent(name, data){

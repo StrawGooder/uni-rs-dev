@@ -87,7 +87,7 @@ export function isFeatureModificationEnabled(mode){
 	
 }
 
-export function getFeatureModificationEnabled(mode){
+export function getFeatureModification(mode){
 	mode = mode || "base"
 	return _interaction_memo[mode]
 	
