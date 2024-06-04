@@ -34,6 +34,7 @@
 	@import 'static/iconfont/iconfont.css';
 	
 	// zs custom style css file
-	@import 'components/zs-components/zs-icon/zs-style.css';
+	@import 'components/zs-components/zs-style.css';
+	// @import 'components/zs-components/zs-icon/zs-style.css';
 	
 </style>

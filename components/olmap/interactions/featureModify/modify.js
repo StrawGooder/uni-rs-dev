@@ -304,6 +304,8 @@ class ZsModify extends Modify{
 		)
 		{
 			this.getOverlay().getSource().removeFeature(this.lastTouchFeatures.pop())
+			// this.deletePointOnOverlay()
+			this.lastTouchPixelPos_ = [-1,-1]
 		}
 		
 		return flag
@@ -398,6 +400,8 @@ class ZsModify extends Modify{
 	onFeatureRemoved_(feat){
 		
 		console.log("debug-zsolmap modify items remove", this.rBush_.getAll().length) 
+		
+		this.getOverlay().getSource().clear()
 	}
 	
 	
@@ -481,7 +485,7 @@ class ZsModify extends Modify{
 		return found_result
 	}
 	
-
+	// pos(Array): coordinate
 	prepareInsertedVertex(pos, evt){
 
 		// if (!this.condition_(evt)) {
@@ -501,7 +505,7 @@ class ZsModify extends Modify{
 		// && this.insertVertexCondition_(evt)
 		) 
 		{
-			console.log("debug-zsolmap prepareInsertedVertex ")
+			// console.log("debug-zsolmap prepareInsertedVertex ")
 			
 		  const projection = map.getView().getProjection();
 		  const insertVertices = [];
@@ -796,8 +800,11 @@ class ZsModify extends Modify{
 				return true
 			}
 		)
-		console.log("debug-zsolmap deleted overlay feature ", deletedFeatOnOverlay[0])
-		overlyrSrc.removeFeature(deletedFeatOnOverlay[0])
+		// console.log("debug-zsolmap deleted overlay feature ", deletedFeatOnOverlay[0])
+		
+		deletedFeatOnOverlay.forEach(
+		(x)=>{overlyrSrc.removeFeature(x)})
+		// overlyrSrc.removeFeature(deletedFeatOnOverlay[0])
 	}
 	
 	markPointOnOverlay(point, lyrSrc, hitObj){
@@ -840,6 +847,7 @@ class ZsModify extends Modify{
 		lyrSrc.addFeature(feat_pt)
 			// break
 		return feat_pt
+		
 	}
 	
 	// addFeatureOnOverlay(feat, lyrSrc){
@@ -847,25 +855,34 @@ class ZsModify extends Modify{
 	// }
 	
 	createClosestVertex(pixelPos){
-		pixelPos = pixelPos ||　this.lastTouchPixelPos_
 		
+		
+		pixelPos = pixelPos ||　this.lastTouchPixelPos_
+		const coordPos = this.getMap().getCoordinateFromPixel(pixelPos)
 		if(!this.vertexFeature_){
 			this.handlePointerAtPixel_(pixelPos,null)
+			coordPos = this.vertexFeature_.getGeometry().getCoordinate()
 		}
 		// this.handlePointerAtPixel_(pixelPos,null)
-		return this.prepareInsertedVertex()
+		const storedInsertCond = this.insertVertexCondition_
+		this.insertVertexCondition_ = ()=>{return true}
+		var success = this.prepareInsertedVertex(coordPos)
+		this.insertVertexCondition_ = storedInsertCond
+		return success
 	}
 
 	removeClosestVertex(pixelPos){
 		
 		pixelPos = pixelPos ||　this.lastTouchPixelPos_
-		// this.handle()
-		
-		// this.handlePointerAtPixel_(this.lastTouchPixelPos_,null)
+		const coordPos = this.getMap().getCoordinateFromPixel(pixelPos)
 		if(!this.vertexFeature_){
 			this.handlePointerAtPixel_(pixelPos,null)
+			coordPos = this.vertexFeature_.getGeometry().getCoordinate()
 		}
-		return this.removeVertex_()
+		
+		var success=  this.removeVertex_()
+		this.deletePointOnOverlay(coordPos)
+		return success
 	}
 	
 	removeVertex_() {

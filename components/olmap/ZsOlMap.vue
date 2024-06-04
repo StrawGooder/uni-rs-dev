@@ -35,23 +35,23 @@
 				>
 			
 			</view>
-			<Menu
+		<!-- 	<Menu
 			:items = "rfmenuItems"
 			:visible = "rfmenuVisible"
 			:position = "rfmenuPos"
 			@clickItem="onMenuItemClicked"
 			>
 				
-			</Menu>
+			</Menu> -->
 			<!-- style="position:absolute;top:0px" -->
-			<!-- <MenuView
+			<MenuView
 			:menuName="rfmenuName"
 			:visible = "rfmenuVisible"
 			:position = "rfmenuPos"
 			@clickItem="onMenuItemClicked"
 			>
 				
-			</MenuView> -->
+			</MenuView>
 		</view>
 
 	</view>
@@ -60,7 +60,7 @@
 
 <!-- 逻辑层 -->
 <script>
-	
+	import "./style.css";
 	import {
 		getShpAll
 	} from '../../utils/getData.js';
@@ -79,7 +79,7 @@
 		name:"ZsOlMap",
 		computed: mapState(['hasLogin', 'uerInfo']),
 		components:{
-			// MenuView,
+			MenuView,
 			Menu
 		},
 		data() {
@@ -335,11 +335,15 @@
 					pos[0] - scrollOffset[0],
 					pos[1] - scrollOffset[1]
 				]
+				// this.rfmenuPos = [
+				// 	pos[0] + scrollOffset[0],
+				// 	pos[1] + scrollOffset[1]
+				// ]
 			},
 			
 			onMenuItemClicked(evt){
 				
-				var key = evt["key"]
+				var key = evt["name"]
 				
 				if(key=="copy"){
 					
@@ -351,8 +355,9 @@
 					
 				}
 				
+				// console.log("debug-zsolmap menu item clicked ", key)
 				// uni.$emit("map:operation:trigger", {opFunc:key, ctx:evt, origin:evt})
-				uni.$emit("map:operation:trigger", {name:key, origin:evt, sender:"OperationMenu"})
+				uni.$emit("map:operation:trigger", {name:key, originEvent:evt, sender:this.rfmenuName})
 			},
 			
 			onMousedown(){
@@ -390,7 +395,7 @@
 				_this.$refs[_this.rfMapContElem].$el.scrollTo(scroll_left, scroll_top)
 				
 				// _this.urfviewPosOffset= [scroll_left, scroll_top]
-				console.log("debug-zsolmap scroll ", scroll_left, scroll_top)
+				// console.log("debug-zsolmap scroll ", scroll_left, scroll_top)
 			 }
 			 
 			
@@ -662,6 +667,8 @@
 			// this.urflongPressMonitor.addListener("rejected", ()=>{console.log("debug-zsolmap long time monitor")})
 			
 			this.urfcurPopupMenuName = null
+			this.urfmenuOpen = false
+			this.urftouchRecvLayerId = 0
 		},
 		mounted() {
 			if (typeof window.ol === 'function') {
@@ -733,13 +740,20 @@
 				// if(originEvt){
 					
 				// }
-				var feat =  getFeatureSelection("singleclick").getFeatures().getArray()[0]
-				var subject = "map"
-				var menuName = "MapMenu"
+				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
 				
-				menuName = "MapBackdropEditMenu"
-				if( feat )
+				var touchFeat = this.map.xgetFeaturesAtPixel(pixPos)[0]
+				
+				
+				var featSelector =  getFeatureSelection("singleclick")
+				var selFeat =  featSelector.getFeatures().getArray()[0]
+				var subject = "map"
+				var menuName = "MapBackdropMenu"
+				
+				// menuName = "MapBackdropMenu"
+				if( touchFeat &&　selFeat === touchFeat )
 				{
+					featSelector.stopInput()
 					subject = "feature"
 					menuName = "FeaturePolygonEditMenu"
 					
@@ -748,10 +762,17 @@
 					{
 						menuName = "FeaturePolygonVertexEditMenu"
 					}
+					
+					this.urftouchRecvLayerId = 2
 				}
-				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
+				else
+				{
+					this.urftouchRecvLayerId = 1
+				}
+				// var pixPos = evt.pixel || [evt.pageX, evt.pageY]
 				
 				this.urfcurPopupMenuName = menuName
+				this.urfmenuOpen = true
 				
 				uni.$emit("map:menu:show", 
 				{
@@ -892,7 +913,7 @@
 					this.initGPSLocation()
 				}catch(e){
 					//TODO handle the exception
-					console.log("debug-olmap error", e)
+					console.log("debug-zsolmap init GPS location error", e)
 				}
 
 
@@ -1378,11 +1399,29 @@
 						// this.urfclickdown = true
 						
 						// this.onTouchEnd(evt)
+						
+						// this.urftouchRecvLayerId--
+						// if(this.urftouchRecvLayerId<0){
+							
+						// }
+						this.urftouchRecvLayerId = Math.max(--this.urftouchRecvLayerId, 0)
+						if(this.urftouchRecvLayerId==0){
+							getFeatureSelection("singleclick").resumeInput()
+						}
+						// else if(this.urftouchRecvLayerId==1)
+						uni.$emit("map:menu:hide", evt)
 				
 					}
 				)
 				
-				this.map.on("click", (evt)=>{uni.$emit("map:menu:hide", evt)})
+				this.map.on("click", (evt)=>{
+					
+					
+					// uni.$emit("map:menu:hide", evt)
+					}
+					
+				
+				)
 				
 				// app
 				this.map.getTargetElement().addEventListener(
@@ -2163,7 +2202,7 @@
 				var evtParam = evt["params"]
 				// var evtName = evt["target"]
 				
-				if(evtSender=="FeatuePolygonVertexEditMenu"){
+				if(evtSender=="FeaturePolygonVertexEditMenu"){
 					
 					var featModifier = getFeatureModification("default")
 					// var curPosCoord = this.curPix
@@ -2176,7 +2215,6 @@
 					else if(evtName=="setVertexInsertMode"){
 						featModifier.setInsertMode(evtParam["mode"] || "normal")
 					}
-					
 				}
 				else if(evtSender=="FeatuePolygonEditMenu"){
 					

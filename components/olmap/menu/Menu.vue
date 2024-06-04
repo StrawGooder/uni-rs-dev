@@ -72,10 +72,13 @@ export default {
 				return {
 					"position":"absolute",
 					// "top":"0px",
-					 "top":`${this.position[1]}rpx`,
-					 "left":`${this.position[0]}rpx`,
-					 // "top":`${this.position[1]}px`,
-					 // "left":`${this.position[0]}px`,
+					 // "top":`${this.position[1]}rpx`,
+					 // "left":`${this.position[0]}rpx`,
+					 // using posisition unit 'rpx' cause a bug that display 
+					 // position of the menu dosen't align 
+					 // the mouse clicked position
+					 "top":`${this.position[1]}px`,
+					 "left":`${this.position[0]}px`,
 					
 					 "zindex":1000
 				}
@@ -89,11 +92,12 @@ export default {
 
     methods:{
 
-		onItemClicked(item){
+		onItemClicked(item, evt){
 			
 			// console.log("debug-zsolmap menu ", item)
-			
-			this.$emit("clickItem", item)
+			var newItem =  Object.assign({}, item)
+			newItem["key"] = newItem["name"]
+			this.$emit("clickItem", newItem)
 		}
     },
 
@@ -103,14 +107,14 @@ export default {
         // return retVn
 		
 
-		
+		// console.log("debug-zsolmap-menu items ", this.items)
 		if(this.visible){
 			
 			var liVnList = []
-			var item
+			// var item
 			for(var i in this.items)
 			{
-				item = this.items[i]
+				const item = this.items[i]
 				liVnList.push(
 					h('li', 
 					{
@@ -122,10 +126,10 @@ export default {
 					)
 				)
 			}
-			
+			// console.log("debug-zsolmap-menu items ", this.items, liVnList)
 			var ulVn = h("ul", {class:["zs-ul"]}, liVnList)
 			
-			return h("view", {style:this.computedStyle}, ulVn)
+			return h("view", {style:this.computedStyle}, [ulVn])
 			// return h("view", {style:this.computedStyle}, ["nihao"])
 		}
 		

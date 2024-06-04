@@ -1,0 +1,39 @@
+	
+	.zs-icon{
+		width:1em;
+		height:1em;
+		/* color:pink; */
+	}
+	
+	
+	.zs-hlyt{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		/* justify-content: space-around;
+		 */
+		justify-content: start;
+	}
+	
+	.zs-hlyt-end{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		/* justify-content: space-around;
+		 */
+		justify-content: end;
+	}
+	
+	.zs-hlyt-between{
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-around;
+		
+	
+	}
+	
+	
+	.zs-noscrollbar::-webkit-scrollbar{
+		display: none;
+	}

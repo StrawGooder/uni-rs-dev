@@ -42,7 +42,7 @@ const _feat_styles = {
 						// stroke: _style_components["stroke"],
 						image: new Circle(
 								{
-								  radius: 10,
+								  radius: 3,
 								 //  fill: new Fill({
 									// color: blue,
 								 //  }),

@@ -6,6 +6,10 @@ import {Fill, Stroke, Style} from 'ol/style.js';
 
 
 import {merge as mergeObject} from "lodash";
+import {Map} from "ol"
+import {Overlay} from "ol"
+// new Map().addOverlay()
+
 
 // just for test
 export class ZsFeatureSelection extends Select{
@@ -14,7 +18,18 @@ export class ZsFeatureSelection extends Select{
 		// options["keepLabel"] = options["keepLabel"] || false
 		super(options)
 		
+		this.inputStopped = false
+		// this.removeCondition_ = ()=>{return this.inputStopped}
+		
 		this.keepLabel_ = options["keepLabel"] || false
+	}
+	
+	stopInput(){
+		this.inputStopped = true
+	}
+	
+	resumeInput(){
+		this.inputStopped = false
 	}
 	
 	applySelectedStyle_(feature){
@@ -38,6 +53,10 @@ export class ZsFeatureSelection extends Select{
 	}
 	
 	handleEvent(mapBrowserEvent){
+		// zs-adding
+		if(this.inputStopped){
+			return true
+		}
 		// just copy from Select's handleEvent function
 		if (!this.condition_(mapBrowserEvent)) {
 			// console.log("debug-zsolmap featselect not meet condition", )
