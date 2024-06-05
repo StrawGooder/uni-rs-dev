@@ -8,6 +8,7 @@ import {merge as mergeObject, isFunction} from "lodash"
 import {createStyle} from "./styles"
 import { extentToContour } from "./geo"
 import {Map} from "ol"
+
 const _geom_type_to_cls = {
 	"Polygon":Polygon,
 	"MultiPolygon":MultiPolygon,
@@ -30,8 +31,8 @@ const _geom_type_to_cls = {
 
 // }
 
-// geojson data object
-export function createVectorLayerFromDataObj(data_obj, style){
+// data_obj: is geojson format object
+export function createVectorLayerFromDataObj(data_obj, style, opts){
 	
 	var iter_feat_data 
 	
@@ -81,32 +82,44 @@ export function createVectorLayerFromDataObj(data_obj, style){
 		}
 	)
 	
-	
 	// new_feature_array.forEach((x)=>{source_obj.addFeature(x)})
 	source_obj.addFeatures(new_feature_array)
 	
 
 	style = style || {}
 	
-	var style_obj = createStyle(style["geomStyle"], style["labelStyle"])
-	// style_obj = createStyle(style["geomStyle"], style["labelStyle"])
+	var style_obj= createStyle(style)
 	
-	var vec_opts = {
+	// style_obj = createStyle(style["geomStyle"], style["labelStyle"])
+	opts = opts || {}
+	delete opts["source"]
+	delete opts["style"]
+
+	var vec_opts = Object.assign(
+	{
 		source: source_obj,
 		style: style_obj
-	}
-	
+	}, 
+	opts
+	)
 	
 	return createVectorLayer(vec_opts)
 	
 }
 
 // zs-adding 
-	// it didn't work
+// it didn't work
 // set wrapX for feature selection effect
-// undefined can't be selected,
-// false cant be selected
-export function createVectorLayerFromURL(url, style){
+// Openlayer Builtin feature selection uses forEachFeatureAtPixel
+// to obtained those features colliding with user touch (click) point,
+// but the selected features is wrong,
+// so try to set the VectorSource's wrapX false or true 
+// fixing the issue,
+// but still no work
+
+export function createVectorLayerFromURL(url, style, opts){
+	
+	opts = opts || {}
 	
 	var source_obj = new VectorSource(
 		{
@@ -121,14 +134,21 @@ export function createVectorLayerFromURL(url, style){
 	// source_obj.addFeatures(new_feature_array)
 	
 	style = style || {}
-	var style_obj = createStyle(style["geomStyle"], style["labelStyle"])
+	
+	// zs-adding
+	style = style || {}
+	style_obj= createStyle(style)
 	// style_obj = createStyle(style["geomStyle"], style["labelStyle"])
 	
-	var vec_opts = {
+	delete opts["source"]
+	delete opts["style"]
+
+	var vec_opts = Object.assign(
+	{
 		source: source_obj,
 		style: style_obj
-	}
-	
+	}, 
+	opts)
 	// var lyr = new VectorLayer(vec_opts)
 	// lyr.addFeatures(new_feature_array)
 	
@@ -181,6 +201,19 @@ export function createVectorLayer(opts){
 	return lyr
 }
 
+
+export function createVectorByDataSource(dataSrc, style, opts){
+	
+	opts = opts || {}
+	if(dataSrc instanceof String)
+	{
+		return createVectorLayerFromURL(dataSrc, style, opts)
+	}
+	else if(typeof dataSrc == "object" && opts["dataFormat"]=="geojson")
+	{
+		return createVectorLayerFromDataObj(dataSrc, style, opts)
+	}
+}
 
 export function addCoordsToLayer(coords, layer, geom_type, props){
 	

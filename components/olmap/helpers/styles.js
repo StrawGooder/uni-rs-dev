@@ -116,23 +116,30 @@ function createTextStyleObject(feature, resolution, opts){
 	  })
 }
 
-
-function createStyle(style, text_style){
+// styleLike: support 
+// 1. ol's Style StyleFunction,Style Array
+// 2 custom style object, format is {"geomStyle":"", "labelStyle":"", "textStyle":""})
+function createStyle(styleLike){
+	
+	// console.log("debug-ollayer create style", style, text_style)
+	// ol's style just return
+	if(styleLike instanceof Style || typeof styleLike == 'function'){
+		return styleLike
+	}
 	
 	
 	var style_obj = null
 	var text_style_obj = null
 	
-
 	var style_final = {
 		"stroke":{
 			"color":"black",
 			"width":"1px"
 		}
 	}
-	// console.log("debug-ollayer create style", style, text_style)
-
 	
+	var style = styleLike["geomStyle"]
+	var text_style = style["labelStyle"] || style["textStyle"]
 	if(style!=null || text_style!=null)
 	{
 		// var stroke_opts = {
@@ -173,7 +180,10 @@ function createStyle(style, text_style){
 		
 		
 	}
-	
+	else{
+		// ol flatten style object format
+		return style
+	}
 	// console.log("debug-ollayer create style", style_obj)
 	
 	return style_obj

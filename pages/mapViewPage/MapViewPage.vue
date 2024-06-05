@@ -363,6 +363,7 @@
 						// 		}
 						// 	}
 						// )
+						_this.$refs["map"].setDrawLayer("city")	
 						
 					}
 				
@@ -403,6 +404,7 @@
 						_this.rfmapVm.addLayer(result, "county", "default")
 					}	
 				)
+				
 				
 			}
 			

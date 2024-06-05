@@ -31,7 +31,7 @@ function initConfig(){
 
 initConfig()
 
-const _type_to_layer_style = {
+const _layer_name_to_render_style = {
 	"nation":0,
 	"province":1,
 	"city":{
@@ -98,7 +98,8 @@ function createLayerByAdminLevel(level, props){
 	
 	var final_url = src_root_url + sub_url
 	
-	var lyr_style_config = _type_to_layer_style[_level_to_name[level]]
+	var lyr_name = _level_to_name[level]
+	var lyr_style_config = _layer_name_to_render_style[lyr_name]
 	
 	var prom = uni.request({
 		url:final_url,
@@ -116,7 +117,8 @@ function createLayerByAdminLevel(level, props){
 					}
 			// console.log("debug-olmap-location ", style_cfg)
 			lyr = createVectorLayerFromDataObj(data, 
-					style_cfg
+					style_cfg,
+					props
 					)
 			
 			if(props)

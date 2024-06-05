@@ -33,7 +33,7 @@ function openDrawInteraction(map, name, layer, opts){
 	
 	if (!drawer)
 	{
-		
+		// the layer stores the drawed finish polygon
 		var storedLyr = null
 		if(!layer)
 		{
@@ -58,7 +58,8 @@ function openDrawInteraction(map, name, layer, opts){
 								)
 							}
 						);
-		}else
+		}
+		else
 		{
 			storedLyr = layer
 		}
@@ -68,21 +69,27 @@ function openDrawInteraction(map, name, layer, opts){
 		}
 		
 		// temp process
-		var drawTheme = opts["drawTheme"] || null
+		var drawStyleTheme = opts["drawStyleTheme"] || null
 		drawer = createDrawer(
-					drawTheme==null||drawTheme=="base"?opts["type"]:"default",
+					drawStyleTheme==null||drawStyleTheme=="base"?opts["type"]:"default",
 					{
 						source:storedLyr.getSource(),
 						style:opts["drawStyle"],
 						// custom prop
-						styleTheme:drawTheme,
+						styleTheme:drawStyleTheme,
 						type:opts["vectorType"],
 	
 					}
 				)		
 					
 		_interaction_memo[name] = drawer
-		map.addLayer(storedLyr)
+		try{
+			map.addLayer(storedLyr)
+		}catch(e){
+			//TODO handle the exception
+			console.log("error-zsolmap ", e)
+		}
+		
 		map.addInteraction(drawer)
 	}
 

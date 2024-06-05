@@ -625,7 +625,7 @@
 				
 				rfscreenSize:null,
 				rfusedMode:this.usedMode,
-				rfdrawTheme:this.drawTheme,
+				rfdrawStyleTheme:this.drawTheme,
 				rffeatSelOn:this.featureSelectionOn,
 				
 				// ...mapState(
@@ -669,6 +669,16 @@
 			this.urfcurPopupMenuName = null
 			this.urfmenuOpen = false
 			this.urftouchRecvLayerId = 0
+			
+			this.urfdrawStoreLyr = null
+			
+			this.urfdrawOptsDefault = {
+				"drawStyleTheme":"base",
+				"geomType":"polygon",
+				"classType":"base",
+				"type":"base"
+			}
+			this.urfdrawOpts = Object.assign({}, this.urfdrawOptsDefault)
 		},
 		mounted() {
 			if (typeof window.ol === 'function') {
@@ -1405,8 +1415,13 @@
 							
 						// }
 						this.urftouchRecvLayerId = Math.max(--this.urftouchRecvLayerId, 0)
-						if(this.urftouchRecvLayerId==0){
-							getFeatureSelection("singleclick").resumeInput()
+						if(this.urftouchRecvLayerId==0)
+						{
+							var featSelector = getFeatureSelection("singleclick")
+							if(featSelector){
+								featSelector.resumeInput()
+							}
+							
 						}
 						// else if(this.urftouchRecvLayerId==1)
 						uni.$emit("map:menu:hide", evt)
@@ -1815,7 +1830,7 @@
 				// only interface createVectorLayer function was used to
 				// create a layer, leading to the 'baseStyleEx' variable 
 				// initialized
-				var lyrBaseStyle = lyr.get("baseStyleEx") || {}
+				var lyrBaseStyle = lyr.get("xbaseStyle") || {}
 				var lyrItemExt = {
 					"name":name, 
 					"scope":scope, 
@@ -1828,7 +1843,8 @@
 					"visible":true,
 					}
 				
-				lyr.set("seqidEx", lyrSeqid)
+				lyr.set("xseqid", lyrSeqid)
+				lyr.set("xname", name)
 				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
 				
 				// var exitedLyrsInGroup = []
@@ -1842,8 +1858,8 @@
 				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
 				// targetLyrGroup.addLayer(lyr)
 				this.map.addLayer(lyr)
-				this.map.render()
 				// this.map.render()
+				
 				
 				// this.$mapStore.commit(
 				
@@ -1995,10 +2011,12 @@
 				opts = opts || {}
 				this.setInteractionType(opts["type"])
 			},
+			
 			setInteractionType(val){
 				
 				var featSel;
-				if(val=="select"){
+				var interactionType = val
+				if(interactionType=="select"){
 			
 					// this.urffeatSelector = this.setupFeatureSelection()
 					featSel = this.setupFeatureSelection()
@@ -2007,7 +2025,7 @@
 				if(this.rfusedMode=="edit")
 				{
 				
-					if(val=="select")
+					if(interactionType=="select")
 					{
 						
 						closeDrawInteraction(this.map, "default")
@@ -2016,7 +2034,7 @@
 						// 	features:featSel.getFeatures()
 						// })
 					}
-					else if(val=="modify"){
+					else if(interactionType=="modify"){
 						
 						// var sel = getFeatureSelection("singleclick")
 						var sel = this.setupFeatureSelection(this.map, "singleclick")
@@ -2028,54 +2046,10 @@
 											features:sel?sel.getFeatures() : null
 										},
 									)
-						// modifier
-	// 					sel.getFeatures().addEventListener("add",
-	// 					// sel.getFeatures().on("add", 
-	// 						(feat)=>{
-								
-	// 							feat = feat.element
-	// 							if(feat)
-	// 							{
-	// 								// var feat_pt = new Point(feat.coordinates()[0])
-	// 								// console.log("debug-zsolmap add points",feat, sel.getFeatures().item(0))
-	// 								var pts = feat.getGeometry().getCoordinates()[0][0]
-	// 								var pt_num = pts.length
-	// 								var pt_geom ;
-	// 								var feat_pt;
-	// 								var step = 1
-	// 								var mdf_overlay_src = modifier.getOverlay().getSource()
-	// 								mdf_overlay_src.clear()
-	// 								for(var i =0;i<pt_num;i=i+step)
-	// 								{
-	// 									pt_geom = new Point(pts[i])
-	// 									// console.log("debug-zsolmap add points", pts[i])
-	// 									feat_pt = new Feature()
-	// 									feat_pt.setGeometry(pt_geom)
-	// 									feat_pt.setProperties({"modify_point_hit_obj":"nothing"})
-	// 									mdf_overlay_src.addFeature(feat_pt)
-	// 								}
 	
-	// 							}
-								
-	// 						}
-	// 					)
-						// var feat = sel.getFeatures().item(0)
-						// if(feat)
-						// {
-						// 	// var feat_pt = new Point(feat.coordinates()[0])
-						// 	var pts = feat.coordinates()[0]
-						// 	var pt_num = pts.length
-						// 	for(var i =0;i<pt_num;i=i+5)
-						// 	{
-						// 		const feat_pt = new Point(feat.coordinates()[i])
-						// 		modifier.addFeature_(feat_pt)
-						// 	}
-						// 	console.log("debug-zsolmap add points",)
-						// }
-						
 						
 					}
-					else if(val=="draw")
+					else if(interactionType=="draw")
 					{
 						// if(this.urffeatSelector){
 						// 	this.urffeatSelector.getFeatures().pop()
@@ -2084,17 +2058,20 @@
 						// 	featSel.getFeatures().pop()
 						// }
 						
-						var drawIntr = openDrawInteraction(this.map, "default", null,
-										{
-											type:"base",
-											drawTheme:this.rfdrawTheme
-										},
+						var drawIntr = openDrawInteraction(this.map, "default", 
+										this.urfdrawStoreLyr,
+										// {
+										// 	type:"base",
+										// 	drawStyleTheme:this.rfdrawStyleTheme
+										// },
+										this.urfdrawOpts,
 										)
 						
 						drawIntr.on("drawend", 
 						(evt)=>{
 							var feat = evt.feature
 							var geom = feat.getGeometry()
+							this.$emit("finishDrawingGeometry")}
 							// var geom_cp = geom.clone()
 							// geom_cp.transform(
 							//  // "EPSG:4236", 
@@ -2113,16 +2090,17 @@
 							// geom.getCoordinates()[0][0],
 							// // geom_cp.getCoordinates(),
 							// )
-							this.$emit("finishDrawingGeometry")}
+							
 						)
 						
 						closeFeatureSelection(this.map, "singleclick")
-						closeFeatureModification(this.map)
+						closeFeatureModification(this.map, "default")
 					}
-					else if(val=="$back"){
+					else if(interactionType=="$back"){
 						
 						var stackSize = this.urfinteractionStack.length
-						if(stackSize<2){
+						if(stackSize<2)
+						{
 							this.urfinteractionStack = []
 							this.setInteractionType("select")
 						}
@@ -2133,7 +2111,7 @@
 						}
 					}
 					
-					if(val && val[0]!="$"){
+					if(interactionType && interactionType[0]!="$"){
 						this.urfinteractionStack.push(val)
 					}
 				
@@ -2143,7 +2121,7 @@
 					closeFeatureModification(this.map)
 					closeDrawInteraction(this.map)
 					// closeFeatureSelection(this.map, "singleclick")
-					if(val!="select"){
+					if(interactionType!="select"){
 						closeFeatureSelection(this.map, "singleclick")
 					}
 				}
@@ -2152,15 +2130,17 @@
 				// 	this.urfinteractionStack.push(val)
 				// }
 				
-				console.log("debug-zsolmap interaction stack ", this.urfinteractionStack,
-				`top: ${this.urfinteractionStack[-1]}`,
-				)
+				// console.log("debug-zsolmap interaction stack ", this.urfinteractionStack,
+				// `top: ${this.urfinteractionStack[-1]}`,
+				// )
+				
 				// this.urfinteractionStack.push(val)
 			},
 			
 			setDrawTheme(val){
 				
-				this.rfdrawTheme = val
+				// this.rfdrawStyleTheme = val
+				this.urfdrawOpts["drawStyleTheme"] = val
 				if(this.rfUseMode=="edit"){
 					this.setUseMode("view")
 					this.setUseMode("edit")
@@ -2192,6 +2172,33 @@
 				// {
 				// 	this.setUsedMode(pVal)
 				// }
+			},
+			
+			setDrawLayer(lyrName){
+				
+				this.urfdrawStoreLyr = null
+				const drawOpts = Object.assign( {}, this.urfdrawOptsDefault)
+				// this.urfdrawStyleTheme = "base"
+				
+				// this.urfdrawGeomType = "Polygon"
+				var lyrs = this.map.getAllLayers()
+				var foundLyr = lyrs.filter((lyr)=>{return lyr.get("xname")==lyrName })[0] || null
+				 
+				 if(foundLyr)
+				 {
+						const geomType = foundLyr.get("geomType") || "Polygon"
+						 if(geomType=="point"){
+							 drawOpts["vectorType"] = "point"
+							 drawOpts["type"] = "default"
+						 }
+						this.urfdrawOpts = drawOpts
+						this.urfdrawStoreLyr = foundLyr
+				 }
+				 else{
+					 
+					 console.log(`debug-zsolmap attemp to set draw layer on '${lyrNamr}', but not found`)
+				 }
+			
 			},
 			
 			onOperationTriggered(evt){
@@ -2237,7 +2244,6 @@
 					else if(evtName=="getImgInfo"){
 						
 					}
-					
 				}
 				
 				

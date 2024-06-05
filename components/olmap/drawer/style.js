@@ -30,6 +30,8 @@ const GeometryType = {
 const areaScale = 1
 const lenScale = 100
 
+
+
 function makeBasePolygonDrawStyle(){
 	
 	const borderWidth = 2
@@ -88,7 +90,6 @@ function makeBasePolygonDrawStyle(){
 		return float_style
 	}
 }
-
 
 
 function makeMetricsDrawStyle(){
@@ -393,12 +394,65 @@ function makeMetricsDrawStyle(){
 }
 
 
-export function createDrawStyle(type){
-	if(type=="base"){
-		return makeBasePolygonDrawStyle()
+function makePointDrawStyle(){
+	
+	const style = new Style({
+	 //  image: new CircleStyle({
+		// radius: 3,
+		// stroke: new Stroke({
+		//   color: 'red',
+		// }),
+		// fill: new Fill({
+		//   color: 'rgba(255, 255, 255, 0.2)',
+		// }),
+	 //  }),
+	  image: new Icon(
+		  {
+			src: "/static/crosshair.svg", 
+			color:"red", 
+			// size:"36",
+			width:icon_width,
+			height:icon_width,
+		  } 
+	  )
+	});
+	
+	return (feat)=>style
+	
+}
+const themeToStyle_ = {
+	"base":makeBasePolygonDrawStyle,
+	"metric":makeMetricsDrawStyle,
+	"point":makePointDrawStyle
+}
+
+export function createStyleByTheme(name){
+	// if(type=="base"){
+	// 	return makeBasePolygonDrawStyle()
+	// }
+	// else if(type=="metric"){
+	// 	return makeMetricsDrawStyle()
+	// }
+	// return makeBasePolygonDrawStyle()
+	
+	var styleObj = themeToStyle_[name] || makeBasePolygonDrawStyle
+	if(typeof styleObj == 'function'){
+		styleObj = styleObj()
 	}
-	else if(type=="metric"){
-		return makeMetricsDrawStyle()
+	return styleObj
+}
+
+export function registerDrawStyleTheme(name, style){
+	if(!themeToStyle_[name]){
+		themeToStyle_[name] = style
+		return true
 	}
-	return makeBasePolygonDrawStyle()
+	else{
+		console.log(`warning-zsolmap draw style theme '{name}' has existed`)
+		return false
+	}
+}
+
+export function unregisterDrawStyleTheme(name){
+	delete themeToStyle_[name]
 }

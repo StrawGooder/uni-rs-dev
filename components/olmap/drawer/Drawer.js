@@ -1,10 +1,12 @@
 import Draw from "ol/interaction/Draw.js"
 import Feature from "ol/Feature"
 import {Point} from "ol/geom"
-import Map from "ol/Map"
-import {createDrawStyle} from "./style.js"
+
+import {createStyleByTheme as createStyleByTheme} from "./style.js"
+// import Map from "ol/Map"
 // var mp = new Map()
 // mp.render()
+
 class Drawer extends Draw {
 	
 	constructor(options) {
@@ -112,7 +114,7 @@ export function createDrawer(name, opts){
 	if(styleTheme)
 	{
 		var oldStyle =opts["style"]
-		opts["style"] = createDrawStyle(styleTheme) || oldStyle
+		opts["style"] = createStyleByTheme(styleTheme) || oldStyle
 		delete opts["styleTheme"]
 	}
 	// opts["style"] = createDrawStyle("base")

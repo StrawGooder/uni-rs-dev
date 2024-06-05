@@ -117,10 +117,12 @@
 					var enabled = evData["enabled"]
 					uni.$emit("map:setProps", 
 					// {"interactionType":enabled==true?btnKey:"$back", "pluginName":btnKey},
-					{"interaction":{
+					{
+						"interaction":{
 						"type":enabled==true?btnKey:"$back",
 						"pluginName":btnKey
-					}}
+						},
+					}
 					)
 				}
 				
@@ -131,7 +133,7 @@
 			changeEditStyle(event){
 				
 				var val = event["newVal"]
-				uni.$emit("map::setProps", {"drawTheme":val})
+				uni.$emit("map:setProps", {"drawTheme":val})
 				// console.log("debug-spaanal ", val)
 			}
 		},
