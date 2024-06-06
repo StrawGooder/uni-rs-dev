@@ -80,7 +80,7 @@ const _request_configs =
 
 
 
-function createLayer(name){
+export function createLayer(name){
 	
 	var level = _name_to_level[name]
 	if(level==null)
@@ -137,60 +137,3 @@ function createLayerByAdminLevel(level, props){
 }
 
 
-function importLayer(name, map){
-	
-	var prom = createLayer(name)
-	
-	if(map)
-	{
-		
-	}
-	
-// temp adding
-	// store.dispatch("findLayers",
-	// // {"name":"city"},
-	// {"field":"name","value":"city"}
-	// )
-	// .then(
-	// 	(lyrs)=>{
-	// 		console.log(`debug-mapviewpage `, lyrs)
-	// 		// return lyrs[0]
-	// 		if(lyrs[0] && !lyrs[0]["visible"])
-	// 		{
-	// 			lyrObj.setVisible(false)
-	// 		}
-	// 	}
-	// )
-	
-	return prom.then(
-		
-		(lyrObj)=>{
-			
-			// lyr.get("xname")
-			return store.dispatch("findLayers",
-			// {"name":"city"},
-			{"field":"name","value":name}
-			)
-			.then(
-				(lyrModels)=>{
-					
-					// console.log(`debug-mapviewpage `, lyrModels)
-					// return lyrs[0]
-					if(lyrModels[0] && !lyrModels[0]["visible"])
-					{
-						lyrObj.setVisible(false)
-					}
-					return  lyrObj
-				}
-			)
-			
-		}
-	)
-	
-	// return prom
-}
-
-
-export {
-	importLayer
-}

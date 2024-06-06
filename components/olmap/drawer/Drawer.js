@@ -109,12 +109,14 @@ export function createDrawer(name, opts){
 		throw new Error(`attemp to create '${name}' Drawer, not found it `)
 	}
 	
+	console.log("debug-zsolmap drawer", opts)
 	// zs-adding 20240509
 	var styleTheme = opts["styleTheme"]
 	if(styleTheme)
 	{
-		var oldStyle =opts["style"]
-		opts["style"] = createStyleByTheme(styleTheme) || oldStyle
+		// more prior style theme
+		var passedStyle = opts["style"]
+		opts["style"] = createStyleByTheme(styleTheme) || passedStyle
 		delete opts["styleTheme"]
 	}
 	// opts["style"] = createDrawStyle("base")

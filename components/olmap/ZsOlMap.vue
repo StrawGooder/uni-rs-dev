@@ -1857,7 +1857,14 @@
 				
 				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
 				// targetLyrGroup.addLayer(lyr)
-				this.map.addLayer(lyr)
+				
+				try{
+					this.map.addLayer(lyr)
+				}catch(e){
+					//TODO handle the exception
+					console.log("error-zsolmap attemp to add layer, but happen an error ",e)
+				}
+				// this.map.addLayer(lyr)
 				// this.map.render()
 				
 				
@@ -2186,17 +2193,20 @@
 				 
 				 if(foundLyr)
 				 {
-						const geomType = foundLyr.get("geomType") || "Polygon"
+						var geomType = foundLyr.get("geomType") || "Polygon"
+						geomType = geomType.toLowerCase()
+						
 						 if(geomType=="point"){
-							 drawOpts["vectorType"] = "point"
+							 drawOpts["vectorType"] = "Point"
 							 drawOpts["type"] = "default"
+							 drawOpts["drawStyleTheme"] = null
 						 }
 						this.urfdrawOpts = drawOpts
 						this.urfdrawStoreLyr = foundLyr
 				 }
 				 else{
 					 
-					 console.log(`debug-zsolmap attemp to set draw layer on '${lyrNamr}', but not found`)
+					 console.log(`debug-zsolmap attemp to set draw layer on '${lyrName}', but not found`)
 				 }
 			
 			},

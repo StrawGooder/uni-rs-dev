@@ -1,5 +1,5 @@
 // import { createVectorLayerFromURL } from "../helpers/layers";
-import {Style, IconImage} from "ol/style"
+import {Style, Icon, IconImage, Circle, Stroke} from "ol/style"
 // import {merge as mergeObj} from "lodash"
 
 
@@ -7,12 +7,21 @@ function createStyle(){
 	
 	var style = new Style({
 		
-		image: new IconImage({
-			src:"/static/logo.jpeg"
-		})
+		image: new Icon({
+				src:"/static/logo.jpeg",
+				width:16,
+				height:16
+			}
+		),
+		// image: new Circle(
+		// 	{
+		// 		radius:5,
+		// 		stroke: new Stroke({color:"red"})
+		// 	}
+		// )
 	})
 	
-	return (feat)=>{
+	return function(feat){
 		
 		return style
 	}

@@ -103,7 +103,10 @@
 	// import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
 	// import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
 	
-	import { importAdminLayer } from "../../components/olmap/locations";
+	// import { importAdminLayer } from "../../components/olmap/locations";
+	
+	import { importLayer } from "../../components/olmap/layers";
+	
 	
 	export default {
 		components: {
@@ -310,9 +313,9 @@
 				this.rfmapVm = this.$refs["map"]
 				// console.log("debug-mapviepage ", this.$refs, mapVm)
 				
-				var import_prom = importAdminLayer("city")
+				// var import_prom = importAdminLayer("city")
 				
-				var $store = this.$store
+				// var $store = this.$store
 				
 				// $store.dispatch("findLayer", {"name":"city"})
 				// .then(
@@ -338,8 +341,9 @@
 				// 	}
 				// )
 				
+				let import_prom;
 				
-				importAdminLayer("city")
+				importLayer({"name":"city", "layerRepresentType":"location"})
 				.then(
 					(lyrObj)=>{
 						
@@ -363,7 +367,7 @@
 						// 		}
 						// 	}
 						// )
-						_this.$refs["map"].setDrawLayer("city")	
+						// _this.$refs["map"].setDrawLayer("city")	
 						
 					}
 				
@@ -392,9 +396,8 @@
 				
 				// _this.$mapStore.commit("addLayer", lyr_item)
 				
-				import_prom = importAdminLayer("county")
-				
-				import_prom.then(
+				importLayer({"name":"county", "layerRepresentType":"location"})
+				.then(
 					(result)=>{
 						// _this.map.addLayer(result)
 						// _this.addLayer(result, "county", "default")
@@ -402,6 +405,18 @@
 						// _this.addLayer(result, "county", "default")
 						
 						_this.rfmapVm.addLayer(result, "county", "default")
+					}	
+				)
+				
+				
+				importLayer({name:"outdoorCamera"})
+				.then(
+					(result)=>{
+						
+						console.log("debug-mapviewpage ", result)
+						
+						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
+						_this.rfmapVm.setDrawLayer("outdoorCamera")
 					}	
 				)
 				

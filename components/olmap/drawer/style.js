@@ -30,7 +30,22 @@ const GeometryType = {
 const areaScale = 1
 const lenScale = 100
 
+const icon_width = 16
 
+function createCrossHairImageStyle( icon_size){
+	
+	icon_size = icon_size || [icon_width, icon_width]
+	
+	return new Icon(
+			{
+				src: "/static/crosshair.svg", 
+				color:"red", 
+				// size:"36",
+				width:icon_size[0],
+				height:icon_size[1],
+			} 
+		)
+}
 
 function makeBasePolygonDrawStyle(){
 	
@@ -48,7 +63,7 @@ function makeBasePolygonDrawStyle(){
 			}
 	)
 	
-	var icon_width = 16
+	// var icon_width = 16
 	var float_style = new Style(
 			{
 				// fill: new Fill({color:"#ffffffa"}),
@@ -59,15 +74,7 @@ function makeBasePolygonDrawStyle(){
 				// 				stroke:new Stroke({color:"red"})
 				// 			}
 				// ),
-				image: new Icon( 
-				{
-					src: "/static/crosshair.svg", 
-					color:"red", 
-					// size:"36",
-					width:icon_width,
-					height:icon_width,
-				} 
-				)
+				image: createCrossHairImageStyle()
 			}
 	)
 	
@@ -397,27 +404,20 @@ function makeMetricsDrawStyle(){
 function makePointDrawStyle(){
 	
 	const style = new Style({
-	 //  image: new CircleStyle({
-		// radius: 3,
-		// stroke: new Stroke({
-		//   color: 'red',
-		// }),
-		// fill: new Fill({
-		//   color: 'rgba(255, 255, 255, 0.2)',
-		// }),
-	 //  }),
-	  image: new Icon(
-		  {
-			src: "/static/crosshair.svg", 
-			color:"red", 
-			// size:"36",
-			width:icon_width,
-			height:icon_width,
-		  } 
-	  )
-	});
+		 //  image: new CircleStyle({
+			// radius: 3,
+			// stroke: new Stroke({
+			//   color: 'red',
+			// }),
+			// fill: new Fill({
+			//   color: 'rgba(255, 255, 255, 0.2)',
+			// }),
+		 //  }),
+		  image: createCrossHairImageStyle()
+		}
+	);
 	
-	return (feat)=>style
+	return (feat)=>{ return style }
 	
 }
 const themeToStyle_ = {

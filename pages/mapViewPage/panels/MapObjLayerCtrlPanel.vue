@@ -6,14 +6,14 @@
 	>
 		
 		<uni-section
-		:type="rfSectType"
+		:type="rfsectType"
 		title="vector info"
 		>
-			<view  :class="rfSecContainerClass">
-				<!-- rfVecItems -->
+			<view  :class="rfsecContainerClass">
+				<!-- rfvecItems -->
 				<!-- computedVecItems -->
 				<MapObjListItem 
-				v-for="it in rfVecItems"
+				v-for="it in rfvecItems"
 				:key="it.key"
 				v-bind="it"
 				@clickButton="onButtonClicked"
@@ -22,11 +22,11 @@
 		
 		</uni-section>
 		<uni-section
-		:type="rfSectType"
+		:type="rfsectType"
 		title="raster info"
 		>
 		
-		<!-- 	<view :class="rfSecContainerClass">
+		<!-- 	<view :class="rfsecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
@@ -41,10 +41,10 @@
 	<view class = "map-obj-list-item">
 	
 		<uni-section
-		:type="rfSectType"
+		:type="rfsectType"
 		:title="rfVecSectTitle"
 		>
-			<view  :class="rfSecContainerClass">
+			<view  :class="rfsecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
@@ -54,11 +54,11 @@
 
 		</uni-section>
 		<uni-section
-		:type="rfSectType"
+		:type="rfsectType"
 		:title="rfImgSectTitle"
 		>
 		
-			<view :class="rfSecContainerClass">
+			<view :class="rfsecContainerClass">
 				<MapObjListItem 
 				v-for="it in rfItems"
 				:key="it.key"
@@ -157,22 +157,22 @@ export default {
 	
 	data(){
 		return {
-			rfSectType:"line",
+			rfsectType:"line",
 			// rfVecSectTitle:"vector info",
 			// rfImgSectTitle:"raster info",
 			
-			rfContainerClass:[],
-			rfSecContainerClass:["uni-pl-5"],
+			rfcontainerClass:[],
+			rfsecContainerClass:["uni-pl-5"],
 			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
-			rfItems:[
-				{text:"forest", iconColor:"red"},
-				{text:"city", iconColor:"green"},
-				{text:"factory", iconColor:"orange"},
-				{text:"3line", iconColor:"blue"},
-				{text:"farm-land", iconColor:"yellow"}
-			],
+			// rfItems:[
+			// 	{text:"forest", iconColor:"red"},
+			// 	{text:"city", iconColor:"green"},
+			// 	{text:"factory", iconColor:"orange"},
+			// 	{text:"3line", iconColor:"blue"},
+			// 	{text:"farm-land", iconColor:"yellow"}
+			// ],
 			
-			rfVecItems:[
+			rfvecItems:[
 				// {text:"forest", iconColor:"red"},
 				// {text:"city", iconColor:"green"},
 				// {text:"factory", iconColor:"orange"},
@@ -181,9 +181,9 @@ export default {
 				
 			],
 			
-			// rfVecItems:{},
+			// rfvecItems:{},
 			
-			rfImgItems:[],
+			rfimgItems:[],
 			
 			rfUpd:false,
 			// rfVecToItem:{},
@@ -221,10 +221,10 @@ export default {
 	
 	watch:{
 		
-		// rfVecItems:{
+		// rfvecItems:{
 		// 	handler:function(newVal, oldVal){
 				
-		// 		console.log("debug-MapObjLayerCtrlPanel watching rfVecItems", newVal)
+		// 		console.log("debug-MapObjLayerCtrlPanel watching rfvecItems", newVal)
 		// 	},
 		// 	deep:true
 		// },
@@ -251,10 +251,10 @@ export default {
 			
 		// }
 		
-		// this.rfVecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
-		// console.log(`debug-mapobj this.rfVecItems`,  this.$store.getters)
-		this.rfVecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
-		console.log(`debug-mapobj this.rfVecItems`,this.rfVecItems)
+		// this.rfvecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
+		// console.log(`debug-mapobj this.rfvecItems`,  this.$store.getters)
+		this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
+		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`,this.rfvecItems)
 		// this.urfItemDataTransMapTable = 
 	},
 	
@@ -274,20 +274,20 @@ export default {
 				
 				// if(this.urfIdToVecItem[id])
 				this.urfIdToVecItem[id] = new_obj
-				// this.rfVecItems.push(new_obj)
-				// this.rfVecItems = [{"iconColor":"red", "text":"aa"}]
-				// this.rfVecItems = [...this.rfVecItems]
-				// this.rfVecItems.push(new_obj)
-				this.rfVecItems[id] = new_obj
+				// this.rfvecItems.push(new_obj)
+				// this.rfvecItems = [{"iconColor":"red", "text":"aa"}]
+				// this.rfvecItems = [...this.rfvecItems]
+				// this.rfvecItems.push(new_obj)
+				this.rfvecItems[id] = new_obj
 				
 				this.$data.rfUpd = !this.rfUpd
 				
-				console.log("debug-MapObjLayerCtrlPanel ", this.rfVecItems, this.rfUpd)
+				console.log("debug-MapObjLayerCtrlPanel ", this.rfvecItems, this.rfUpd)
 			}
 			else if(dataSrcType=="raster"){
 				
 				this.urfIdToImgItem[id] = new_obj
-				this.rfImgItems.push(new_obj)
+				this.rfimgItems.push(new_obj)
 			}
 			
 			// console.log("debug-MapObjLayerCtrlPanel ", obj)

@@ -121,7 +121,7 @@ function createTextStyleObject(feature, resolution, opts){
 // 2 custom style object, format is {"geomStyle":"", "labelStyle":"", "textStyle":""})
 function createStyle(styleLike){
 	
-	// console.log("debug-ollayer create style", style, text_style)
+	// console.log("debug-olzsmap create style", styleLike)
 	// ol's style just return
 	if(styleLike instanceof Style || typeof styleLike == 'function'){
 		return styleLike

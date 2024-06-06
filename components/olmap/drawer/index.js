@@ -16,21 +16,13 @@ const _interaction_memo = {
 // 	type: drawer type
 // 	drawStyle: setup the overlap layer style (response the user drawing action)
 //	vectorType: drawed geometry type
-function openDrawInteraction(map, name, layer, opts){
+export function openDrawInteraction(map, name, layer, opts){
 
 	name = name || "default"
 	opts = mergeObject({"type":"base", "vectorType":"Polygon"}, opts || {} )
 	
-	
-
-	// if(drawer!=null)return 
-	// drawer = new Draw(
-	
-	// var draw_init_options = {}
 	var drawer = _interaction_memo[name] || null
-	// var drawType = opt
 
-	
 	if (!drawer)
 	{
 		// the layer stores the drawed finish polygon
@@ -53,11 +45,14 @@ function openDrawInteraction(map, name, layer, opts){
 														radius:5,
 														stroke:new Stroke({color:"yellow"})
 													}
-										),
+												)
+										,
 									}
 								)
 							}
 						);
+						
+			storedLyr.set("xtemporary")
 		}
 		else
 		{
@@ -70,14 +65,30 @@ function openDrawInteraction(map, name, layer, opts){
 		
 		// temp process
 		var drawStyleTheme = opts["drawStyleTheme"] || null
+		
+		var drawVecType = opts["vectorType"]
+		var classType = "default";
+		
+		if(drawVecType=="Point"){
+			classType = "default"
+			drawStyleTheme=　"point"
+			opts["drawStyle"] = null
+		}
+		else if(drawVecType=="Polygon" || drawVecType=="MultiPolygon")
+		{
+			if(drawStyleTheme=="base"){
+				classType = opts["type"] ||　classType
+			}
+		}
+		
 		drawer = createDrawer(
-					drawStyleTheme==null||drawStyleTheme=="base"?opts["type"]:"default",
+					classType,
 					{
 						source:storedLyr.getSource(),
 						style:opts["drawStyle"],
 						// custom prop
 						styleTheme:drawStyleTheme,
-						type:opts["vectorType"],
+						type:drawVecType,
 	
 					}
 				)		
@@ -87,7 +98,7 @@ function openDrawInteraction(map, name, layer, opts){
 			map.addLayer(storedLyr)
 		}catch(e){
 			//TODO handle the exception
-			console.log("error-zsolmap ", e)
+			console.log("error-zsolmap add layer to drawer", e)
 		}
 		
 		map.addInteraction(drawer)
@@ -106,10 +117,11 @@ function openDrawInteraction(map, name, layer, opts){
 	return drawer
 }
 
-function closeDrawInteraction(map, name = "default") {
+export function closeDrawInteraction(map, name = "default") {
 	
-	var drawer = hasDrawInteraction(name)
-	if(drawer){
+	var drawer = getDrawInteraction(name)
+	if(drawer)
+	{
 		map.removeInteraction(drawer)	
 		
 		var src = drawer.source_
@@ -118,8 +130,12 @@ function closeDrawInteraction(map, name = "default") {
 		var lyrTotal = lyrs.length
 		for(var i = lyrTotal-1; i>-1;i--)
 		{
-			if(lyrs[i].getSource()==src){
-				map.removeLayer(lyrs[i])
+			const iterLyr = lyrs[i]
+			if(iterLyr.getSource()==src){
+				if(iterLyr.get("xtemporary")){
+					map.removeLayer(iterLyr)
+				}
+				
 				console.log("debug-zsolmap-drawer remove draw stored layer")
 				break;
 			}
@@ -138,15 +154,13 @@ function closeDrawInteraction(map, name = "default") {
 }
 
 
-function hasDrawInteraction(name){
+export function getDrawInteraction(name){
 	
 	return _interaction_memo[name]
 }
 
-
-export {
-	openDrawInteraction,
-	closeDrawInteraction
+function hasDrawInteraction(name){
+	
+	return _interaction_memo[name]
 }
-
 

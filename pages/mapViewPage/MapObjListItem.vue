@@ -20,7 +20,7 @@
 	<!-- 	<view>
 			
 			<ZsButtonGroup
-			:items = "rfBtnItems"
+			:items = "rfopBtnItems"
 			>
 				
 			</ZsButtonGroup>
@@ -30,7 +30,7 @@
 		<!-- <uni-row>
 			<uni-col :span='2'>
 				<ZsButtonGroup
-				:items = "rfFeatBtnItems"
+				:items = "rfgeoFeatjtems"
 				>
 					
 				</ZsButtonGroup>	
@@ -42,7 +42,7 @@
 			</uni-col>
 			<uni-col :span="rfColNum">
 				<ZsButtonGroup
-				:items = "rfBtnItems"
+				:items = "rfopBtnItems"
 				>	
 				</ZsButtonGroup>
 			</uni-col>
@@ -61,7 +61,7 @@
 					>
 					</ZsIcon>	 -->				
 					<ZsButtonGroup
-					:items = "rfFeatBtnItems"
+					:items = "rfgeoFeatjtems"
 					>
 						
 					</ZsButtonGroup>		
@@ -74,7 +74,7 @@
 			</view>
 			<view style="width:50%; display: flex;justify-content: end;">
 				<ZsButtonGroup
-				:items = "rfBtnItems"
+				:items = "rfopBtnItems"
 				:index="seqid"
 				@click="onButtonGroupClicked"
 				
@@ -149,15 +149,15 @@ export default {
 			rfColNum : 8,
 			rfClass:["hlyt"],
 			
-			rfFeatBtnItems:[{"icon": "rectangle", "color":this.iconColor}],
-			rfBtnItems:
+			rfgeoFeatjtems:[{"icon": "rectangle", "color":this.iconColor}],
+			rfopBtnItems:
 			[
 				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlash",
 					"status":this.xprops["visible"]==false?0:1
 				},
 				{"icon":"refresh", "name":"refresh", "color":"green"},
 			],
-			// rfBtnItems:[{"text":"eye"},{"text":"eye"}]
+			// rfopBtnItems:[{"text":"eye"},{"text":"eye"}]
 		}
 	},
 	

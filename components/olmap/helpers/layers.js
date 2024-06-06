@@ -34,45 +34,52 @@ const _geom_type_to_cls = {
 // data_obj: is geojson format object
 export function createVectorLayerFromDataObj(data_obj, style, opts){
 	
-	var iter_feat_data 
 	
-	var data = data_obj["features"]
-	var i = 0
-	var geom_cls = null;
-	var geom_type;
-	var geom;
-	var warning_msg = ""
-	var new_feat;
-	var new_feature_array = []
 	
-	for(i in data)
+	const new_feat_array = []
+	
+	if( data_obj && data_obj["features"])
 	{
-		iter_feat_data = data[i]
+		const feat_datas = data_obj["features"]
+		var i = 0
+		var geom_cls = null;
+		var geom_type;
+		var geom;
+		var warning_msg = ""
+		var new_feat;
+		var iter_feat_data 
 		
-		geom_type = iter_feat_data["geometry"]["type"]
-		geom_cls = _geom_type_to_cls[geom_type]
-		if(!geom_cls)
+		for(i in feat_datas)
 		{
-			warning_msg = `attemp create layer from geojson data, but got unknown geometry type ${geom_type} on ${i+1}th feature`
-			// throw new Error(warning_msg)
-			// console.log("warning-ol ", warning_msg)
-			throw new Error(warning_msg)
+			iter_feat_data = feat_datas[i]
+			
+			geom_type = iter_feat_data["geometry"]["type"]
+			geom_cls = _geom_type_to_cls[geom_type]
+			if(!geom_cls)
+			{
+				warning_msg = `attemp create layer from geojson data, but got unknown geometry type ${geom_type} on ${i+1}th feature`
+				// throw new Error(warning_msg)
+				// console.log("warning-ol ", warning_msg)
+				throw new Error(warning_msg)
+			}
+			
+			geom = new geom_cls(iter_feat_data["geometry"]["coordinates"])
+			
+			// var coords = extentToContour(geom.getExtent())
+			// coords.push(coords[0])
+			// geom = new Polygon([coords])
+			// console.log("debug-zsolmap area ", geom.getArea())
+			// geom.setCoordinates( iter_feat_data["geometry"]["coordinates"][0][0] )
+			
+			new_feat = new Feature()
+			new_feat.setProperties(iter_feat_data["properties"])
+			new_feat.setGeometry(geom)
+			
+			new_feat_array.push(new_feat)
 		}
 		
-		geom = new geom_cls(iter_feat_data["geometry"]["coordinates"])
-		
-		// var coords = extentToContour(geom.getExtent())
-		// coords.push(coords[0])
-		// geom = new Polygon([coords])
-		// console.log("debug-zsolmap area ", geom.getArea())
-		// geom.setCoordinates( iter_feat_data["geometry"]["coordinates"][0][0] )
-		
-		new_feat = new Feature()
-		new_feat.setProperties(iter_feat_data["properties"])
-		new_feat.setGeometry(geom)
-		
-		new_feature_array.push(new_feat)
 	}
+	
 	
 	var source_obj = new VectorSource(
 		{
@@ -82,10 +89,9 @@ export function createVectorLayerFromDataObj(data_obj, style, opts){
 		}
 	)
 	
-	// new_feature_array.forEach((x)=>{source_obj.addFeature(x)})
-	source_obj.addFeatures(new_feature_array)
+	// new_feat_array.forEach((x)=>{source_obj.addFeature(x)})
+	source_obj.addFeatures(new_feat_array)
 	
-
 	style = style || {}
 	
 	var style_obj= createStyle(style)
@@ -131,13 +137,11 @@ export function createVectorLayerFromURL(url, style, opts){
 			useSpatialIndex:true
 		}
 	)
-	// source_obj.addFeatures(new_feature_array)
-	
-	style = style || {}
+
 	
 	// zs-adding
 	style = style || {}
-	style_obj= createStyle(style)
+	var style_obj= createStyle(style)
 	// style_obj = createStyle(style["geomStyle"], style["labelStyle"])
 	
 	delete opts["source"]
@@ -148,9 +152,10 @@ export function createVectorLayerFromURL(url, style, opts){
 		source: source_obj,
 		style: style_obj
 	}, 
-	opts)
+	opts
+	)
 	// var lyr = new VectorLayer(vec_opts)
-	// lyr.addFeatures(new_feature_array)
+	// lyr.addFeatures(new_feat_array)
 	
 	return createVectorLayer(vec_opts)
 	
@@ -162,7 +167,7 @@ export function createVectorLayer(opts){
 	var style = opts["style"] || null
 	
 	var lyr = new VectorLayer(opts)
-	// lyr.addFeatures(new_feature_array)
+	// lyr.addFeatures(new_feat_array)
 	
 	// var stroke_color = "unset"
 	// var fill_color = "unset"
@@ -196,7 +201,7 @@ export function createVectorLayer(opts){
 		}
 	}
 	
-	lyr.set("baseStyleEx", {"strokeColor":stroke_color, "fillColor":fill_color})
+	lyr.set("xbaseStyle", {"strokeColor":stroke_color, "fillColor":fill_color})
 	
 	return lyr
 }
@@ -205,11 +210,15 @@ export function createVectorLayer(opts){
 export function createVectorByDataSource(dataSrc, style, opts){
 	
 	opts = opts || {}
-	if(dataSrc instanceof String)
+	// "".includes("/")
+	console.log("debug-zsolmap createVectorByDataSource", typeof dataSrc)
+	if(typeof dataSrc == 'string' && dataSrc.includes("/"))
 	{
 		return createVectorLayerFromURL(dataSrc, style, opts)
 	}
-	else if(typeof dataSrc == "object" && opts["dataFormat"]=="geojson")
+	else if(typeof dataSrc == "object" 
+	// && opts["dataFormat"]=="geojson"
+	)
 	{
 		return createVectorLayerFromDataObj(dataSrc, style, opts)
 	}
