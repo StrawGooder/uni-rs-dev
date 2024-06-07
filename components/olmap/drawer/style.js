@@ -1,5 +1,5 @@
 
-import {Style, Fill, Stroke,Icon,Text} from "ol/style";
+import {Style, Fill, Stroke,Icon,Text,IconImage} from "ol/style";
 import CircleStyle from "ol/style/Circle";
 import RegularShape from "ol/style/RegularShape";
 // import GeometryType from 'ol/geom/GeometryType.js';
@@ -420,6 +420,10 @@ function makePointDrawStyle(){
 	return (feat)=>{ return style }
 	
 }
+
+
+
+
 const themeToStyle_ = {
 	"base":makeBasePolygonDrawStyle,
 	"metric":makeMetricsDrawStyle,
