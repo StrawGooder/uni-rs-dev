@@ -1,5 +1,6 @@
 import {Select} from "ol/interaction"
 import {SelectEvent} from "ol/interaction/Select.js"
+import Event from "ol/events/Event.js"
 import {clear} from "ol/obj.js"
 import {altKeyOnly, click, pointerMove} from 'ol/events/condition.js';
 import {Fill, Stroke, Style} from 'ol/style.js';
@@ -57,6 +58,39 @@ function pointDiff(pointA, pointB){
 	return [dx, dy]
 }
 
+const dragEventType = {
+	dragStart:"dragStart",
+	dragging:"draging",
+	dragEnd:"dragEnd"
+}
+
+class DragEndEvent extends Event{
+	
+	constructor(type, feature, mapBrowserEvent){
+		super(dragEventType.dragEnd)
+		this.feature = feature
+		this.mapBrowserEvent = mapBrowserEvent
+	}
+}
+
+class DragStartEvent extends Event{
+	
+	constructor(type, feature, mapBrowserEvent){
+		super(dragEventType.dragStart)
+		this.feature = feature
+		this.mapBrowserEvent = mapBrowserEvent
+	}
+}
+
+class DragEvent extends Event{
+	
+	constructor(type, feature, mapBrowserEvent){
+		super(dragEventType.dragging)
+		this.feature = feature
+		this.mapBrowserEvent = mapBrowserEvent
+	}
+}
+
 // just for test
 export class ZsFeatureSelection extends Select{
 	
@@ -105,7 +139,7 @@ export class ZsFeatureSelection extends Select{
 		if(this.inputStopped){
 			return true
 		}
-		// just copy from Select's handleEvent function
+		// following codes are just copied from Select's handleEvent function
 		if (!this.condition_(mapBrowserEvent)) {
 			// console.log("debug-zsolmap featselect not meet condition", )
 			  return true;
@@ -117,7 +151,7 @@ export class ZsFeatureSelection extends Select{
 		const toggle = this.toggleCondition_(mapBrowserEvent);
 		const set = !add && !remove && !toggle;
 		// const map = mapBrowserEvent.map;
-		// const features = this.getFeatures();
+		const features = this.getFeatures();
 		var deselected = [];
 		var selected = [];
 		
@@ -171,6 +205,12 @@ export class ZsFeatureSelection extends Select{
 		
 	}
 	
+	handleEvent_(mapBrowserEvent){
+	
+		
+		
+	}
+	
 	executeHitDetection(mapBrowserEvent){
 		
 		const map = mapBrowserEvent.map;
@@ -206,7 +246,7 @@ export class ZsFeatureSelection extends Select{
 			}
 		  );
 		  
-		this.onHitDetectionAfter([selected, deselected])
+		// this.onHitDetectionAfter([selected, deselected])
 		return [selected, deselected]
 	}
 	
@@ -274,23 +314,56 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		this.dragTimer = null
 		this.touchPixPosPrev = null
 		this.dragToleranceDist = [1,1]
+		this.dragTimerInterval = 2000
+		this.prevMapBrowserEvent = null
 	}
 	
 	startDrag(){
 		
-		const pixPos = this.curMapBrowserEvent.pixel
-		this.dragTimer = setTimeout()
+		// const pixPos = this.curMapBrowserEvent.pixel
+		// this.dragTimer = setTimeout( this.execDrag.bind(), this.dragTimerInterval ) 
+		this.loopexecDrag()
 	}
 	
 	endDrag(){
 		
-		const pixPos = this.curMapBrowserEvent.pixel
+		// const pixPos = this.curMapBrowserEvent.pixel
+		this.dragTimer = null
+		this.clearDragStatus()
 	}
 	
-	collectTouchInfo(){
+	// bootDragMonitorTimer_(){
 		
-		const pixPos = this.curMapBrowserEvent.pixel
+	// 	if(this.curDragFeat){
+	// 		this.dragTimer = setTimeout( this.execDrag.bind(), this.dragTimerInterval ) 
+	// 	}
+	// 	else{
+			
+	// 	}
+	// 	// this.dragTimer = setTimeout( this.execDrag.bind(), this.dragTimerInterval ) 
+	// }
+	
+	loopexecDrag(){
+
+		const round = this.execDrag
 		
+		if(this.curDragFeat){
+			this.dragTimer = setTimeout(round.bind(this), this.dragTimerInterval ) 
+		}
+		else{
+			this.endDrag()
+		}	
+		
+	}
+	
+	execDrag(mapBrowserEvent){
+		
+		// this.loopexecDrag()
+		
+		const pixPos = mapBrowserEvent.pixel
+		if(this.touchPixPosPrev==null){
+			this.touchPixPosPrev = pixPos
+		}
 		const equal = pointEqual(pixPos, this.touchPixPosPrev)
 		
 		if(!equal && this.curDragFeat)
@@ -300,7 +373,8 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 			const resol = map.getView().getResolution()
 			var moveDist = pointDiff(pixPos, this.touchPixPosPrev)
 			
-			var moveDistCoord = [moveDist[0] * resol,  moveDist[1] * resol]
+			// console.log("debug-zsolmap movie dist ", moveDist, )
+			var moveDistCoord = [moveDist[0] * resol,  moveDist[1] * resol * -1]
 			
 			const draggedFeat = this.curDragFeat
 			
@@ -317,9 +391,14 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 			else if(geomType=="Point"){
 				this.movePointGeometry(geom, moveDistCoord)
 			}
+			
+			this.dispatchEvent(
+			new DragEvent()
+			)
 			// var dx = 
 			// var dy
 		}
+		
 		
 		this.touchPixPosPrev = pixPos
 		
@@ -330,11 +409,11 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		// var newCoords = geom.getCoordinates()
 	
 		const polygons = geometry.getCoordinates();
-		for (let k = 0, kk = polygons.length; k < kk; ++k) {
+		for (let k = 0, kk = polygons.length; k < kk; k++) {
 		  const rings = polygons[k];
-		  for (let j = 0, jj = rings.length; j < jj; ++j) {
+		  for (let j = 0, jj = rings.length; j < jj; j++) {
 			const coordinates = rings[j];
-			for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+			for (let i = 0, ii = coordinates.length ; i < ii; i++) {
 			  // const segment = coordinates.slice(i, i + 2);
 				const coord = coordinates[i];
 				coord[0] = coord[0] + dist[0]
@@ -353,9 +432,9 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		// var newCoords = geom.getCoordinates()
 		
 		const rings = geometry.getCoordinates();
-		for (let j = 0, jj = rings.length; j < jj; ++j) {
+		for (let j = 0, jj = rings.length; j < jj; j++) {
 		  const coordinates = rings[j];
-		  for (let i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+		  for (let i = 0, ii = coordinates.length; i < ii; i++) {
 			// const segment = coordinates.slice(i, i + 2);
 			const coord = coordinates[i];
 			coord[0] = coord[0] + dist[0]
@@ -396,6 +475,143 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 				
 		// 	}
 		// }
+		
+	}
+	
+	handleEvent(mapBrowserEvent){
+		
+		// zs-adding
+		if(this.inputStopped){
+			return true
+		}
+		// following codes are just copied from Select's handleEvent function
+		const eventType = mapBrowserEvent.type
+		
+		// console.log("debug-zsolmap FeatureSelectAndDrag", eventType)
+		if (!this.condition_(mapBrowserEvent) 
+		&& (eventType!=MapBrowserEventType.POINTERDRAG
+		&& eventType!= MapBrowserEventType.POINTERUP
+		)
+		) {
+			// console.log("debug-zsolmap featselect not meet condition", )
+			  return true;
+		}
+		const prevMapBrowserEvent = this.prevMapBrowserEvent
+		this.prevMapBrowserEvent = mapBrowserEvent
+		
+		// console.log("debug-zsolmap FeatureSelectAndDrag", eventType)
+		if(eventType==MapBrowserEventType.POINTERDRAG){
+			
+			this.handleDragEvent_(mapBrowserEvent)
+			return true
+		}
+		else if( this.dragging 
+		&& eventType==MapBrowserEventType.POINTERUP
+		// && prevMapBrowserEvent==MapBrowserEventType.POINTERDRAG
+		){
+			
+			this.clearDragStatus()
+			return true
+		}
+		
+		// this.curMapBrowserEvent = mapBrowserEvent
+		// console.log("debug-zsolmap featselect meet condition", )
+		const add = this.addCondition_(mapBrowserEvent);
+		const remove = this.removeCondition_(mapBrowserEvent);
+		const toggle = this.toggleCondition_(mapBrowserEvent);
+		const set = !add && !remove && !toggle;
+		// const map = mapBrowserEvent.map;
+		const features = this.getFeatures();
+		var deselected = [];
+		var selected = [];
+		
+		var selectResult
+		
+		if (set) {
+		  selectResult = this.executeHitDetection(mapBrowserEvent)
+		  selected =  selectResult[0]
+		  deselected = selectResult[1]
+		  for (let i = features.getLength() - 1; i >= 0; --i) {
+		  			const feature = features.item(i);
+		  			const index = selected.indexOf(feature);
+		  			if (index > -1) {
+		  			  // feature is already selected
+		  			  selected.splice(index, 1);
+		  			} else {
+		  			  features.remove(feature);
+		  			  deselected.push(feature);
+		  			}
+		  }
+		  
+		  if (selected.length !== 0) {
+		  		features.extend(selected);
+		  }
+		  
+		} else {
+			// constraint
+			
+		  selectResult = this.executeHitDetectionOnConstraint()
+		  selected =  selectResult[0]
+		  deselected = selectResult[1]
+		  for (let j = deselected.length - 1; j >= 0; --j) {
+		  			features.remove(deselected[j]);
+		  }
+		  features.extend(selected);
+		  		
+		}
+		
+		if (selected.length > 0 || deselected.length > 0) {
+		  this.dispatchEvent(
+			new SelectEvent(
+			  // SelectEventType.SELECT,
+			  "select",
+			  selected,
+			  deselected,
+			  mapBrowserEvent
+			)
+		  );
+		}
+		return true;
+		
+		
+	}
+	
+	handleDragEvent_(mapBrowserEvent){
+	
+		
+		if(!this.curDragFeat)
+		{
+
+			let selectResult
+			
+			selectResult = this.executeHitDetection(mapBrowserEvent)
+			const selected = selectResult[0][0]
+			const deselected = selectResult[1]
+			
+			const exitedFeatures = this.getFeatures()
+			
+			const included = exitedFeatures.getArray().includes(selected)
+			if( included){
+				
+				this.curDragFeat = selected
+				this.dragging = true
+				// this.startDrag()
+				this.dispatchEvent(new DragStartEvent(selected, mapBrowserEvent))
+			}			
+			// console.log("debug-zsolmap feature select ", included)
+		}
+		else
+		{
+			this.execDrag(mapBrowserEvent)
+			this.dispatchEvent(new DragEvent(this.curDragFeat, mapBrowserEvent))
+		}
+		
+	}
+	
+	clearDragStatus(){
+		this.dispatchEvent(new DragEndEvent(this.curDragFeat, this.prevMapBrowserEvent))
+		this.curDragFeat = null
+		this.dragging = false
 		
 	}
 	

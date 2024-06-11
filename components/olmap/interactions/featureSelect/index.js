@@ -3,7 +3,7 @@
 import {clear} from "ol/obj.js"
 import {altKeyOnly, click, pointerMove} from 'ol/events/condition.js';
 import {Fill, Stroke, Style} from 'ol/style.js';
-import {ZsFeatureSelection} from "./featureSelection.js"
+import {ZsFeatureSelection, ZsFeatureSelectAndDrag} from "./featureSelection.js"
 
 import {merge as mergeObject} from "lodash";
 import { createThemeStyle } from "./styles.js";
@@ -55,7 +55,8 @@ export function openFeatureSelection(map, mode="click", opts = null){
 	}
 	
 	// ret_interaction = new Select(init_opts)
-	ret_interaction = new ZsFeatureSelection(init_opts)
+	// ret_interaction = new ZsFeatureSelection(init_opts)
+	ret_interaction = new ZsFeatureSelectAndDrag(init_opts)
 	_interaction_objs[mode] = ret_interaction
 	
 	map.addInteraction(ret_interaction)

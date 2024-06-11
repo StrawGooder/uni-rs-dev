@@ -16,7 +16,7 @@ const _style_components = {
 	// "stroke":null
 }
 const _feat_styles = {
-	"base":function(){ 
+	"default":function(){ 
 		
 				var hit_mouse_style = new Style(
 					{

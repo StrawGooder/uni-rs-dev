@@ -418,13 +418,13 @@
 						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
 						_this.rfmapVm.setDrawLayer("outdoorCamera")
 						// for test
-						_this.rfmapVm.setUsedMode("edit")
+						// _this.rfmapVm.setUsedMode("edit")
 						// _this.rfmapVm.setupInteraction({"type":"draw"})
-						_this.rfmapVm.setInteractionType("draw")
+						// _this.rfmapVm.setInteractionType("draw")
 					}	
 				)
 				
-				
+				_this.rfmapVm.setInteractionType("select")
 				
 			}
 			

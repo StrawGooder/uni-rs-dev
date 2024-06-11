@@ -544,6 +544,8 @@
 	import { openDrawInteraction, closeDrawInteraction } from './drawer';
 	import { openFeatureSelection, closeFeatureSelection, getFeatureSelection,
 	 openFeatureModification, closeFeatureModification, getFeatureModification} from './interactions';
+	import {ZsDragPan} from "./interactions"
+	import {findInteraction} from "./interactions"
 	// import {makePolygonDrawStyleFunc} from "./drawer/style.js"
 	// import {openFeatureModification, closeFeatureModification, getFeatureModification} from  "./interactions/featureModification.js";
 	import { bufferExtent , extentToContour} from './helpers/geo.js';
@@ -734,13 +736,20 @@
 				const timeMin = 1500
 				const timeMax = 3000
 				// console.log("debug-zsolmap touchend ", delta)
+				
 				if(
 				delta>=timeMin 
 				&& delta<=timeMax
 				){
 					// uni.$emit("map:menu:show", {pixel:evt.pixel || [evt.pageX, evt.pageY], "subject":"" } )
+					const pos = [evt.pageX,evt.pageY]
+					if(Math.abs(this.urfclickDownPos[0]- pos[0])<2
+					&& Math.abs(this.urfclickDownPos[1]- pos[1])<2
+					)
+					{
+						this.handleMenuPopup(evt)
+					}
 					
-					this.handleMenuPopup(evt)
 				}
 			},
 			
@@ -768,7 +777,7 @@
 					menuName = "FeaturePolygonEditMenu"
 					
 					var featModifier = getFeatureModification("default")
-					if(featModifier.isTouchPointOnPolygonBoundary())
+					if(featModifier && featModifier.isTouchPointOnPolygonBoundary())
 					{
 						menuName = "FeaturePolygonVertexEditMenu"
 					}
@@ -1180,7 +1189,7 @@
 				// zs add draw layer temp
 				// this.map.addLayer(recvDrawVecLyr)
 				this.setUsedMode(this.rfusedMode)
-				this.setupInteraction({"type":"modify"})
+				// this.setupInteraction({"type":"modify"})
 			},
 			
 			initGPSLocation(){
@@ -1340,6 +1349,8 @@
 				// 				}
 				// 			)
 			},
+			
+			
 			initEvent(){
 				
 				var _this = this
@@ -1348,17 +1359,30 @@
 				var center_coord = [107.324739,24.033756999999998]
 				var mpview = _this.map.getView()
 				
-
+				// console.log("debug-zsolmap interactions ", this.map.getInteractions().getArray())
+				
+				var foundIntact = findInteraction(this.map, "DragPan")
+				this.map.removeInteraction(foundIntact)
+				
+				// console.log("debug-zsolmap interactions ", foundIntact)
+				
+				const dragPan = new ZsDragPan()
+				dragPan.setEnabled(false)
+				// dragPan.setEnabled(true)
+				this.map.addInteraction(dragPan)
+			
+				
 				this.map.on("dblclick",
 					(evt)=>{
 						
 						// const found_feats = _this.map.xgetFeaturesAtPixel(evt.pixel)
 						var sel = getFeatureSelection("singleclick")
-						if(sel){
+						if(sel)
+						{
 							var sel_feats = sel.getFeatures()
 							// when same feature was dblclicked
 							// the map enter 'modify' mode
-							if(sel_feats.item(0) || sel_feats.length>0)
+							if(sel_feats.length>0 && sel_feats.item(0))
 							{
 								// _this.setupInteraction({"type":"modify"})
 								const found_feats = _this.map.xgetFeaturesAtPixel(evt.pixel)
@@ -1465,6 +1489,7 @@
 					(evt)=>{
 						// console.log("debug-zsolmap touchstart ", evt)
 						this.urfclickStartTime = Date.now()
+						this.urfclickDownPos = [evt.pageX,evt.pageY]
 						// this.urflongPressMonitor.update([evt.pageX,evt.pageY])
 						// this.urfclickdown = true
 					}
@@ -1583,8 +1608,6 @@
 				// 	this.testViewZoom()}, 
 				// 	1000
 				// )
-				
-				
 				
 				// uni.getSystemInfo({
 				// 	success(res) {
@@ -2008,6 +2031,32 @@
 						// )
 					}
 				)	
+				
+				sel.on(
+					"dragStart", 
+					()=>{
+						var intact = findInteraction(this.map, "ZsDragPan")
+						// this.map.removeInteraction(intact)
+						if(intact){
+							intact.setEnabled(false)
+							console.log("debug-zsolmap dragstart")
+						}
+						// intact.setEnabled(false)
+						
+					}
+				)
+				
+				sel.on(
+					"dragEnd", 
+					()=>{
+						var intact = findInteraction(this.map, "ZsDragPan")
+						if(intact){
+								intact.setEnabled(true)
+								// intact.setEnabled(false)
+								console.log("debug-zsolmap dragend")
+						}
+					}
+				)
 
 				// this.urffeatSelector = sel	
 				return sel
@@ -2036,12 +2085,14 @@
 					{
 						
 						closeDrawInteraction(this.map, "default")
+						closeFeatureModification(this.map, "default")
 						// this.urffeatModification = openFeatureModification(this.map, "default", {
 						// 	// features:this.urffeatSelector.getFeatures()
 						// 	features:featSel.getFeatures()
 						// })
 					}
-					else if(interactionType=="modify"){
+					else if(interactionType=="modify")
+					{
 						
 						// var sel = getFeatureSelection("singleclick")
 						var sel = this.setupFeatureSelection(this.map, "singleclick")
@@ -2125,8 +2176,8 @@
 				}
 				else if(this.rfusedMode=="view")
 				{
-					closeFeatureModification(this.map)
-					closeDrawInteraction(this.map)
+					closeFeatureModification(this.map, "default")
+					closeDrawInteraction(this.map, "default")
 					// closeFeatureSelection(this.map, "singleclick")
 					if(interactionType!="select"){
 						closeFeatureSelection(this.map, "singleclick")
