@@ -1,6 +1,8 @@
 import Draw from "ol/interaction/Draw.js"
+import PointerInteraction from "ol/interaction/Pointer.js"
+import MapBrowserEventType from "ol/MapBrowserEventType.js"
 import Feature from "ol/Feature"
-import {Point} from "ol/geom"
+import {Point,LineString} from "ol/geom"
 
 import {createStyleByTheme as createStyleByTheme} from "./style.js"
 // import Map from "ol/Map"
@@ -95,21 +97,158 @@ class Drawer extends Draw {
 	}
 }
 
+class Doodle extends Draw {
+	
+	constructor(opts){
+	
+		opts["type"] = "LineString"
+		
+		if(opts["color"]){
+			var style = createStyleByTheme("doodle")(feat)
+			style.getStroke().setColor(opts["color"])
+			if(opts["width"]){
+				style.getStroke().setWidth(opts["width"])
+			}
+			opts["style"] = style
+			// style = function()
+		}
+		else{
+			opts["style"] = createStyleByTheme("doodle")
+		}
+		
+		// opts["style"] = createStyleByTheme("doodle")
+		super(opts)
+		
+		this.lastTouchCoordPos_ = null
+		
+		this.sketchFeatureLineCoords_ = []
+	}
+	
+	handleEvent(mapBrowserEvent){
+		
+		const eventType = mapBrowserEvent.type
+		var handled = false
+		if(eventType==MapBrowserEventType.POINTERMOVE){
+			if(!this.sketchPoint_){
+				this.sketchPoint_ = new Feature(new Point(mapBrowserEvent.coordinate))
+			}
+			else{
+				this.sketchPoint_.getGeometry().setCoordinates(mapBrowserEvent.coordinate)
+			}
+			
+			this.updateSketchFeatures_()
+		}
+		else if(eventType==MapBrowserEventType.POINTERDRAG){
+			
+			handled = this.handleDragEvent(mapBrowserEvent)
+		}
+		else if(eventType==MapBrowserEventType.POINTERUP){
+			console.log("debug-zsolmap draw doodle ptr up")
+			handled = this.handleUpEvent(mapBrowserEvent)
+		}
+
+		
+		return handled
+	}
+	
+	handleDragEvent(mapBrowserEvent){
+		
+		const curCoordPos = mapBrowserEvent.coordinate
+		
+		// const newGeomLine = new LineString()
+		// new_geom_line.setCoordinates([[this.lastTouchCoordPos_],[curCoordPos]])
+		
+		// this.sketchFeatureLineCoords_.push([curCoordPos])
+		
+		// var sketchFeature = this.sketchFeature_
+		// if(!sketchFeature){
+		// 	sketchFeature = new Feature()
+		// 	this.sketchFeature_ = sketchFeature
+		// 	sketchFeature.setGeometry(new LineString([[0,0]]))
+		// }
+		
+		// sketchFeature.getGeometry().setCoordinates(this.sketchFeatureLineCoords_)
+		// this.appendCoordinates([this.lastTouchCoordPos_, curCoordPos])
+		// this.sketchCoords_ = this.sketchFeatureLineCoords_
+		
+		// this.appendCoordinates([this.lastTouchCoordPos_, curCoordPos])
+		this.appendCoordinates([ curCoordPos])
+		
+		// this.addToDrawing
+		// this.modifyDraw()
+	
+	}
+	
+	handleUpEvent(mapBrowserEvent){
+		
+		this.sketchFeatureLineCoords_ = []
+		// this.updateSketchFeatures_()
+		this.finishDrawing()
+		
+		// super.handleUpEvent(mapBrowserEvent)
+		return true
+	}
+	
+	
+	appendCoordinates(coordinates) {
+		const mode = this.mode_;
+		const newDrawing = !this.sketchFeature_;
+		if (newDrawing) {
+		  this.startDrawing_(coordinates[0]);
+		}
+		/** @type {LineCoordType} */
+		let sketchCoords;
+		if (mode === 'LineString' || mode === 'Circle') {
+		  sketchCoords = /** @type {LineCoordType} */ (this.sketchCoords_);
+		} else if (mode === 'Polygon') {
+		  sketchCoords =
+			this.sketchCoords_ && this.sketchCoords_.length
+			  ? /** @type {PolyCoordType} */ (this.sketchCoords_)[0]
+			  : [];
+		} else {
+		  return;
+		}
+
+		if (newDrawing) {
+		  sketchCoords.shift();
+		}
+
+		// // Remove last coordinate from sketch drawing (this coordinate follows cursor position)
+		// sketchCoords.pop();
+
+		// Append coordinate list
+		for (let i = 0; i < coordinates.length; i++) {
+		  this.addToDrawing_(coordinates[i]);
+		}
+
+		// const ending = coordinates[coordinates.length - 1];
+		// Duplicate last coordinate for sketch drawing (cursor position)
+		// this.addToDrawing_(ending);
+		// this.modifyDrawing_(ending);
+	  }
+	
+}
+
 export function createDrawer(name, opts){
 	
 	var kls = null
 	name = name || "base"
+	name = name.toLowerCase()
 	if(name=="base"){
 		kls = Drawer
 	}
 	else if(name=="default"){
 		kls = Draw
 	}
+	else if(name=="doodle"){
+		kls = Doodle
+	}
 	else{
 		throw new Error(`attemp to create '${name}' Drawer, not found it `)
 	}
 	
-	console.log("debug-zsolmap drawer", opts)
+	
+	// console.log("debug-zsolmap drawer", opts)
 	// zs-adding 20240509
 	var styleTheme = opts["styleTheme"]
 	if(styleTheme)

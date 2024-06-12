@@ -119,7 +119,7 @@ function createTextStyleObject(feature, resolution, opts){
 // styleLike: support 
 // 1. ol's Style StyleFunction,Style Array
 // 2 custom style object, format is {"geomStyle":"", "labelStyle":"", "textStyle":""})
-function createStyle(styleLike){
+export function createStyle(styleLike){
 	
 	// console.log("debug-olzsmap create style", styleLike)
 	// ol's style just return
@@ -190,6 +190,22 @@ function createStyle(styleLike){
 }
 
 
-export {
-	createStyle
+export function createSimpleStyle(color, width, toFunction){
+	
+	
+	
+	const style = new Style(
+		{
+			stroke: new Stroke({color:color||"black", width:width || 5}),
+			// image: new CircleStyle({radius:5, stroke:new Stroke({color:"red"})})
+		}
+	)
+	if(toFunction){
+		return function(feat){
+			return style
+		}			
+	}
+
+	return style
+	
 }

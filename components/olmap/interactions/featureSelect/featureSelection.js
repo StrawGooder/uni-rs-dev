@@ -360,7 +360,7 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		
 		// this.loopexecDrag()
 		
-		const pixPos = mapBrowserEvent.pixel
+		var pixPos = mapBrowserEvent.pixel
 		if(this.touchPixPosPrev==null){
 			this.touchPixPosPrev = pixPos
 		}
@@ -371,15 +371,25 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 			
 			const map = this.getMap()
 			const resol = map.getView().getResolution()
-			var moveDist = pointDiff(pixPos, this.touchPixPosPrev)
 			
-			// console.log("debug-zsolmap movie dist ", moveDist, )
+			// pixPos = []
+			var moveDist = pointDiff(pixPos, this.touchPixPosPrev)
+	
+			const d = 3
+			
+			
 			var moveDistCoord = [moveDist[0] * resol,  moveDist[1] * resol * -1]
+			// moveDistCoord = moveDist
+			
+			// console.log("debug-zsolmap movie dist ", moveDist, moveDist_)
 			
 			const draggedFeat = this.curDragFeat
 			
-			var geom = draggedFeat.getGeometry()
-			var geomType = geom.getType()
+			var geom_old = draggedFeat.getGeometry()
+			var geomType = geom_old.getType()
+			
+			// const geom = geom_old.clone()
+			const geom = geom_old
 			
 			// var newCoords = geom.getCoordinates()
 			if(geomType=="MultiPolygon"){
@@ -392,13 +402,14 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 				this.movePointGeometry(geom, moveDistCoord)
 			}
 			
+			// draggedFeat.setGeometry(geom)
+			
 			this.dispatchEvent(
-			new DragEvent()
+				new DragEvent(draggedFeat, mapBrowserEvent)
 			)
 			// var dx = 
 			// var dy
 		}
-		
 		
 		this.touchPixPosPrev = pixPos
 		
@@ -409,6 +420,7 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		// var newCoords = geom.getCoordinates()
 	
 		const polygons = geometry.getCoordinates();
+		// var poly_cp = geometry.clone().getCoordinates();
 		for (let k = 0, kk = polygons.length; k < kk; k++) {
 		  const rings = polygons[k];
 		  for (let j = 0, jj = rings.length; j < jj; j++) {
@@ -424,6 +436,7 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		}
 		
 		geometry.setCoordinates(polygons)
+
 		
 	}
 	
@@ -612,7 +625,7 @@ export class ZsFeatureSelectAndDrag extends ZsFeatureSelection{
 		this.dispatchEvent(new DragEndEvent(this.curDragFeat, this.prevMapBrowserEvent))
 		this.curDragFeat = null
 		this.dragging = false
-		
+		this.touchPixPosPrev = null
 	}
 	
 }

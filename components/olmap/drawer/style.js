@@ -422,12 +422,25 @@ function makePointDrawStyle(){
 }
 
 
+function makeDoodleDrawStyle(){
+	
+	const style = new Style(
+		{
+			stroke: new Stroke({color:"red", width:5}),
+			image: new CircleStyle({radius:5, stroke:new Stroke({color:"red"})})
+		}
+	)
+	return function(feat){
+		return style
+	}
+}
 
 
 const themeToStyle_ = {
 	"base":makeBasePolygonDrawStyle,
 	"metric":makeMetricsDrawStyle,
-	"point":makePointDrawStyle
+	"point":makePointDrawStyle,
+	"doodle":makeDoodleDrawStyle,
 }
 
 export function createStyleByTheme(name){

@@ -416,7 +416,7 @@
 						console.log("debug-mapviewpage ", result)
 						
 						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
-						_this.rfmapVm.setDrawLayer("outdoorCamera")
+						// _this.rfmapVm.setDrawLayer("outdoorCamera")
 						// for test
 						// _this.rfmapVm.setUsedMode("edit")
 						// _this.rfmapVm.setupInteraction({"type":"draw"})
@@ -424,9 +424,13 @@
 					}	
 				)
 				
-				_this.rfmapVm.setInteractionType("select")
+				// _this.rfmapVm.setInteractionType("select")
+				_this.rfmapVm.createDoodleLayer("default", "red", 4)
+				_this.rfmapVm.startDoodle("default")
 				
 			}
+			
+			
 			
 		},
 		
