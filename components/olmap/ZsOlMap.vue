@@ -2197,8 +2197,15 @@
 			setDrawTheme(val){
 				
 				// this.rfdrawStyleTheme = val
+				if(val=="metric"){
+					this.urfdrawOpts["type"] = "Shape"
+				}
+				else{
+					// options : normal base default
+					this.urfdrawOpts["type"] = "ShapeVertex"
+				}
 				this.urfdrawOpts["drawStyleTheme"] = val
-				if(this.rfUseMode=="edit"){
+				if(this.rfuseMode=="edit"){
 					this.setUseMode("view")
 					this.setUseMode("edit")
 				}
@@ -2234,16 +2241,19 @@
 			setDrawLayer(lyrName, doodle=false){
 				
 				this.urfdrawStoreLyr = null
-				const drawOpts = Object.assign( {}, this.urfdrawOptsDefault)
+				
 				// this.urfdrawStyleTheme = "base"
 				
 				// this.urfdrawGeomType = "Polygon"
 				var lyrs = this.map.getAllLayers()
 				
-				var lyrFilter = null
+				// var lyrFilter = null
 				var foundLyr
 				var success = true
-				if(!doodle){
+				const drawOpts = Object.assign( {}, this.urfdrawOptsDefault)
+				
+				if(!doodle)
+				{
 					foundLyr = lyrs.filter((lyr)=>{return lyr.get("xname")==lyrName })[0] || null
 					if(foundLyr)
 					{
@@ -2276,13 +2286,14 @@
 					if(foundLyr)
 					{
 		
-						 drawOpts["type"] = "doodle"
-						 drawOpts["drawStyleTheme"] = "base"
-						 drawOpts["color"] = foundLyr.get("xbaseStyle")["strokeColor"] || "red"
-						 drawOpts["width"] = foundLyr.get("xbaseStyle")["strokeWidth"] || 4
+						 drawOpts["type"] = "Doodle"
+						 // drawOpts["drawStyleTheme"] = "base"
+						 var baseStyle = foundLyr.get("xbaseStyle") || {}
+						 drawOpts["color"] = baseStyle["strokeColor"] || "red"
+						 drawOpts["width"] = baseStyle["strokeWidth"] || 4
 						this.urfdrawOpts = drawOpts
 						this.urfdrawStoreLyr = foundLyr
-						console.log(`debug-zsolmap attemp to set draw layer on '${lyrName}'`, drawOpts)
+						// console.log(`debug-zsolmap attemp to set draw layer on '${lyrName}'`, drawOpts)
 						
 					}
 					else{

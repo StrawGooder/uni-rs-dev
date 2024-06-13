@@ -19,7 +19,7 @@ const _interaction_memo = {
 export function openDrawInteraction(map, name, layer, opts){
 
 	name = name || "default"
-	opts = mergeObject({"type":"base", "vectorType":"Polygon"}, opts || {} )
+	opts = mergeObject({"type":"ShapeNode", "vectorType":"Polygon"}, opts || {} )
 	
 	var drawer = _interaction_memo[name] || null
 
@@ -67,30 +67,45 @@ export function openDrawInteraction(map, name, layer, opts){
 		var drawStyleTheme = opts["drawStyleTheme"] || null
 		
 		var drawVecType = opts["vectorType"]
-		var classType = "default";
+		drawVecType = drawVecType.slice(0,1).toUpperCase() + drawVecType.slice(1)
+		var classType = opts["type"] || "ShapeVertex";
 		
 		if(drawVecType=="Point"){
-			classType = "default"
-			drawStyleTheme=　"point"
+			classType = "Shape"
+			drawStyleTheme =　"point"
 			opts["drawStyle"] = null
 		}
-		else if(drawVecType=="Polygon" || drawVecType=="MultiPolygon")
-		{
-			if(drawStyleTheme=="base"){
-				classType = opts["type"] ||　classType
+		else{
+			
+			if(opts["showVertex"]){
+				classType = "ShapeVertex"
 			}
+			// else{
+			// 	classType = opts["type"] || "ShapeVertex"
+			// }
+			
 		}
 		
-		drawer = createDrawer(
-					classType,
-					{
+		
+		
+		// else if(drawVecType=="Polygon" || drawVecType=="MultiPolygon")
+		// {
+		// 	if(drawStyleTheme=="base"){
+		// 		classType = opts["type"] ||　classType
+		// 	}
+		// }
+		
+		const new_opts = mergeObject(opts, {
 						source:storedLyr.getSource(),
 						style:opts["drawStyle"],
 						// custom prop
 						styleTheme:drawStyleTheme,
 						type:drawVecType,
 	
-					}
+					})
+		drawer = createDrawer(
+					classType,
+					new_opts
 				)		
 					
 		_interaction_memo[name] = drawer
@@ -98,7 +113,7 @@ export function openDrawInteraction(map, name, layer, opts){
 			map.addLayer(storedLyr)
 		}catch(e){
 			//TODO handle the exception
-			console.log("error-zsolmap add layer to drawer", e)
+			console.log(`error-zsolmap attemp to open draw interaction, but the drawable layer '${storedLyr.get("xname")}' maybe existed`, e)
 		}
 		
 		map.addInteraction(drawer)

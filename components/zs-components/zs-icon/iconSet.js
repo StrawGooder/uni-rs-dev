@@ -133,9 +133,35 @@ function initSvgIconComponent(){
 					</svg>',
 		"pointer":'<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 16 16" fill="currentColor">\
 				<path d="M 5.65625 2.09375 C 5.550781 2.070313 5.4375 2.082031 5.34375 2.117188 C 5.160156 2.195313 5 2.402344 5 2.632813 L 5 13.421875 L 7.789063 11.613281 L 9.101563 14.171875 L 11.546875 12.921875 L 10.339844 10.578125 L 13.472656 9.765625 L 12.855469 9.148438 L 5.945313 2.242188 C 5.867188 2.160156 5.761719 2.113281 5.65625 2.09375 Z M 6 3.707031 L 11.527344 9.234375 L 8.878906 9.921875 L 10.199219 12.484375 L 9.539063 12.828125 L 8.171875 10.171875 L 6 11.578125 Z"></path>\
-				</svg>'
+				</svg>',
+		// boostrapIcon
+		"circleGraph":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
+				<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>\
+				</svg>',
 		
+		// boostrapIcon
+		"polygonGraph":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
+				<path d="M14 4.577v6.846L8 15l-6-3.577V4.577L8 1zM8.5.134a1 1 0 0 0-1 0l-6 3.577a1 1 0 0 0-.5.866v6.846a1 1 0 0 0 .5.866l6 3.577a1 1 0 0 0 1 0l6-3.577a1 1 0 0 0 .5-.866V4.577a1 1 0 0 0-.5-.866z"/>\
+				</svg>',
+		"point":'',
 		
+		// https://products.aspose.app
+		// ASPOSE auto generated
+		"drawPolygon":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
+					  <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
+						<path d="M138 221 l-93 -89 -11 -42 -12 -41 42 6 41 6 93 95 92 94 0 18 0 18 -12 12 -12 12 -18 0 -17 0 -93 -89z m96 17 l11 -18 -66 -66 -67 -66 -22 22 -22 22 63 64 64 65 14 -3 14 -3 11 -17z m-155 -141 l11 -14 -7 -6 -6 -7 -14 0 -13 0 0 20 0 20 9 0 9 0 11 -13z" />\
+						<path d="M5 10 l-6 -10 36 0 36 0 -6 10 -6 10 -24 0 -24 0 -6 -10z" />\
+						<path d="M105 10 l-6 -10 111 0 111 0 -6 10 -6 10 -99 0 -99 0 -6 -10z" />\
+					  </g>\
+					</svg>',
+		// ASPOSE auto generated
+		"drawDoodle":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
+					  <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
+						<path d="M169 264 l-13 -16 23 -19 c13 -11 27 -19 32 -19 5 0 11 11 15 24 3 14 3 30 -1 35 -3 6 -14 11 -24 11 -10 0 -25 -7 -32 -16z" />\
+						<path d="M100 145 c-23 -41 -44 -90 -47 -110 -3 -19 -3 -35 1 -35 4 0 18 7 32 16 13 9 43 47 64 85 22 37 43 76 47 85 l6 17 -10 -6 c-6 -4 -27 -35 -46 -70 -20 -34 -45 -71 -56 -81 l-21 -19 0 14 c0 8 7 28 16 44 8 17 29 54 45 83 17 28 26 52 20 52 -5 0 -28 -34 -51 -75z" />\
+						<path d="M200 41 c0 -5 -10 -11 -22 -13 -12 -2 -23 -8 -25 -13 l-3 -11 27 1 c14 0 28 6 31 13 l4 13 17 -15 16 -15 15 9 15 10 -16 0 c-9 0 -22 7 -29 15 -7 8 -16 15 -21 15 -5 0 -9 -4 -9 -9z" />\
+					  </g>\
+					</svg>',
 	}
 	
 
@@ -150,7 +176,8 @@ function initSvgIconComponent(){
 	
 	for(var icon_name in name_to_svg)
 	{
-		icon_name_pro = icon_name.slice(0,1).toUpperCase() + icon_name.slice(1, icon_name.length)
+		// icon_name_pro = icon_name.slice(0,1).toUpperCase() + icon_name.slice(1, icon_name.length)
+		icon_name_pro = icon_name.slice(0,1).toUpperCase() + icon_name.slice(1)
 		icon_name_pro = icon_name+"Icon"
 		name_to_icon_comp[icon_name] = createIconComponent(icon_name_pro, name_to_svg[icon_name])
 	}
@@ -205,6 +232,7 @@ function createIconComponent(name, svg, props){
 				if (this.svg.slice(1,4)!="svg")
 				{
 					// note, viewBox coordination 
+					// maybe will be deprecated in the future
 					svg_elem = `<svg width="76.000000pt" height="72.000000pt" viewBox="0 0 76.000000 72.000000" xmlns="http://www.w3.org/2000/svg">\
 					${this.svg}\
 					</svg>`

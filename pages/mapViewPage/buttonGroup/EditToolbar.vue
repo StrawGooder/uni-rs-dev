@@ -8,7 +8,7 @@
 			class="zs-hlyt"
 			>
 				<ZsButtonGroup
-				:items = "rfItems"
+				:items = "rfitems"
 				@click="onBtnGroupClick"
 				>
 					
@@ -64,12 +64,17 @@
 				device: '',
 				list: [], //要展示的数据	,
 				
-				rfItems:[
+				rfitems:[
 							{name:"select",icon:"pointerFill", iconDisabled:"pointer", color:"orange",colorDisabled:"black",status:0},
-							{name:"draw",icon:"pencilFill", iconDisabled:"pencil", color:"orange",colorDisabled:"black",status:0},
-							{name:"edit", icon:"stopBtn",iconDisabled:"pencilSquare", color:"orange",colorDisabled:"black",status:0},
+							// {name:"draw",icon:"pencilFill", iconDisabled:"pencil", color:"orange",colorDisabled:"black",status:0},
+							
+							{name:"draw", icon:"drawPolygon", status:1},
+							{name:"doodle", icon:"drawDoodle", status:1},{name:"edit", icon:"stopBtn",iconDisabled:"pencilSquare", color:"orange",colorDisabled:"black",status:0},
+							{name:"polygon", icon:"polygonGraph", status:1},
+							{name:"circle", icon:"circleGraph", status:1},
+							{name:"point", icon:"crosshair2", status:1},
 						],
-				rfdrawStyleList:["base", "metric"]
+				rfdrawStyleList:["normal", "metric"]
 			}
 		},
 		components: {

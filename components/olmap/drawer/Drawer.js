@@ -1,15 +1,16 @@
 import Draw from "ol/interaction/Draw.js"
+import {DrawEvent} from "ol/interaction/Draw.js"
 import PointerInteraction from "ol/interaction/Pointer.js"
 import MapBrowserEventType from "ol/MapBrowserEventType.js"
 import Feature from "ol/Feature"
-import {Point,LineString} from "ol/geom"
+import {Point,LineString,Polygon} from "ol/geom"
 
 import {createStyleByTheme as createStyleByTheme} from "./style.js"
 // import Map from "ol/Map"
 // var mp = new Map()
 // mp.render()
 
-class Drawer extends Draw {
+class ZSBaseDrawer extends Draw {
 	
 	constructor(options) {
 		
@@ -97,18 +98,20 @@ class Drawer extends Draw {
 	}
 }
 
-class Doodle extends Draw {
+class ZSDoodle extends Draw {
 	
 	constructor(opts){
 	
 		opts["type"] = "LineString"
-		
-		if(opts["color"]){
-			var style = createStyleByTheme("doodle")(feat)
+		// console.log("debug-zsolmap ZsDoodle drawer ", opts)
+		if(opts["color"])
+		{
+			var style = createStyleByTheme("doodle")()
 			style.getStroke().setColor(opts["color"])
 			if(opts["width"]){
 				style.getStroke().setWidth(opts["width"])
 			}
+			// console.log("debug-zsolmap ZsDoodle drawer ", opts)
 			opts["style"] = style
 			// style = function()
 		}
@@ -116,7 +119,7 @@ class Doodle extends Draw {
 			opts["style"] = createStyleByTheme("doodle")
 		}
 		
-		// opts["style"] = createStyleByTheme("doodle")
+		// opts["style"] = createStyleByTheme("ZSDoodle")
 		super(opts)
 		
 		this.lastTouchCoordPos_ = null
@@ -143,7 +146,7 @@ class Doodle extends Draw {
 			handled = this.handleDragEvent(mapBrowserEvent)
 		}
 		else if(eventType==MapBrowserEventType.POINTERUP){
-			console.log("debug-zsolmap draw doodle ptr up")
+			console.log("debug-zsolmap draw ZSDoodle ptr up")
 			handled = this.handleUpEvent(mapBrowserEvent)
 		}
 
@@ -183,8 +186,22 @@ class Doodle extends Draw {
 		
 		this.sketchFeatureLineCoords_ = []
 		// this.updateSketchFeatures_()
+		// const feat = this.sketchFeature_
+		// const tolerance = 20
+		
+		// const geom = feat.getGeometry()
+		// const geomType = geom.getType()
+		
+		// const old_num = geom.getFlatCoordinates().length
+		
+		// const geom_sim = geom.getSimplifiedGeometry(tolerance)
+		
+		// // feat.setGeometry( feat.getGeometry().getSimplifiedGeometry(tolerance) )
+		
+		// console.log("debug-zsolmap doodle ", old_num, geom_sim.getFlatCoordinates().length)
 		this.finishDrawing()
 		
+		// new Polygon().getFlatCoordinates()
 		// super.handleUpEvent(mapBrowserEvent)
 		return true
 	}
@@ -226,25 +243,58 @@ class Doodle extends Draw {
 		// this.addToDrawing_(ending);
 		// this.modifyDrawing_(ending);
 	  }
+	  
+	  
+	  finishDrawing() {
+	    const sketchFeature = this.abortDrawing_();
+	    if (!sketchFeature) {
+	      return;
+	    }
+		
+		const feat = sketchFeature
+		const tolerance = this.getMap().getView().getResolution()*0.001
+		
+		const geom = feat.getGeometry()
+		// const geomType = geom.getType()
+		
+		// const old_num = geom.getFlatCoordinates().length
+		
+		const geom_sim = geom.getSimplifiedGeometry(tolerance)
+		
+		feat.setGeometry( geom_sim )
+		
+		// console.log("debug-zsolmap doodle ", old_num, geom_sim.getFlatCoordinates().length)
+		
+	    // First dispatch event to allow full set up of feature
+	    this.dispatchEvent(new DrawEvent("drawend", sketchFeature));
+	  
+	    // Then insert feature
+	    if (this.features_) {
+	      this.features_.push(sketchFeature);
+	    }
+	    if (this.source_) {
+	      this.source_.addFeature(sketchFeature);
+	    }
+	  }
 	
 }
 
-export function createDrawer(name, opts){
+export function createDrawer(type, opts){
 	
 	var kls = null
-	name = name || "base"
-	name = name.toLowerCase()
-	if(name=="base"){
-		kls = Drawer
+	type = type || "ShapeVertex"
+	type = type.slice(0,1).toUpperCase() + type.slice(1)
+	if(type=="ShapeVertex"){
+		kls = ZSBaseDrawer
 	}
-	else if(name=="default"){
+	else if(type=="Shape"){
 		kls = Draw
 	}
-	else if(name=="doodle"){
-		kls = Doodle
+	else if(type=="Doodle"){
+		kls = ZSDoodle
 	}
 	else{
-		throw new Error(`attemp to create '${name}' Drawer, not found it `)
+		throw new Error(`attemp to create '${type}' Drawer, not found it `)
 	}
 	
 	
