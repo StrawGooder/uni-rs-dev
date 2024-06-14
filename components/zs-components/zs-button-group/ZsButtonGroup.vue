@@ -5,6 +5,7 @@
 // import { defineComponent, h, render } from "vue" 
 import ZsButton from "./ZsButton.vue"
 import ZsButtonSta2 from "./ZsButtonSta2.vue"
+import ZsGutter from "./ZsGutter.vue"
 import {getSVG} from "../zs-icon/iconSet.js"
 // import UniRow from "@/uni_modules/uni-row/components/uni-col/uni-col.vue"
 // import UniCol from "@/uni_modules/uni-row/components/uni-col/uni-col.vue"
@@ -16,6 +17,7 @@ export default {
 	components:{
 		ZsButton,
 		ZsButtonSta2,
+		ZsGutter
 		// UniRow,
 		// UniCol
 	},
@@ -31,11 +33,14 @@ export default {
 			type:[Number, String, Array],
 			default:24
 		},
-		
-		featMode:{
-			type:String,
-			default:""
+		itemStyle:{
+			type:Object,
+			default:()=>{return {}}
 		},
+		// featMode:{
+		// 	type:String,
+		// 	default:""
+		// },
 		
 		layoutDir:{
 			type:String,
@@ -49,6 +54,28 @@ export default {
 		
 		index:{
 			type:Number,
+		},
+		
+		enableMutex:{
+			type:Boolean
+		},
+		
+		borderColor:{
+			type:String,
+			default:"gray"
+		},
+		borderWidth:{
+			type:Number,
+			default:0
+		},
+		
+		gutter:{
+			type:Number,
+			default:0
+		},
+		gutterColor:{
+			type:String,
+			default:"black"
 		}
 		
 	},
@@ -56,13 +83,13 @@ export default {
 	data(){
 		return {
 			
-			rfContClass:{"zs-hlyt": this.layoutDir=="h"?true:false},
+			rfcontClass:{"zs-hlyt": this.layoutDir=="h"?true:false},
 			
 			// rfImgSrc: getSVG("eye")
-			rfStyle:{},
+			rfstyle:{},
 			
-			rfItemCol:2,
-			rfColTotal:24,
+			rfitemCol:2,
+			rfcolTotal:24,
 		}
 	},
 	
@@ -70,7 +97,7 @@ export default {
 			
 		computedItemCol:{
 			get:function(){
-				return this.rfColTotal / this.items.length
+				return this.rfcolTotal / this.items.length
 			}
 		},
 		
@@ -85,7 +112,6 @@ export default {
 				{
 					if(this.layoutMode=="start")
 					{
-						
 						class_name = class_name + ""
 					}
 					else if(this.layoutMode=="end")
@@ -99,7 +125,8 @@ export default {
 				}
 				else
 				{
-					class_name = ""
+					// class_name = ""
+					class_name = "zs-vlyt"
 				}
 				
 				return [class_name]
@@ -132,7 +159,7 @@ export default {
 			var item_w = `${pitem_size}px`,
 			item_h = `${pitem_size}px`;
 			
-			this.rfStyle = {
+			this.rfstyle = {
 				"width":item_w,
 				"height":item_h
 			}
@@ -142,7 +169,7 @@ export default {
 		
 		renderItemStyle(item){
 			
-			var style = Object.assign({"color": item["color"]}, this.rfStyle)
+			var style = Object.assign({"color": item["color"]}, this.rfstyle)
 			return style
 			
 		},
@@ -151,8 +178,29 @@ export default {
 			
 			item["size"] = this.itemSize
 			
+			// var color = item["color"]
+			// var colorDisabled = item["colorDisabled"]
+			
+			const tempItemStyle = {}
+			// overlap common style
+			// by item self style 
+			Object.assign(tempItemStyle, this.itemStyle)
+			Object.assign(tempItemStyle, item)
+			Object.assign(item, tempItemStyle)
+			
+			// if(this.layoutDir=="v"){
+			// 	item[""]
+			// }
+			
 			return item
 		},
+		
+		// mergeItemStyle(item){
+		
+		// 	var color = item["color"]
+		// 	var colorDisabled = item["colorDisabled"]
+				
+		// },
 		
 		// loadSVG(item){
 			
@@ -175,12 +223,45 @@ export default {
 			
 		// },
 		
-		onClicked(ev){
+		onBtnClicked(evt){
 			
-			this.handleClicked(ev)
-			this.$emit("click", ev)
+			// ev["index"] = this.index;  
+			// ev["item"] = item
+			this.handleClicked(evt)
+			this.$emit("click", evt)
+			// this.handleClicked(item)
+			// this.$emit("click", item)
 			
+			var index = evt["index"]
+			// var evtData = evt["data"]
+			if(this.enableMutex)
+			{
+				var evtData = evt["data"]
+				
+				if(evtData["enabled"]!=false){
+					this.checkMutex(index)
+				}
+				
+			}
 		},
+		
+		checkMutex(index){
+			var checked
+			for(var i =0,num=this.items.length; i<num; i++)
+			{
+				
+				if(i!=index){
+					// this.$refs[`btn${i}`].setCheck(0)
+					checked = 0
+				}
+				else{
+					checked = 1
+				}
+				this.$refs[`btn${i}`].setCheck(checked)
+				// console.log("debug-zsbtnsta2 ", index)
+			}
+		},
+		
 		
 		handleClicked(ev){
 				
@@ -203,28 +284,73 @@ export default {
 			// {
 			// 	ret_vns.push( this.renderBtn(h, this.mergeItemProps(items[i])) )
 			// }
-			items.forEach(
-				(it,i)=>{
-					ret_vns.push( this.renderBtn(h, this.mergeItemProps(it)) )
+			var gutter = this.gutter
+			if(gutter>0)
+			{
+				const itemNum = this.items.length
+				
+				for(var i =0,ii=itemNum*2-1; i<ii; i++){
+					
+					if(i%2){
+						ret_vns.push( h("ZsGutter", 
+							{
+								props:{direction:this.layoutDir=="v"?"h":"v", size:[gutter,this.itemSize], color:this.gutterColor}},
+							) 
+							)
+					}
+					else{
+						const index = i/2
+						ret_vns.push( 
+						this.renderBtn(h, 
+							this.mergeItemProps(this.items[index]),
+							index
+							) 
+						)
+					}
+					
 				}
-			)
+				
+			}
+			else{
+				
+				items.forEach(
+					(it,i)=>{
+						ret_vns.push( this.renderBtn(h, this.mergeItemProps(it), i) )
+					}
+				)
+			}
+			// items.forEach(
+			// 	(it,i)=>{
+			// 		ret_vns.push( this.renderBtn(h, this.mergeItemProps(it)) )
+			// 	}
+			// )
 			
 			return ret_vns
 		},
 		
-		renderBtn(h, item){
+		renderBtn(h, item, index){
 			
 			return h("ZsButtonSta2", 
-			{
-				props:item, 
-				on:
 				{
-					click:(ev)=>{ ev["index"] = this.index;  this.onClicked(ev)},
-				},
-			}
+					props:item, 
+					ref:`btn${index}`,
+					on:
+					{
+						// evt is button item
+						click:(evt)=>{
+							evt["index"]=index;
+							this.onBtnClicked(evt)
+						},
+					},
+				}
 			)
 			
 		},
+		
+		// onBtnClicked(){
+			
+		// 	ev["index"] = this.index;  this.onClicked(ev)
+		// }
 		
 	},
 	
@@ -235,7 +361,14 @@ export default {
 		
 		btn_vns = this.renderBtns(h, this.items)
 		
-		return h("view", {class:this.computedContClass}, btn_vns)
+		var contStyle = {border:`${this.borderColor} ${this.borderWidth}px solid`}
+		
+		return h("view", {
+			class:this.computedContClass, 
+			style:contStyle,
+			}, 
+			btn_vns
+			)
 		// var col_vns = []
 		// var iter_col_vn;
 		// for(var i in this.items)

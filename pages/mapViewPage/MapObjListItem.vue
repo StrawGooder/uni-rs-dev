@@ -30,7 +30,7 @@
 		<!-- <uni-row>
 			<uni-col :span='2'>
 				<ZsButtonGroup
-				:items = "rfgeoFeatjtems"
+				:items = "rfgeoFeatitems"
 				>
 					
 				</ZsButtonGroup>	
@@ -61,7 +61,7 @@
 					>
 					</ZsIcon>	 -->				
 					<ZsButtonGroup
-					:items = "rfgeoFeatjtems"
+					:items = "rfgeoFeatitems"
 					>
 						
 					</ZsButtonGroup>		
@@ -149,7 +149,7 @@ export default {
 			rfColNum : 8,
 			rfClass:["hlyt"],
 			
-			rfgeoFeatjtems:[{"icon": "rectangle", "color":this.iconColor}],
+			rfgeoFeatitems:[{"icon": "b-rectangle", "color":this.iconColor}],
 			rfopBtnItems:
 			[
 				{"icon":"eyeFill", "name":"shown", "colorDisabled":"black", "iconDisabled":"eyeSlash",

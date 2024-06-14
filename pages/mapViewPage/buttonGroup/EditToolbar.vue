@@ -9,7 +9,13 @@
 			>
 				<ZsButtonGroup
 				:items = "rfitems"
+				:itemStyle="rfitemStyle"
 				@click="onBtnGroupClick"
+				:gutter="3"
+				gutterColor="gray"
+				borderColor="gray"
+				:borderWidth="2"
+				enableMutex
 				>
 					
 				</ZsButtonGroup>
@@ -63,18 +69,29 @@
 				// listColumns:['图斑编号','图斑类型','图斑面积'],
 				device: '',
 				list: [], //要展示的数据	,
-				
+				rfitemStyle:{
+					"color":"blue",
+					"bgColor":"orange",
+					"bgColorDisabled":"white"
+				},
 				rfitems:[
-							{name:"select",icon:"pointerFill", iconDisabled:"pointer", color:"orange",colorDisabled:"black",status:0},
+							// {name:"select",icon:"b-pointerFill", iconDisabled:"b-pointer", color:"orange",colorDisabled:"black",status:0},
+							{name:"select",icon:"b-pointerFill",status:0},
 							// {name:"draw",icon:"pencilFill", iconDisabled:"pencil", color:"orange",colorDisabled:"black",status:0},
 							
-							{name:"draw", icon:"drawPolygon", status:1},
-							{name:"doodle", icon:"drawDoodle", status:1},{name:"edit", icon:"stopBtn",iconDisabled:"pencilSquare", color:"orange",colorDisabled:"black",status:0},
-							{name:"polygon", icon:"polygonGraph", status:1},
-							{name:"circle", icon:"circleGraph", status:1},
-							{name:"point", icon:"crosshair2", status:1},
+							{name:"draw", icon:"aspose-polygon", status:0},
+							{name:"doodle", icon:"aspose-doodle", status:0},
+							{name:"edit", icon:"stopBtn",iconDisabled:"pencilSquare", color:"blue",colorDisabled:"blue",status:0},
+							// {name:"edit", icon:"stopBtn",status:0},
+							{name:"rectangle", icon:"b-rectangle", status:0, borderWidth:2, borderColor:"red"},
+							{name:"polygon", icon:"b-polygon", status:0, bgColor:"red", bgColorDisabled:"white"},
+							{name:"circle", icon:"b-circle", status:0, bgColor:"green", bgColorDisabled:"white"},
+							{name:"point", icon:"crosshair2", status:0, bgColor:"yellow",bgColorDisabled:"white"},
+							{name:"point", icon:"aspose-forward", reflection:"x", status:0, color:"cyan"},
+							{name:"point", icon:"aspose-forward", status:0, color:"green"},
 						],
-				rfdrawStyleList:["normal", "metric"]
+				rfdrawStyleList:["normal", "metric"],
+				
 			}
 		},
 		components: {

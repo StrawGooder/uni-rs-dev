@@ -38,8 +38,8 @@ function initSvgIconComponent(){
 							</path>\
 						</svg>'
 		,
-		
-		"rectangle":'<svg width="36.000000pt" height="36.000000pt" viewBox="0 0 36.000000 36.000000" xmlns="http://www.w3.org/2000/svg">\
+		// ASPOSE auto generated
+		"aspose-rectangle":'<svg width="36.000000pt" height="36.000000pt" viewBox="0 0 36.000000 36.000000" xmlns="http://www.w3.org/2000/svg">\
 						<g transform="translate(0.000000,36.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M42 318 c-17 -17 -17 -279 0 -296 17 -17 279 -17 296 0 17 17 17 279\
 						0 296 -17 17 -279 17 -296 0z m283 -148 c0 -135 0 -135 -135 -135 -135 0 -135\
@@ -47,8 +47,8 @@ function initSvgIconComponent(){
 					  </g>\
 					</svg>'
 		,
-			
-		"eyeFillSmooth":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
+		// ASPOSE auto generated
+		"aspose-eyeFillSmooth":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
 						<g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M112 209 c-24 -12 -54 -37 -68 -55 -26 -33 -26 -33 -4 -64 12 -16 41\
 						-41 64 -55 24 -14 56 -25 71 -25 42 0 112 37 141 76 26 34 26 34 0 68 -28 37\
@@ -59,7 +59,8 @@ function initSvgIconComponent(){
 						</g>\
 					</svg>'
 		,
-		"eyeSlashFillSmooth":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
+		// ASPOSE auto generated
+		"aspose-eyeSlashFillSmooth":'<svg width="36.000000pt" height="24.000000pt" viewBox="0 0 36.000000 24.000000" xmlns="http://www.w3.org/2000/svg">\
 							<g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="#2f3236" stroke="none">\
 							<path d="M60 232 c0 -14 229 -236 237 -229 7 8 -215 237 -229 237 -5 0 -8 -3\
 							-8 -8z" />\
@@ -84,6 +85,7 @@ function initSvgIconComponent(){
 		  <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829"/>\
 		  <path d="M3.35 5.47q-.27.24-.518.487A13 13 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7 7 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12z"/>\
 		</svg>',
+		
 		"layersFillSmooth":'<svg width="36.000000pt" height="28.000000pt" viewBox="0 0 36.000000 28.000000" xmlns="http://www.w3.org/2000/svg">\
 						<g transform="translate(0.000000,28.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M98 228 c-43 -23 -78 -45 -78 -48 0 -3 36 -25 80 -49 80 -42 80 -42\
@@ -128,26 +130,54 @@ function initSvgIconComponent(){
 				  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1z"/>\
 				</svg>',
 				
-		"pointerFill":'<svg version="1.0" viewBox="0 0 24 24"  fill="currentColor" xmlns="http://www.w3.org/2000/svg">\
+		"b-pointerFill":'<svg version="1.0" viewBox="0 0 24 24"  fill="currentColor" xmlns="http://www.w3.org/2000/svg">\
 					<path d="M7,2l12,11.2l-5.8,0.5l3.3,7.3l-2.2,1l-3.2-7.4L7,18.5V2"/>\
 					</svg>',
-		"pointer":'<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 16 16" fill="currentColor">\
+		"b-pointer":'<svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 16 16" fill="currentColor">\
 				<path d="M 5.65625 2.09375 C 5.550781 2.070313 5.4375 2.082031 5.34375 2.117188 C 5.160156 2.195313 5 2.402344 5 2.632813 L 5 13.421875 L 7.789063 11.613281 L 9.101563 14.171875 L 11.546875 12.921875 L 10.339844 10.578125 L 13.472656 9.765625 L 12.855469 9.148438 L 5.945313 2.242188 C 5.867188 2.160156 5.761719 2.113281 5.65625 2.09375 Z M 6 3.707031 L 11.527344 9.234375 L 8.878906 9.921875 L 10.199219 12.484375 L 9.539063 12.828125 L 8.171875 10.171875 L 6 11.578125 Z"></path>\
 				</svg>',
 		// boostrapIcon
-		"circleGraph":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
+		"b-circle":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
 				<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>\
 				</svg>',
-		
+		"b-rectangle":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-square" viewBox="0 0 16 16">\
+					<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>\
+					</svg>',
 		// boostrapIcon
-		"polygonGraph":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
+		"b-polygon":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">\
 				<path d="M14 4.577v6.846L8 15l-6-3.577V4.577L8 1zM8.5.134a1 1 0 0 0-1 0l-6 3.577a1 1 0 0 0-.5.866v6.846a1 1 0 0 0 .5.866l6 3.577a1 1 0 0 0 1 0l6-3.577a1 1 0 0 0 .5-.866V4.577a1 1 0 0 0-.5-.866z"/>\
 				</svg>',
 		"point":'',
 		
+		"b-plus":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">\
+				<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>\
+				</svg>',
+		"b-plusCircle":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 16 16">\
+			<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>\
+			<path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>\
+			</svg>',
+		"b-dashCircle":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle" viewBox="0 0 16 16">\
+					<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>\
+					<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>\
+					</svg>',
+		"b-dash":'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash" viewBox="0 0 16 16">\
+				<path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"/>\
+				</svg>',
+		"b-back":'',
+		'b-question':'<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question" viewBox="0 0 16 16">\
+					<path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 \
+					1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 \
+					0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/>\
+					</svg>',
+		"aspose-forward":'<svg width="24.000000pt" height="24.000000pt" viewBox="0 0 24.000000 24.000000" color="currentColor" xmlns="http://www.w3.org/2000/svg">\
+					<g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
+					<path d="M150 212 l0 -8 12 -12 12 -12 -52 0 -52 0 -20 -20 -20 -20 0 -55 0 -55 10 0 10 0 0 53 0 53 12 12 12 12 49 0 49 0 -12 -15 -13 -15 7 -7 7 -7 26 27 27 26 -24 26 -23 25 -9 0 -8 0 0 -8z" />\
+					</g>\
+					</svg>',
+		
 		// https://products.aspose.app
 		// ASPOSE auto generated
-		"drawPolygon":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
+		"aspose-polygon":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
 					  <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M138 221 l-93 -89 -11 -42 -12 -41 42 6 41 6 93 95 92 94 0 18 0 18 -12 12 -12 12 -18 0 -17 0 -93 -89z m96 17 l11 -18 -66 -66 -67 -66 -22 22 -22 22 63 64 64 65 14 -3 14 -3 11 -17z m-155 -141 l11 -14 -7 -6 -6 -7 -14 0 -13 0 0 20 0 20 9 0 9 0 11 -13z" />\
 						<path d="M5 10 l-6 -10 36 0 36 0 -6 10 -6 10 -24 0 -24 0 -6 -10z" />\
@@ -155,7 +185,7 @@ function initSvgIconComponent(){
 					  </g>\
 					</svg>',
 		// ASPOSE auto generated
-		"drawDoodle":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
+		"aspose-doodle":'<svg width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000" xmlns="http://www.w3.org/2000/svg">\
 					  <g transform="translate(0.000000,32.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">\
 						<path d="M169 264 l-13 -16 23 -19 c13 -11 27 -19 32 -19 5 0 11 11 15 24 3 14 3 30 -1 35 -3 6 -14 11 -24 11 -10 0 -25 -7 -32 -16z" />\
 						<path d="M100 145 c-23 -41 -44 -90 -47 -110 -3 -19 -3 -35 1 -35 4 0 18 7 32 16 13 9 43 47 64 85 22 37 43 76 47 85 l6 17 -10 -6 c-6 -4 -27 -35 -46 -70 -20 -34 -45 -71 -56 -81 l-21 -19 0 14 c0 8 7 28 16 44 8 17 29 54 45 83 17 28 26 52 20 52 -5 0 -28 -34 -51 -75z" />\

@@ -103,6 +103,19 @@ export default {
 		status:{
 			type:Number,
 			default:1
+		},
+		
+		borderWidth:{
+			type:[String,Number],
+		},
+		borderColor:{
+			type:String,
+			default:"black"
+		},
+		
+		reflection:{
+			type:String,
+			default:""
 		}
 	},
 	
@@ -258,13 +271,15 @@ export default {
 			// }
 			this.rfcontainerBaseStyle = {}
 			var contentMode = this.computedContentMode
-			if(contentMode=="text" || contentMode=="icon&text"){
+			if(contentMode=="text" || contentMode=="icon&text")
+			{
 				
 				this.rfcontainerBaseStyle = {
 					// color: this.computedColor,
 					height: `${this.size}px`,
 					// width: `${this.size}px`,
-					// fontSize : temp process, for icon(svg) size scale
+					// fontSize-2 temp process, let the icon(svg) size
+					// large than the font size
 					fontSize:`${this.size-2}px`,
 					// adapting the content(text)
 					display:"inline",
@@ -274,16 +289,33 @@ export default {
 			}
 			else if(contentMode=="icon")
 			{
+				
 				this.rfcontainerBaseStyle = {
 					// color: this.computedColor,
 					height: `${this.size}px`,
 					width: `${this.size}px`,
-					// fontSize : temp process, for icon(svg) size scale
+					// fontSize-2 temp process, let the icon(svg) size 
+					// large than the font size
 					fontSize:`${this.size-2}px`,
+					
 				}	
+
 			}
+			// var borderWidth = this.borderWidth
+			// if(borderWidth)
+			// {
+			// 	// this.rfcontainerBaseStyle["borderColor"] = this.borderColor
+			// 	// if(typeof borderWidth == 'Number')borderWidth = `${borderWidth}px`
+			// 	// if(borderWidth instanceof Number)borderWidth = `${borderWidth}px`
+			// 	// this.rfcontainerBaseStyle["borderSize"] = borderWidth
+			// 	this.rfcontainerBaseStyle["border"] = `${this.borderColor} ${borderWidth}px solid`
+			// }
 			
+			// console.log("debug-zsbtnsta2 ", this.rfcontainerBaseStyle)
 			
+			if(this.reflection=="x"){
+				this.rfcontainerBaseStyle["transform"] = 'scaleX(-1)'
+			}
 
 		},
 		
@@ -354,12 +386,15 @@ export default {
 			}
 			this.$emit("click", evPro)
 
+		},
+		setCheck(val){
+			this.rfstatus = val
 		}
 		// loadSVG2(icon){
 			
 		// 	return getSVG(icon)
 		// }
-	
+		
 	},
 	
 	

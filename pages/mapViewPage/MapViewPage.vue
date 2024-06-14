@@ -17,13 +17,39 @@
 		<view
 		style="position: absolute; z-index: 999; top: 20vh; right:1vw"
 		>
-			<MapViewBasicToolbar
-			@click="onRightToolbarClicked"
+
+
+			<view
+			class="zs-hlyt-end"
+			style="align-items: start;"
 			>
+			<!-- 	<view
+				style="width:60%;height:386rpx;backgroundColor:red;overflow: hidden;"
+				>
 				
-			</MapViewBasicToolbar>
-			
+					layer control layer
+				</view>	 -->
+				<MapViewBasicToolbar
+				@click="onRightToolbarClicked"
+				>
+					
+				</MapViewBasicToolbar>	
+				
+			</view>
+		
 		</view>
+		
+	<!-- 	<view
+		style="position: absolute; z-index: 999; top: 20vh; right:10vw"
+		>
+			<view
+			style="width:60%;height:100rpx;backgroundColor:red;overflow: hidden;"
+			>
+			
+				layer control layer
+			</view>
+			
+		</view> -->
 		
 	<!-- 	<view
 		style="position: absolute;top:0px;height:500px"

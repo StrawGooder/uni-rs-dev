@@ -22,14 +22,30 @@ function getDefaultProps(){
 		items:{
 			default:()=>[
 				{"icon":"layersFill", "name":"layer", "color":"orange"},
-				{"icon":"eyeFill", "name":"view", "color":"orange"},
+				// {"icon":"eyeFill", "name":"view", "color":"orange"},
+				// {"icon":"b-question", "name":"view", "color":"orange"},
+				{"icon":"b-plus", "name":"largen", "color":"orange"},
+				{"icon":"b-dash", "name":"lessen", "color":"orange"},
+				{"icon":"b-question", "name":"view", "color":"orange"},
 			]
 		},
 		itemSize:{
-			default:48
+			default:32
 		},
 		layoutDir:{
 			default:"v"
+		},
+		gutter:{
+			type:Number,
+			default:2
+		},
+		borderWidth:{
+			type:Number,
+			default:2
+		},
+		borderColor:{
+			type:String,
+			default:"black"
 		}
 	}
 }
