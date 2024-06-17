@@ -11,7 +11,7 @@ import MapViewPage from "../mapViewPage/MapViewPage.vue";
 import MapObjListItem from '../mapViewPage/MapObjListItem.vue';
 // import MapObjLayerCtrlPanel from "../mapViewPage/MapObjLayerCtrlPanel.vue";
 import MapObjLayerCtrlPanel from "../mapViewPage/panels/MapObjLayerCtrlPanel.vue";
-import MapViewBottomPanel from "../mapViewPage/MapViewBottomPanel.vue";
+import MapViewBottomPanel from "../mapViewPage/MapViewBusinessOpPanel.vue";
 
 
 import Vue from "vue";

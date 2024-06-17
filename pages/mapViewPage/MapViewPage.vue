@@ -23,12 +23,6 @@
 			class="zs-hlyt-end"
 			style="align-items: start;"
 			>
-			<!-- 	<view
-				style="width:60%;height:386rpx;backgroundColor:red;overflow: hidden;"
-				>
-				
-					layer control layer
-				</view>	 -->
 				<MapViewBasicToolbar
 				@click="onRightToolbarClicked"
 				>
@@ -38,6 +32,23 @@
 			</view>
 		
 		</view>
+		
+		<view
+		style="position: absolute; z-index: 999; top: 20vh; left:1rpx;"
+		>
+			<view
+			style="width:512rpx;"
+			>
+			<MapViewBasicCtrlPanel>
+				
+			</MapViewBasicCtrlPanel>	
+				
+			</view>
+			
+		
+		</view>
+		
+		
 		
 	<!-- 	<view
 		style="position: absolute; z-index: 999; top: 20vh; right:10vw"
@@ -87,11 +98,11 @@
 					>
 					</button> 
 
-					<MapViewBottomPanel
-					:ref="rfBottomPanelRefName"
+					<MapViewBusinessOpPanel
+					:ref="rfbottomPanelRefName"
 					>
 						
-					</MapViewBottomPanel>
+					</MapViewBusinessOpPanel>
 				</view>
 			
 			</uni-transition>
@@ -120,9 +131,9 @@
 	// import olMap from "@/components/olmap/olmap.vue";
 	import olMap from "@/components/olmap/ZsOlMap.vue";
 	
-	import MapViewBottomPanel from "./MapViewBottomPanel.vue";
+	import MapViewBusinessOpPanel from "./MapViewBusinessOpPanel.vue";
 	import MapViewBasicToolbar from "./MapViewBasicToolbar.vue";
-	
+	import MapViewBasicCtrlPanel from "./MapViewBasicCtrlPanel.vue";
 	// import one from "@/components/custom-tab-check/custom-tab-check-one.vue";
 	// import two from "@/components/custom-tab-check/custom-tab-check-two.vue";
 	// import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
@@ -137,8 +148,9 @@
 	export default {
 		components: {
 			olMap,
-			MapViewBottomPanel,
+			MapViewBusinessOpPanel,
 			MapViewBasicToolbar,
+			MapViewBasicCtrlPanel,
 			
 			// one,
 			// two,
@@ -159,7 +171,7 @@
 				mintop:"45vh",
 				
 				
-				rfBottomPanelRefName:"bottom_panel",
+				rfbottomPanelRefName:"bottom_panel",
 				
 				rfBaseToolbarStyle:{
 					
@@ -194,7 +206,7 @@
 			// this.importMapLayers()
 			// temp for debug
 			// popup the bottom panel
-			setTimeout(()=>{this.popupBottomPanel()}, 256)
+			// setTimeout(()=>{this.popupBottomPanel()}, 256)
 		},
 		methods:{
 			//开始触摸
@@ -322,7 +334,7 @@
 					else
 					{
 						this.popupBottomPanel()
-						this.$refs[this.rfBottomPanelRefName].switchTabTo("layer")	
+						this.$refs[this.rfbottomPanelRefName].switchTabTo("layer")	
 					}
 				}
 				

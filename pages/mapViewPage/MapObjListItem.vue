@@ -72,7 +72,9 @@
 				</view>
 				
 			</view>
-			<view style="width:50%; display: flex;justify-content: end;">
+			<view 
+			style="width:50%; display: flex;justify-content: end;"
+			>
 				<ZsButtonGroup
 				:items = "rfopBtnItems"
 				:index="seqid"
