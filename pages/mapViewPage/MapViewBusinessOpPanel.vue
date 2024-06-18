@@ -2,18 +2,19 @@
 	
 	<view>
 		<ZsTabs
-		:type="rfTabName"
-		:value="rfCurTabInd"
-		:ref = "rfTabRefName"
+		:type="rftabId"
+		:value="rfcurTabInd"
+		:ref = "rftabRefName"
 		>
-			<ZsTab 
+		
+		<!-- 	<ZsTab 
 			label="图层" 
 			:name="makeupTabKey('layer')"
 			>
 				<MapObjLayerCtrlPanel>
 					
 				</MapObjLayerCtrlPanel>
-			</ZsTab>
+			</ZsTab> -->
 			
 		<!-- 	<ZsTab
 			label="数据分析"
@@ -104,10 +105,10 @@ export default {
         var props = this.$props
         
         return {
-			rfTabName:"mvbt",
-			rfCurTabInd:1,
-			// rfCurTabInd:2,
-			rfTabRefName:"tabs"
+			rftabId:"mvbt",
+			rfcurTabInd:1,
+			// rfcurTabInd:2,
+			rftabRefName:"tabs"
         }
     },
 
@@ -118,7 +119,7 @@ export default {
     created(){
 		
 		
-		// var tabName = `$change_tab_${this.rfTabName}`
+		// var tabName = `$change_tab_${this.rftabId}`
 		// uni.$off(tabName)
 		// uni.$on(
 		// 	tabName, 
@@ -139,17 +140,17 @@ export default {
 
 		makeupTabKey(name){
 			
-			return `${this.rfTabName}_${name}`
+			return `${this.rftabId}_${name}`
 		},
 		
 		switchTabTo(name){
 			
-			// this.rfCurTabInd = this.crtTabKeyToInd[name]
+			// this.rfcurTabInd = this.crtTabKeyToInd[name]
 			var ind = this.crtTabKeyToInd[name]
-			// console.log("debug-mvbp tab", this.rfCurTabInd)
+			// console.log("debug-mvbp tab", this.rfcurTabInd)
 			// this.$forceUpdate()
 			
-			this.$refs[this.rfTabRefName].switchTab(ind)
+			this.$refs[this.rftabRefName].switchTab(ind)
 		}
 		
     },

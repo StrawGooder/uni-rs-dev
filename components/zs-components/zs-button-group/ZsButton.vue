@@ -99,7 +99,7 @@ export default {
 		},
 		
 		size:{
-			type:Number,
+			type:[Number,Array],
 			default:16
 		}
 		

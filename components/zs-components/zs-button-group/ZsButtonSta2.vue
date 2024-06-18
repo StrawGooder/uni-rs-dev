@@ -49,9 +49,6 @@
 		</button>
 	</view>		
 		
-
-
-
 </template>
 
 <script>
@@ -116,6 +113,10 @@ export default {
 		reflection:{
 			type:String,
 			default:""
+		},
+		
+		noWrapContent:{
+			type:Boolean
 		}
 	},
 	
@@ -127,7 +128,8 @@ export default {
 			// rfstatus: 0,
 			
 			rfClass:["hlyt"],
-			rfImgClass:["svg-img"],
+			// rfImgClass:["svg-img"],
+			rfImgClass:[],
 			// rfImgSrc: getSVG("eye")
 			rfStyle:{},
 			
@@ -148,7 +150,8 @@ export default {
 					return this.text
 				}
 				
-				return this.textDisabled || this.text + "&nbsp"
+				// return this.textDisabled || this.text + "&nbsp"
+				return this.textDisabled || this.text
 			}		
 			
 		},
@@ -269,34 +272,75 @@ export default {
 			// 	"width":item_w,
 			// 	"height":item_h
 			// }
+			
+			var btnSize = this.size
+			if( !Array.isArray(btnSize)){
+				btnSize = [this.size, this.size]
+			}
 			this.rfcontainerBaseStyle = {}
 			var contentMode = this.computedContentMode
 			if(contentMode=="text" || contentMode=="icon&text")
 			{
 				
+				// this.rfcontainerBaseStyle = {
+				// 	// color: this.computedColor,
+				// 	height: `${this.size}px`,
+				// 	// width: `${this.size}px`,
+				// 	// fontSize-2 temp process, let the icon(svg) size
+				// 	// large than the font size
+				// 	fontSize:`${this.size-2}px`,
+				// 	// adapting the content(text)
+				// 	display:"inline",
+				// 	// padding:"2px",
+				// 	padding:"0.2em"
+				// }	
+
 				this.rfcontainerBaseStyle = {
 					// color: this.computedColor,
-					height: `${this.size}px`,
+					height: `${btnSize[1]}px`,
+					// width:"auto",
 					// width: `${this.size}px`,
+					
+					// origin version
 					// fontSize-2 temp process, let the icon(svg) size
 					// large than the font size
-					fontSize:`${this.size-2}px`,
 					// adapting the content(text)
-					display:"inline",
+					// fontSize:`${btnSize[1]-2}px`,
+					// display:"inline",
+					
+					
+					// for map float ball modify version
+					// display:"flex",
+					// justifyContent:"center",
+					fontSize:`${btnSize[1]/2}px`,
 					// padding:"2px",
-					padding:"0.25em"
+					padding:"0.2em",
+					textAlign:"center",
+					margin:'1px',
 				}	
+				if(this.noWrapContent){
+					this.rfcontainerBaseStyle["width"] =  `${btnSize[0]}px`
+				}
 			}
 			else if(contentMode=="icon")
 			{
 				
+				// this.rfcontainerBaseStyle = {
+				// 	// color: this.computedColor,
+				// 	height: `${this.size}px`,
+				// 	width: `${this.size}px`,
+				// 	// fontSize-2 temp process, let the icon(svg) size 
+				// 	// large than the font size
+				// 	fontSize:`${this.size-2}px`,
+					
+				// }	
 				this.rfcontainerBaseStyle = {
 					// color: this.computedColor,
-					height: `${this.size}px`,
-					width: `${this.size}px`,
+					height: `${btnSize[1]}px`,
+					width: `${btnSize[0]}px`,
 					// fontSize-2 temp process, let the icon(svg) size 
 					// large than the font size
-					fontSize:`${this.size-2}px`,
+					fontSize:`${btnSize[1]-2}px`,
 					
 				}	
 
@@ -313,6 +357,7 @@ export default {
 			
 			// console.log("debug-zsbtnsta2 ", this.rfcontainerBaseStyle)
 			
+			// for some icon, for example the 'backward' 'forward'
 			if(this.reflection=="x"){
 				this.rfcontainerBaseStyle["transform"] = 'scaleX(-1)'
 			}

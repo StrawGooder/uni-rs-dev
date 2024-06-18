@@ -9,7 +9,7 @@
 		:class="['tab-bar',{'tab-bar-center':tabCenter}]" 
 		scroll-y="true" 
 		:scroll-into-view="scrollId" 
-		:style="{backgroundColor:tabBarColor}"
+		:style="{backgroundColor:tabBarBgColor}"
 		scroll-with-animation
 		>
 			<slot name="tab-bar"
@@ -40,7 +40,7 @@
 		scroll-x="true" 
 		scroll-y="true" 
 		
-		:style="{backgroundColor:tabContentContainerColor}"
+		:style="{backgroundColor:tabPanelBgColor}"
 		>
 			<view 
 			class="tab-cont" 
@@ -48,22 +48,17 @@
 				<slot></slot>
 			</view>			
 		</scroll-view> -->
-		<!-- :style="{'backgroundColor':tabContentContainerColor}" -->
-
 		
-		<template v-if="rfvisible">
 
-			<view
-			class="tab-cont" 
-			
-			:style="{'backgroundColor':tabContentContainerColor,'transform':`translateY(${translateX}%)`,'transition':`transform ${d/1000}s ease-in-out`}"
-			>
-				<slot></slot>
-			</view>	
-			
-		</template>
+<!-- :style="{'backgroundColor':tabPanelBgColor,'transform':`translateY(${translateX}%)`,'transition':`transform ${d/1000}s ease-in-out`}" -->
+		<view
+		class="tab-cont" 
+		:style="rftabPanelStyle"
 		
-<!-- :style="{'transform':`translateX(${translateX}%)`,'transition':`transform ${d/1000}s ease-in-out`}" -->
+		>
+			<slot></slot>
+		</view>	
+		
 	</view>
 </template>
 <script>
@@ -113,17 +108,20 @@
 				type:String,
 				default:"v"
 			},
-			tabItemAnchor:{
+			tabBarPlacement:{
 				type:String,
 				default:"right"
 			},
-			tabBarColor:{
+			tabBarBgColor:{
 				type:String,
 				default:"gray"
 			},
-			tabContentContainerColor:{
+			tabPanelBgColor:{
 				type:String,
 				default:"gray"
+			},
+			tabPanelStyle:{
+				type:[Object],
 			}
 		},
 		data() {
@@ -140,7 +138,14 @@
 				watchTabValueKey: `watchTabValue_${this.type}`,
 				putChangeKey: `putChange_${this.type}`,
 				
-				rfvisible:true
+				rfvisible:true,
+				// rftabPanelFixStyle:{
+				// 	'backgroundColor':this.tabPanelBgColor,
+				// 	'transform':`translateY(${this.translateX}%)`,
+				// 	'transition':`transform ${this.d/1000}s ease-in-out`
+				// },
+				rftabPanelFixStyle:{},
+				rftabPanelStyle:{}
 			}
 		},
 		created() {
@@ -160,6 +165,8 @@
 					if (item.label == o.oldValue && item.name == o.name) item.label = o.newValue;
 				})
 			})
+			
+			this.initRenderStyle_()
 		},
 		watch: {
 			value: {
@@ -238,6 +245,22 @@
 					index: this.tabIndex==index,
 					name:item.name,
 				}
+			},
+			
+			initRenderStyle_(){
+				
+				this.rftabPanelFixStyle = {
+					'backgroundColor':this.tabPanelBgColor,
+					'transform':`translateY(${this.translateX}%)`,
+					'transition':`transform ${this.d/1000}s ease-in-out`
+				}
+				if(this.tabPanelStyle){
+					Object.assign(this.rftabPanelStyle, this.rftabPanelFixStyle)
+					Object.assign(this.rftabPanelStyle, this.tabPanelStyle)
+				}
+				// if(this.tabPanelBgColor){
+				// 	this.rftabPanelStyle["backgroundColor"] = this.tabPanelBgColor
+				// }
 			}
 		}
 	}
@@ -421,8 +444,12 @@
 			display: flex;
 			// #endif
 			flex-direction: row;
-			padding: 20rpx 0;
+			// padding: 20rpx 0;
+			// padding: 2rpx 0;
 			
+			border-radius: 0rem 0.5rem 0.5rem 0.5rem;
+			// border-top-right-radius: 0.5rem;
+			// border-bottom-right-radius: 0.5rem;
 			// display: block;
 		}
 	}

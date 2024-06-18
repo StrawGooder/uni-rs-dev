@@ -14,11 +14,9 @@
 		<!-- :afterInit="importMapLayers" -->
 		</ol-map>
 
-		<view
+	<!-- 	<view
 		style="position: absolute; z-index: 999; top: 20vh; right:1vw"
 		>
-
-
 			<view
 			class="zs-hlyt-end"
 			style="align-items: start;"
@@ -31,24 +29,62 @@
 				
 			</view>
 		
-		</view>
+		</view> -->
 		
-		<view
-		style="position: absolute; z-index: 999; top: 20vh; left:1rpx;"
+	<!-- 	<view
+		style="position: absolute; z-index: 999; top: 20vh; left:0rpx;"
+		>
+
+			
+		</view> -->
+		
+		<!-- <view
+		style="position: absolute; z-index: 999; top: 30vh; left:0rpx;"
 		>
 			<view
-			style="width:512rpx;"
-			>
-			<MapViewBasicCtrlPanel>
+			>	
+				<ZsButtonSta2
+				v-if = "!rfctrlPanelVisible"
+				icon="b-ring-fill"
+				color="bisque"
+				:size="32"
+				:status="0"
+				@click="onFloatBallClicked"
+				>	
+				</ZsButtonSta2>
+				<view
+				v-if="rfctrlPanelVisible"
+				>
+					<view>
+						<ZsButtonSta2
+						text="^"
+						color="black"
+						bgColor="bisque"
+						:size="[32,16]"
+						:status="0"
+						noWrapContent
+						@click="onRecycleBallClicked"
+						>	
+						</ZsButtonSta2>
+					</view>
 				
-			</MapViewBasicCtrlPanel>	
-				
+					</ZsButtonSta2>
+					<MapViewBasicCtrlPanel>
+						
+					</MapViewBasicCtrlPanel>	
+					
+				</view>
 			</view>
-			
-		
-		</view>
-		
-		
+		</view> -->
+		<!-- <ZsButtonSta2
+		text="^"
+		color="black"
+		bgColor="bisque"
+		:size="[30,15]"
+		:status="0"
+		noWrapContent
+		@click="onRecycleBallClicked"
+		>	 -->
 		
 	<!-- 	<view
 		style="position: absolute; z-index: 999; top: 20vh; right:10vw"
@@ -121,6 +157,7 @@
 			>
 			</chooseimage>
 		</custom-tabs> -->
+		
 	</view>
 
 </template>
@@ -144,6 +181,7 @@
 	
 	import { importLayer } from "../../components/olmap/layers";
 	
+	import ZsButtonSta2 from "../../components/zs-components/zs-button-group/ZsButtonSta2.vue";
 	
 	export default {
 		components: {
@@ -151,7 +189,7 @@
 			MapViewBusinessOpPanel,
 			MapViewBasicToolbar,
 			MapViewBasicCtrlPanel,
-			
+			ZsButtonSta2,
 			// one,
 			// two,
 			// three,
@@ -178,7 +216,9 @@
 				},
 				
 				rfmapVmName:"map",
-				rfmapVm:null
+				rfmapVm:null,
+				
+				rfctrlPanelVisible:false
 			}
 		},
 		onLoad(options) {
@@ -276,6 +316,18 @@
 					this.popupBottomPanel()
 				}
 				// this.touchEnd(ev)
+			},
+			
+			onFloatBallClicked(evt){
+				
+				var evtData = evt['data']
+				// if(evtData["en"])
+				this.rfctrlPanelVisible = evtData["enabled"]
+			},
+			
+			onRecycleBallClicked(evt){
+				
+				this.rfctrlPanelVisible = false
 			},
 			
 			//输入框获焦

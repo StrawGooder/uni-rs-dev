@@ -8,6 +8,8 @@
 		:change:propgeojson="ol.GetGeojson"
 		>
 		</view>
+		
+		
 		<!--监控手机用户的界面大小  -->
 	<!-- 	<view id="olMap"
 			:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}" 
@@ -20,8 +22,9 @@
 		:ref = "rfMapContElem"
 		style="overflow: scroll;"
 		class="zs-noscrollbar"
-	
 		>
+		
+		
 			
 	<!-- 		<view id="olMap"
 				:style="{height: nowMapIndex ? nintyPercentScreenHeight : seventyPercentScreenHeight,width:'750rpx'}" 
@@ -52,6 +55,46 @@
 			>
 				
 			</MenuView>
+			
+			<view
+			style="position: absolute; z-index: 999; top: 30vh; left:0rpx;"
+			>
+				<view
+				>	
+					<ZsButtonSta2
+					v-if = "!rfctrlPanelVisible"
+					icon="b-ring-fill"
+					color="bisque"
+					:size="32"
+					:status="0"
+					@click="onFloatBallClicked"
+					>	
+					</ZsButtonSta2>
+					<view
+					v-if="rfctrlPanelVisible"
+					>
+						<view>
+							<ZsButtonSta2
+							text="^"
+							color="black"
+							bgColor="bisque"
+							:size="[32,16]"
+							:status="0"
+							noWrapContent
+							@click="onRecycleBallClicked"
+							>	
+							</ZsButtonSta2>
+						</view>
+			
+						</ZsButtonSta2>
+						<MapViewBasicCtrlPanel>
+							
+						</MapViewBasicCtrlPanel>	
+						
+					</view>
+				</view>
+			</view>
+
 		</view>
 
 	</view>
@@ -73,14 +116,17 @@
 	
 	import Menu from './menu/Menu.vue';
 	import MenuView from './menu/MenuView.vue';
-	
+	import ZsButtonSta2 from "../zs-components/zs-button-group/ZsButtonSta2.vue";
+	import MapViewBasicCtrlPanel from "../../pages/mapViewPage/MapViewBasicCtrlPanel.vue";
 	export default {
 		
 		name:"ZsOlMap",
 		computed: mapState(['hasLogin', 'uerInfo']),
 		components:{
 			MenuView,
-			Menu
+			Menu,
+			MapViewBasicCtrlPanel,
+			ZsButtonSta2,
 		},
 		data() {
 			return {
@@ -127,7 +173,9 @@
 				rfmenuItems:[{text:"copy", key:"copy"},{"text":"paste","key":"paste"}],
 				rfmenuPos:[0,0],
 				rfmenuVisible:false,
-				rfmenuName:"Menu"
+				rfmenuName:"Menu",
+				
+				rfctrlPanelVisible:false,
 			}
 		},
 	
@@ -366,7 +414,19 @@
 			onLongpress(){
 				
 				console.log("debug-zsolmap long press", )
-			}
+			},
+			
+			onFloatBallClicked(evt){
+				
+				var evtData = evt['data']
+				// if(evtData["en"])
+				this.rfctrlPanelVisible = evtData["enabled"]
+			},
+			
+			onRecycleBallClicked(evt){
+				
+				this.rfctrlPanelVisible = false
+			},
 			
 			// },
 

@@ -24,9 +24,9 @@ function getDefaultProps(){
 				{"icon":"layersFill", "name":"layer", "color":"orange"},
 				// {"icon":"eyeFill", "name":"view", "color":"orange"},
 				// {"icon":"b-question", "name":"view", "color":"orange"},
-				{"icon":"b-plus", "name":"largen", "color":"orange"},
-				{"icon":"b-dash", "name":"lessen", "color":"orange"},
-				{"icon":"b-question", "name":"view", "color":"orange"},
+				{"icon":"b-plus", "name":"zoomIn", "color":"orange"},
+				{"icon":"b-dash", "name":"zoomOut", "color":"orange"},
+				{"icon":"b-question", "name":"viewGuideline", "color":"orange"},
 			]
 		},
 		itemSize:{

@@ -1,10 +1,39 @@
 <template>
 	<view class="tab-pane">
 		<template v-if="show">
-			<slot></slot>
+			<view>
+			<!-- 	<template
+				v-if="title"
+				>
+					<slot name="header">
+						<view
+						>
+							{{title}}
+						</view>
+					</slot>
+			
+				</view> -->
+				<slot name="header">
+					<view
+					v-if="title"
+					>
+						<h3>
+							{{title}}
+						</h3>
+						<!-- {{title}} -->
+					</view>
+				</slot>
+				
+				<slot></slot>
+			</view>
+			
 		</template>
 		<template v-else>
-			<view style="width: 750rpx;height: 0;"></view>
+			<view 
+			style="width: 0;height: 0;"
+			>
+				<!-- style="width: 750rpx;height: 0;" -->
+			</view>
 		</template>
 	</view>
 </template>
@@ -35,7 +64,7 @@
 <script>
 	export default {
 		name:"ZsTab",
-		props: ['label', 'name'],
+		props: ['label', 'name', 'title'],
 		data() {
 			return {
 				timer: 0,

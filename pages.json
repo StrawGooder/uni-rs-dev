@@ -34,7 +34,7 @@
 			}
 		},
         {
-            "path" : "pages/task_infos/task_infos",
+            "path" : "pages/task_infos/ZsSpotSurveyTaskPage",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "督察",
@@ -55,7 +55,8 @@
         },
 
         {
-            "path" : "pages/task_infos/task_infor_items/task_infor_items",
+            // "path" : "pages/task_infos/task_infor_items/task_infor_items",
+			"path" : "pages/task_infos/task_infor_items/spot_survey_task_view_page",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
@@ -64,7 +65,8 @@
             
         },
         {
-            "path" : "pages/task_infos/task_infos_check/task_infos_check",
+            // "path" : "pages/task_infos/task_infos_check/task_infos_check",
+			"path" : "pages/task_infos/task_infos_check/spot_survey_work_page",
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",

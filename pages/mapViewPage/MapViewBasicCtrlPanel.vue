@@ -6,6 +6,8 @@
 		:type="rftabName"
 		:value="rfcurTabInd"
 		:ref = "rftabRefName"
+		:tabPanelStyle="{border:'gray 0.1rem solid'}"
+		tabPanelBgColor="white"
 		>
 		<!-- 	<view
 			>
@@ -38,49 +40,55 @@
 				</MapViewBasicToolbar>
 			</template>
 			
+			<!-- style="width:50%;height:50%;padding:0.5rem;" -->
+			<!-- scroll-with-animation -->
 			<template v-if="rfvisible">
-			<scroll-view
-			style="width:50%;height:50%;"
-			scroll-x="true"
-			scroll-y="true"
-			>	
-				<!-- <template #tab-bar-item
-				v-bind:data= "scopedSlots.props"
-				>
-					
-				</template> -->
+				<scroll-view
+				style="padding:0.5rem;"
+				:style="{width:`${rftabWidth}rpx`, height:`${rftabHeight}rpx`}"
+				scroll-x="true"
+				scroll-y="true"
 				
-				<view
-				style="width:512rpx;height: 256rpx;"
-				>
+				>	
+					<!-- <template #tab-bar-item
+					v-bind:data= "scopedSlots.props"
+					>
+						
+					</template> -->
+					<!-- style="width:512rpx;height: 256rpx;" -->
+					<!-- style="width:90%;height: 90%;" -->
+					<view
+					:style="{width:`${computedNinetyPercentSize[0]}rpx`,height: `${computedNinetyPercentSize[1]}rpx`}"
+					>
+						
+						<ZsTab
+						label="图层" 
+						:name="makeupTabKey('layer')"
+						title="图层"
+						>
+							<MapObjLayerCtrlPanel>
+								
+							</MapObjLayerCtrlPanel>
+						</ZsTab>	
+						<ZsTab 
+						label="图层2" 
+						:name="makeupTabKey('layer2')"
+						>
+							<view>
+								layer2
+							</view>
+						</ZsTab>	
+					<!-- 	<ZsTab
+						label="图层3" 
+						:name="makeupTabKey('layer3')"
+						>
+							<view>
+								layer3
+							</view>
+						</ZsTab> -->
+					</view>
 					
-					<ZsTab
-					label="图层" 
-					:name="makeupTabKey('layer')"
-					>
-						<MapObjLayerCtrlPanel>
-							
-						</MapObjLayerCtrlPanel>
-					</ZsTab>	
-					<ZsTab 
-					label="图层2" 
-					:name="makeupTabKey('layer2')"
-					>
-						<view>
-							layer2
-						</view>
-					</ZsTab>	
-				<!-- 	<ZsTab
-					label="图层3" 
-					:name="makeupTabKey('layer3')"
-					>
-						<view>
-							layer3
-						</view>
-					</ZsTab> -->
-				</view>
-				
-			</scroll-view>	
+				</scroll-view>	
 				
 				
 			</template>
@@ -126,12 +134,21 @@ export default {
 			rfcurTabInd:0,
 			// rfcurTabInd:2,
 			rftabRefName:"tabs",
-			rfvisible:true
+			rfvisible:true,
+			
+			// rftabSize:[512,384],
+			rftabWidth:512,
+			rftabHeight:384,
 		}
     },
 
     computed:{
 
+		computedNinetyPercentSize:{
+			get:function(){
+				return [this.rftabWidth*1.05, this.rftabHeight*1.05]
+			}
+		}
     },
 
     created(){
