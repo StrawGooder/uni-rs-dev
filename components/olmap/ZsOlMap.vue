@@ -56,7 +56,7 @@
 				
 			</MenuView>
 			
-			<view
+			<!-- <view
 			style="position: absolute; z-index: 999; top: 30vh; left:0rpx;"
 			>
 				<view
@@ -93,7 +93,7 @@
 						
 					</view>
 				</view>
-			</view>
+			</view> -->
 
 		</view>
 
@@ -103,6 +103,7 @@
 
 <!-- 逻辑层 -->
 <script>
+	// custom ol map css
 	import "./style.css";
 	import {
 		getShpAll
@@ -175,6 +176,8 @@
 				rfmenuVisible:false,
 				rfmenuName:"Menu",
 				
+				// for float ball and MapBasicCtrlPanel expanding
+				// control
 				rfctrlPanelVisible:false,
 			}
 		},
@@ -416,6 +419,9 @@
 				console.log("debug-zsolmap long press", )
 			},
 			
+			
+			// for float ball and MapBasicCtrlPanel expanding
+			// control
 			onFloatBallClicked(evt){
 				
 				var evtData = evt['data']
@@ -423,6 +429,8 @@
 				this.rfctrlPanelVisible = evtData["enabled"]
 			},
 			
+			// for float ball and MapBasicCtrlPanel expanding
+			// control
 			onRecycleBallClicked(evt){
 				
 				this.rfctrlPanelVisible = false
@@ -2469,7 +2477,7 @@
 					)
 					lyr.set("xgeomType", "LineString")
 					lyr.set("xdrawerClass", "Doodle")
-					lyr.set("xoriginName", lyrName)
+					lyr.set("xbuiltinName", lyrName)
 					lyr.set("xbaseStyle", {strokeColor:color, strokeWidth: width})
 					
 					this.addLayer(lyr, newName)

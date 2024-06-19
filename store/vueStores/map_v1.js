@@ -4,17 +4,6 @@ import { getLocalStore } from '../localStores';
 import {isMap} from "lodash"
 // import {merge as mergeObject } from "lodash"
 
-function objectToArray(obj){
-	
-	var ret = []
-	// var lyrs = state.layers
-	for(var k in obj){
-		ret.push(lyrs[k])
-	}
-	// state.layers.forEach((k,v)=>{lyrArr.push(v)})
-	// console.log("debug-map-vuesto computed layers ", state.layers)
-	return ret
-}
 
 function findLayerById(state,i){
 		
@@ -97,11 +86,11 @@ function loadLayers(){
 	}
 	// var data = getLocalStore("map").loadItem("layers")
 	
-	// if(Array.isArray(data)) return new Map(data)
-	// else if(isMap(data)) return data
-	// console.log("debug-map-vuesto init vue store from LocalStorage ", data)
-	// return new Map()
-	return {}
+	if(Array.isArray(data)) return new Map(data)
+	else if(isMap(data)) return data
+	console.log("debug-map-vuesto init vue store from LocalStorage ", data)
+	return new Map()
+	
 }
 
 
@@ -126,16 +115,7 @@ const mapStore = {
 	getters: {
 		
 		computedLayers(state){
-			// return [...state.layers.values()]
-			
-			var lyrArr = []
-			var lyrs = state.layers
-			for(var k in lyrs){
-				lyrArr.push(lyrs[k])
-			}
-			// state.layers.forEach((k,v)=>{lyrArr.push(v)})
-			console.log("debug-map-vuesto computed layers ", state.layers)
-			return lyrArr
+			return [...state.layers.values()]
 		},
 
 	},
@@ -152,21 +132,19 @@ const mapStore = {
 			if(!hasLayer(this.getters.computedLayers, {"field":state.indexField, "value": indexVal} ))
 			{
 				// state.layers.push(lyr)
-				// state.layers.set(indexVal, lyr)
-				state.layers[indexVal] = lyr
-				// console.log("debug-map-vuesto layers aa ", state.layers, indexVal, lyr)
+				state.layers.set(indexVal, lyr)
+				console.log("debug-map-vuesto layers aa ", state.layers, indexVal, lyr)
 				// new Map().set
 				var a;
 			}
 			// state.layers.push(lyr)
-			// console.log("debug-map-vuesto layers ", state.layers)
+			// console.log("debug-map-vuesto layers ", lyr)
 		},
 		
 		removeLayer(state, filters){
 			
 			// var lyrs = findLayers(state.layers, filters)
-			// var lyrs = findLayers(this.getters.computedLayers, filters)
-			var lyrs = findLayers(objectToArray(state.layers), filters)
+			var lyrs = findLayers(this.getters.computedLayers, filters)
 			
 			if(lyrs.length>0)
 			{
@@ -174,8 +152,7 @@ const mapStore = {
 				for(var i in lyrs)
 				{
 					iter_lyr = lyrs[i]
-					// state.layers.delete(iter_lyr[state.indexField])	
-					delete state.layers[i]
+					state.layers.delete(iter_lyr[state.indexField])	
 				}	
 			}
 		},
@@ -198,8 +175,7 @@ const mapStore = {
 			// var targetLyr = findLayerById(state, id)
 			
 			// console.log(`warning-store | `, this.getters.computedLayers)
-			// var targetLyr = hasLayer(this.getters.computedLayers, {"field":state.indexField, "value":id})
-			var targetLyr = hasLayer(objectToArray(state.layers), {"field":state.indexField, "value":id})
+			var targetLyr = hasLayer(this.getters.computedLayers, {"field":state.indexField, "value":id})
 			
 			if(!targetLyr)
 			{
@@ -220,7 +196,7 @@ const mapStore = {
 			// }
 			// targetLyr = mergeObject(targetLyr, updProps)
 			Object.assign(targetLyr, updProps)
-			// console.log(`debug-mapstore | upd layer`, targetLyr, updProps)
+			console.log(`debug-mapstore | upd layer`, targetLyr, updProps)
 			
 			return true
 		},
@@ -231,11 +207,6 @@ const mapStore = {
 		findLayers(context, query){
 			
 			return findLayers(context.getters.computedLayers, query)
-		},
-		
-		getAllLayers(context){
-			
-			return context.state.layers
 		},
 		
 		saveToLSTO({state,commit}){

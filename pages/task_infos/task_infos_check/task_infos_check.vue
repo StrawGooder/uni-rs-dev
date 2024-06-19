@@ -3,9 +3,22 @@
 		<!-- <olMap  @func="chang_transition_top($event)"></olMap> -->
 		<!-- 地图模块向空间分析传值 -->
 
-		<olmapoperation :messageOlmap="messageolmap" @olmapSend="messageAnaly($event)" :tbbh="tbbh"
+	<!-- 	<olmapoperation :messageOlmap="messageolmap" @olmapSend="messageAnaly($event)" :tbbh="tbbh"
 			@featureGeoJsonSend="getfeatureGeoJson($event)" @compassangelSend="getcompassangel($event)"
-			@jwdSend="getjwd($event)" @get_graphphone_status="get_graphphone_status($event)"></olmapoperation>
+			@jwdSend="getjwd($event)" @get_graphphone_status="get_graphphone_status($event)">
+		</olmapoperation> -->
+			
+		<!-- :afterInit="importMapLayers"
+		:ref="rfmapVmName" -->
+		<OlMap
+		hideMapImg
+		usedMode = "view"
+		drawTheme="base"
+		>
+			
+			
+		</OlMap>	
+		
 		<view class="index">
 			<uni-transition v-bind:custom-class="{'menu_warp': isActive, 'menu_warp1': hasError }" :show="show"
 				ref="menuWarp">
@@ -48,7 +61,7 @@
 	// #endif
 </script>
 <script>
-	import olmapoperation from "./@/components/olmap/olmap_operation.vue";
+	// import olmapoperation from "./@/components/olmap/olmap_operation.vue";
 	import setting from '@/setting.js';
 	import one from "./@/components/custom-tab-check/custom-tab-check-one.vue";
 	import two from "./@/components/custom-tab-check/custom-tab-check-two.vue";
@@ -56,6 +69,9 @@
 	import analy from "./@/components/custom-tab-check/custom-tab-check-analy.vue";
 	import chooseimage from "./@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
 	import coordtransform from 'coordtransform';
+	
+	import OlMap from "@/components/olmap/ZsOlMap.vue"
+	
 	export default {
 		components: {
 			olmapoperation,

@@ -1,113 +1,136 @@
 <template>
+
 	<view>
-		<!-- <olMap  @func="chang_transition_top($event)"></olMap> -->
-		<!-- 地图模块向空间分析传值 -->
+	<!-- 	<custom-tabs type="c1" :value="value" >
+			<one></one>
+			<two :id="tbbh"></two>
+			<three :id="tbbh"></three>
+			<chooseimage :imageList="imagelist" :get_map_data="get_map_data"
+				:set_graphphone_status="set_graphphone_status" :tbbh="tbbh"
+				:investigationStatus="investigationStatus">
+			</chooseimage>
+			
+			<analy :messageAnaly="messageanaly" @analySend="messageOlmap($event)"></analy>
+		</custom-tabs> -->
 
-<!-- 		<olmapoperation 
-		:messageOlmap="messageolmap" 
-		@olmapSend="messageAnaly($event)" 
-		:tbbh="tbbh"
-		@featureGeoJsonSend="getfeatureGeoJson($event)" 
-		@compassangelSend="getcompassangel($event)"
-		@jwdSend="getjwd($event)" 
-		@get_graphphone_status="get_graphphone_status($event)"
-		>
-		</olmapoperation> -->
-		
-		<!-- :afterInit="importMapLayers"
-		:ref="rfmapVmName" -->
-		<OlMap
-		hideMapImg
-		usedMode = "view"
-		drawTheme="base"
-		:afterInit="importMapLayers"
-		ref = "map"
+		<ZsTabs
+		:type="rftabId"
+		:value="4"
 		>
 			
-			
-		</OlMap>	
-
-		<ZsFloatBall>
-			<MapViewBasicCtrlPanel></MapViewBasicCtrlPanel>
-			
-		</ZsFloatBall>
-		
-		<ZsBottomPullup>
-			
-			<!-- <view>
-				<custom-tabs type="c1" :value="value" >
-					<one></one>
-					<two :id="tbbh"></two>
-					<three :id="tbbh"></three>
-					<chooseimage :imageList="imagelist" :get_map_data="get_map_data"
-						:set_graphphone_status="set_graphphone_status" :tbbh="tbbh"
-						:investigationStatus="investigationStatus">
-					</chooseimage>
+			<ZsTab
+				label="影像截取"
+				:name="makeupTabKey('mapImageSnapshot')"
+				>
+					<view style="width:100%;">
+						<!-- <image src='../../static/a18101f2e6ea4b1eb06fed87454421f1.jpeg'> -->
+							<image src='/static/a18101f2e6ea4b1eb06fed87454421f1.jpeg'>
+						</image>
+					</view>
+				</ZsTab>
+				<ZsTab
+				label="图斑信息"
+				:name="makeupTabKey('spotInfo')"
+				>
 					
-					<analy :messageAnaly="messageanaly" @analySend="messageOlmap($event)"></analy>
-				</custom-tabs>
-				<button  class="submit_button" type="primary"
-					@click="postMins()">
-					<uni-icons class="submit_button_icon" type="cloud-upload-filled" size="28" color="white">
-					</uni-icons>
-					<span class="submit_button_text">点击提交</span>
-				</button>
+					<SpotInfoViewPanel>
+						
+					</SpotInfoViewPanel>
+					
+				</ZsTab>
+				<ZsTab
+				label="分析"
+				:name="makeupTabKey('analy')"
+				>
+					<!-- <SpatialAnalyPanel>
+						
+					</SpatialAnalyPanel> -->
+				</ZsTab>
+				<ZsTab
+				label="拍照取证"
+				:name="makeupTabKey('dataCollection')"
+				>
+	
+					<OutdoorPhotoPanel
+					:imageList="imagelist" 
+					:get_map_data="get_map_data"
+					:set_graphphone_status="set_graphphone_status" 
+					:tbbh="tbbh"
+					:investigationStatus="investigationStatus"
+					>
+						
+					</OutdoorPhotoPanel>
+					
+				</ZsTab>	
+				<ZsTab
+				label="绘制编辑"
+				:name="makeupTabKey('drawAndEdit')"
+				>
+						<MapEditCtrlPanel>
+							
+						</MapEditCtrlPanel>
 				
-			</view> -->
-			<!-- 分析模块向地图模块传值 -->
-			<SpotSurveyBusinessOpPanel>
-				
-			</SpotSurveyBusinessOpPanel>
+				</ZsTab>
 			
-		</ZsBottomPullup>
-		
-		
+		</ZsTabs>
+		<button  
+		class="submit_button" 
+		type="primary"
+		@click="postMins()"
+		>
+			<uni-icons class="submit_button_icon" type="cloud-upload-filled" size="28" color="white">
+			</uni-icons>
+			<span class="submit_button_text">点击提交</span>
+		</button>
 	</view>
+
 </template>
-<script setup>
-	// // #ifdef VUE3
-	// import {
-	// 	reactive,
-	// 	ref,
-	// 	watch
-	// } from 'vue';
-	// const value = ref(2);
 
+<script type="text/javascript">
 
-	// // #endif
-</script>
-<script>
-	// import olmapoperation from "./@/components/olmap/olmap_operation.vue";
+import Vue from 'vue';
+
+import ZsTabs from '@/components/zs-components/zs-tabs/ZsTabs.vue';
+import ZsTab from '@/components/zs-components/zs-tabs/ZsTab.vue';
+// import MapObjLayerCtrlPanel from './MapObjLayerCtrlPanel.vue';
+// import MapObjLayerCtrlPanel from './panels/MapObjLayerCtrlPanel.vue';
+// import OutdoorDataCollectionPanel from './panels/OutdoorDataCollectionPanel.vue';
+// import SpatialAnalyPanel from "@/pages/mapViewPage/panels/SpatialAnalyPanel.vue";
+import SpatialQueryPanel from '@/pages/mapViewPage/panels/SpatialQueryPanel.vue';
+// import DataAnalyPanel from './panels/DataAnalyPanel.vue';
+import SpotInfoViewPanel from './SpotInfoViewPanel.vue';
+import OutdoorPhotoPanel from './OutdoorPhotoPanel.vue';
+import MapEditCtrlPanel from "./MapEditCtrlPanel.vue"
+// import OutdoorDataCollectionPanel from '@/components/custom-tab-check/custom-tab-check-chooseimage.vue';
+// import DataAnalyPanel from "@/components/custom-tab-check/custom-tab-check-analy.vue";
+
 	import setting from '@/setting.js';
-	import one from "./@/components/custom-tab-check/custom-tab-check-one.vue";
-	import two from "./@/components/custom-tab-check/custom-tab-check-two.vue";
-	import three from "./@/components/custom-tab-check/custom-tab-check-three.vue";
-	import analy from "./@/components/custom-tab-check/custom-tab-check-analy.vue";
-	import chooseimage from "./@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
-	import coordtransform from 'coordtransform';
-	
-	import OlMap from "@/components/olmap/ZsOlMap.vue";
-	import ZsFloatBall from "@/components/zs-components/zs-floatball/ZsFloatBall.vue";
-	import MapViewBasicCtrlPanel from "@/pages/mapViewPage/MapViewBasicCtrlPanel.vue";
-	import ZsBottomPullup from "@/components/zs-components/zs-bottom-pullup/ZsBottomPullup.vue";
-	
-	import SpotSurveyBusinessOpPanel from "./SpotSurveyBusinessOpPanel.vue";
-	
-	import { importLayer } from "@/components/olmap/layers";
-	
-	export default {
+	// import one from "@/components/custom-tab-check/custom-tab-check-one.vue";
+	// import two from "@/components/custom-tab-check/custom-tab-check-two.vue";
+	// import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
+	// import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
+	// import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
+	// import coordtransform from 'coordtransform';
+
+export default {
+		name:"SpotSurveyBusinessOpPanel",
 		components: {
+			ZsTabs,
+			ZsTab,
 			// olmapoperation,
 			// one,
 			// two,
 			// three,
 			// analy,
 			// chooseimage,
-			OlMap,
-			ZsFloatBall,
-			MapViewBasicCtrlPanel,
-			ZsBottomPullup,
-			SpotSurveyBusinessOpPanel
+			// OlMap,
+			// ZsFloatBall,
+			// MapViewBasicCtrlPanel,
+			// ZsBottomPullup,
+			
+			SpotInfoViewPanel,
+			OutdoorPhotoPanel,
+			MapEditCtrlPanel,
 		},
 		data() {
 			return {
@@ -154,8 +177,21 @@
 				}, //获取经纬度信息
 				image_error: null, //错误图片的集合
 				investigationStatus: null, //调查状态
-				// a:1,
+				
+				
+				rftabId:"ssptb",
+				rfcurTabInd:1,
+				// rfcurTabInd:2,
+				rftabRefName:"tabs"
 			};
+		},
+		created(){
+			
+			this.urftabKeyToInde = {
+				"layer":0,
+				"spatialAnaly":1,
+				"dataCollection":2
+			}
 		},
 		onLoad(options) {
 			this.tbbh = options.tbbh;
@@ -426,6 +462,9 @@
 				}
 			},
 			uploadImageAndData(image_path) {
+				
+				
+			
 				return new Promise((resolve, reject) => {
 					let token = uni.getStorageSync('DriverAuthorization')
 					uni.uploadFile({
@@ -472,232 +511,31 @@
 				})
 			},
 			
+			makeupTabKey(name){
+				
+				return `${this.rftabId}_${name}`
+			},
 			
-			importMapLayers(){
+			switchTabTo(name){
 				
-				var _this = this
-				this.rfmapVm = this.$refs["map"]
-				// console.log("debug-mapviepage ", this.$refs, mapVm)
+				// this.rfcurTabInd = this.urftabKeyToInde[name]
+				var ind = this.urftabKeyToInde[name]
+				// console.log("debug-mvbp tab", this.rfcurTabInd)
+				// this.$forceUpdate()
 				
-				// var import_prom = importAdminLayer("city")
-				
-				// var $store = this.$store
-				
-				// $store.dispatch("findLayer", {"name":"city"})
-				// .then(
-				// 	(lyr)=>{
-				// 		return importAdminLayer("city")
-				// 	}
-				// )
-				// .then( 
-				// 	(lyrObj)=>{
-				// 		_this.$refs["map"].addLayer(lyrObj,  "city", "default")
-				// 	} 
-				
-				// )
-				
-				// $store.dispatch("findLayers", 
-				// // {"name":"city"},
-				// {"field":"name","value":"city"}
-				// )
-				// .then(
-				// 	(lyrs)=>{
-				// 		console.log(`debug-mapviewpage `, lyrs)
-				// 		return lyrs[0]
-				// 	}
-				// )
-				
-				let import_prom;
-				
-				importLayer({"name":"city", "layerRepresentType":"location"})
-				.then(
-					(lyrObj)=>{
-						
-						// if(!lyrModel[0]["visible"])
-						// {
-						// 	lyrObj.setVisible(false)
-						// }
-						_this.$refs["map"].addLayer(lyrObj,  "city", "default")	
-				
-						// $store.dispatch("findLayers",
-						// // {"name":"city"},
-						// {"field":"name","value":"city"}
-						// )
-						// .then(
-						// 	(lyrs)=>{
-						// 		console.log(`debug-mapviewpage `, lyrs)
-						// 		// return lyrs[0]
-						// 		if(lyrs[0] && !lyrs[0]["visible"])
-						// 		{
-						// 			lyrObj.setVisible(false)
-						// 		}
-						// 	}
-						// )
-						// _this.$refs["map"].setDrawLayer("city")	
-						
-					}
-				
-				)
-				
-				// _this.$refs["map"].addLayer(lyrObj,  "city", "default")
-				// import_prom.then(
-				// 	(result)=>{
-				// 		// console.log("debug-zsolmap import layer", _this.rfmapVm)
-				// 		// _this.map.addLayer(result)
-				// 		// _this.addLayer(result, "city", "default")
-				// 		// _this.rfmapVm.addLayer(result,  "city", "default")
-				// 		_this.$refs["map"].addLayer(result,  "city", "default")
-				// 		// _this.map.render()
-						
-				// 	}
-				// )
-				
-				// var lyr_item = {
-				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
-				// 	"dataSourceType":"vector"
-				// }
-				// _this.emitEvent("createMapLayer", 
-				// 				lyr_item,
-				// 			)
-				
-				// _this.$mapStore.commit("addLayer", lyr_item)
-				
-				importLayer({"name":"county", "layerRepresentType":"location"})
-				.then(
-					(result)=>{
-						// _this.map.addLayer(result)
-						// _this.addLayer(result, "county", "default")
-						// _this.map.render()
-						// _this.addLayer(result, "county", "default")
-						
-						_this.rfmapVm.addLayer(result, "county", "default")
-					}	
-				)
-				
-				
-				importLayer({name:"outdoorCamera"})
-				.then(
-					(result)=>{
-						
-						console.log("debug-mapviewpage ", result)
-						
-						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
-						// _this.rfmapVm.setDrawLayer("outdoorCamera")
-						// for test
-						// _this.rfmapVm.setUsedMode("edit")
-						// _this.rfmapVm.setupInteraction({"type":"draw"})
-						// _this.rfmapVm.setInteractionType("draw")
-					}	
-				)
-				
-				// _this.rfmapVm.setInteractionType("select")
-				_this.rfmapVm.createDoodleLayer("default", "red", 4)
-				_this.rfmapVm.startDoodle("default")
-				
+				this.$refs[this.rftabRefName].switchTab(ind)
 			}
 		},
 	};
+
+
 </script>
-<style lang="scss">
-	.submit_button {
-		margin-top: -8%;
-		// bottom: -8%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 7%;
 
-		.submit_button_icon {
-			vertical-align: middle;
-		}
+<style>
+/* 
+    your CSS
 
-		.submit_button_text {
-			vertical-align: middle;
-			font-size: 25rpx;
-			margin-left: 10rpx;
-		}
-	}
-
-	.mainImg {
-		width: 100%;
-	}
-
-	//要给u-transition设置fixed定位
-	.menu_warp {
-		width: 100vw;
-		z-index: 9999999;
-		position: fixed;
-		top: 90vh;
-		left: 0;
-
-		.warp {
-			background: lightblue;
-			border-radius: 40rpx 40rpx 0 0;
-			padding-bottom: 300rpx;
-
-			.bar {
-				position: relative;
-				width: 100%;
-				height: 40rpx;
-
-				&::after {
-					content: "";
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-					width: 200rpx;
-					height: 10rpx;
-					border-radius: 10rpx;
-					background: #111111;
-				}
-			}
-
-			.text {
-				font: 100rpx "Ravie";
-				margin-top: 160rpx;
-				text-align: center;
-				color: #ffffff;
-			}
-		}
-	}
-
-	.menu_warp1 {
-		width: 100vw;
-		position: fixed;
-		top: 45vh;
-		z-index: 9999999;
-		left: 0;
-
-		.warp {
-			background: lightblue;
-			border-radius: 40rpx 40rpx 0 0;
-			padding-bottom: 300rpx;
-
-			.bar {
-				position: relative;
-				width: 100%;
-				height: 40rpx;
-
-				&::after {
-					content: "";
-					position: absolute;
-					top: 50%;
-					left: 50%;
-					transform: translate(-50%, -50%);
-					width: 200rpx;
-					height: 10rpx;
-					border-radius: 10rpx;
-					background: #111111;
-				}
-			}
-
-			.text {
-				font: 100rpx "Ravie";
-				margin-top: 160rpx;
-				text-align: center;
-				color: #ffffff;
-			}
-		}
-	}
+    or use '@import "/path/package/you.css"'
+    import the third library css files
+*/
 </style>

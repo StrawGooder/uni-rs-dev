@@ -1,17 +1,18 @@
 <template>
 	<view>
 	
-		<scroll-view scroll-y style="height: 530rpx;">
-<!-- 
-			<view style="width: 80%; margin: auto; margin-bottom: 20px;">
+		<scroll-view 
+		scroll-y 
+		style="height: 384rpx;"
+		>
+
+	<!-- 		<view style="width: 80%; margin: auto; margin-bottom: 20px;">
 				<xfl-select :list="list" :clearable="false" :showItemNum="10" :listShow="false" :isCanInput="false"
 					:style_Container="'height: 30px; font-size: 16px;'" :placeholder="'placeholder'"
 					:initValue="'选择分析的图斑'" :selectHideType="'hideAll'" v-model="list[0]" @change="change">
 
-				</xfl-select>
-			 
+			 </xfl-select>
 			</view> -->
-			
 			<!-- </uni-list> -->
 
 			<view
@@ -33,9 +34,10 @@
 	} from '@/utils/getData.js';
 	import xflSelect from '@/components/xfl-select/xfl-select.vue'; //导入
 	import ZsButtonSta2 from "@/components/zs-components/zs-button-group/ZsButtonSta2.vue"
-	import EditToolbar from '../buttonGroup/EditToolbar.vue';
+	import EditToolbar from '@/pages/mapViewPage/buttonGroup/EditToolbar.vue';
 	import {mapMutations} from "vuex"
 	export default {
+		name:"MapEditCtrlPanel",
 		props: ['id'],
 		data() {
 			return {

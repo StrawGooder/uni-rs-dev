@@ -1,132 +1,49 @@
 <template>
-	<view>
-		<ol-map
-		hideMapImg
-		
-		usedMode = "edit"
-		drawTheme="base"
-		:afterInit="importMapLayers"
-		:ref="rfmapVmName"
-		
+    
+<view 
+		class="index" 
+		style="height: 60vh;position:absolute;"
 		>
-		<!-- drawTheme="metrics" -->
-		<!-- usedMode = "edit" -->
-		<!-- :afterInit="importMapLayers" -->
-		</ol-map>
-
-	<!-- 	<view
-		style="position: absolute; z-index: 999; top: 20vh; right:1vw"
-		>
-			<view
-			class="zs-hlyt-end"
-			style="align-items: start;"
+			<uni-transition  
+			v-bind:custom-class="{'menu_warp': isActive, 'menu_warp1': hasError }" 
+			:show="show"
+			ref="menuWarp"
 			>
-				<MapViewBasicToolbar
-				@click="onRightToolbarClicked"
-				>
+				
+				<view class="warp">
+					<button 
+					class="bar" 
+					@touchmove.stop="touchMove" 
+					@touchend.stop="touchEnd"
+					@touchstart.stop="touchStart" 
+					@mousedown="onBottomBtnPressed"
+					@mouseup="onBottomBtnReleased"
 					
-				</MapViewBasicToolbar>	
-				
-			</view>
-		
-		</view> -->
-		
-	<!-- 	<view
-		style="position: absolute; z-index: 999; top: 20vh; left:0rpx;"
-		>
+					>
+					</button> 
 
+					<slot>
+						<view></view>
+					</slot>
+				</view>
 			
-		</view> -->
-		
-		
-		<!-- <ZsButtonSta2
-		text="^"
-		color="black"
-		bgColor="bisque"
-		:size="[30,15]"
-		:status="0"
-		noWrapContent
-		@click="onRecycleBallClicked"
-		>	 -->
-		
-	<!-- 	<view
-		style="position: absolute; z-index: 999; top: 20vh; right:10vw"
-		>
-			<view
-			style="width:60%;height:100rpx;backgroundColor:red;overflow: hidden;"
-			>
+			</uni-transition>
 			
-				layer control layer
-			</view>
-			
-		</view> -->
-		
-	<!-- 	<view
-		style="position: absolute;top:0px;height:500px"
-		>	
-			
-		</view> -->
-		<!-- 	<next-tree
-			
-			uiMode="page"
-			:treeData = "rfTreeData"
-			>
-				
-			</next-tree> -->	
-		
-		<ZsFloatBall>
-			
-			<MapViewBasicCtrlPanel>
-				
-			</MapViewBasicCtrlPanel>
-		</ZsFloatBall>
-			
-		<!-- bottom panel pullup container-->
-		<ZsBottomPullup>
-			
-			<MapViewBusinessOpPanel
-			:ref="rfbottomPanelRefName"
-			>
-				
-			</MapViewBusinessOpPanel>
-			
-		</ZsBottomPullup>
-		
-	</view>
-
+</view>
+    
 </template>
 
-<!-- ```javascript -->
-<script>
-	// import olMap from "@/components/olmap/olmap.vue";
-	import olMap from "@/components/olmap/ZsOlMap.vue";
-	import ZsBottomPullup from "@/components/zs-components/zs-bottom-pullup/ZsBottomPullup.vue";
-	import ZsFloatBall from "@/components/zs-components/zs-floatball/ZsFloatBall.vue";
-	import MapViewBusinessOpPanel from "./MapViewBusinessOpPanel.vue";
-	// import MapViewBasicToolbar from "./MapViewBasicToolbar.vue";
-	import MapViewBasicCtrlPanel from "./MapViewBasicCtrlPanel.vue";
+<script type="text/javascript">
+
+import Vue from 'vue';
+
+
+export default {
 	
-	// import one from "@/components/custom-tab-check/custom-tab-check-one.vue";
-	// import two from "@/components/custom-tab-check/custom-tab-check-two.vue";
-	// import three from "@/components/custom-tab-check/custom-tab-check-three.vue";
-	// import analy from "@/components/custom-tab-check/custom-tab-check-analy.vue";
-	// import chooseimage from "@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
-	
-	// import { importAdminLayer } from "../../components/olmap/locations";
-	
-	import { importLayer } from "../../components/olmap/layers";
-	
-	import ZsButtonSta2 from "../../components/zs-components/zs-button-group/ZsButtonSta2.vue";
-	
-	export default {
+		name:"ZsBottomPullup",
 		components: {
-			olMap,
-			ZsBottomPullup,
-			ZsFloatBall,
-			MapViewBusinessOpPanel,
-			// MapViewBasicToolbar,
-			MapViewBasicCtrlPanel,
-			ZsButtonSta2,
+		
+			// ZsButtonSta2,
 			// one,
 			// two,
 			// three,
@@ -183,7 +100,7 @@
 			// this.importMapLayers()
 			// temp for debug
 			// popup the bottom panel
-			// setTimeout(()=>{this.popupBottomPanel()}, 256)
+			setTimeout(()=>{this.popupBottomPanel()}, 256)
 		},
 		methods:{
 			//开始触摸
@@ -334,137 +251,22 @@
 				return this.urfcurBottomPanelPos==this.maxtop?false:true
 			},
 			
-			importMapLayers(){
-				
-				var _this = this
-				this.rfmapVm = this.$refs["map"]
-				// console.log("debug-mapviepage ", this.$refs, mapVm)
-				
-				// var import_prom = importAdminLayer("city")
-				
-				// var $store = this.$store
-				
-				// $store.dispatch("findLayer", {"name":"city"})
-				// .then(
-				// 	(lyr)=>{
-				// 		return importAdminLayer("city")
-				// 	}
-				// )
-				// .then( 
-				// 	(lyrObj)=>{
-				// 		_this.$refs["map"].addLayer(lyrObj,  "city", "default")
-				// 	} 
-				
-				// )
-				
-				// $store.dispatch("findLayers", 
-				// // {"name":"city"},
-				// {"field":"name","value":"city"}
-				// )
-				// .then(
-				// 	(lyrs)=>{
-				// 		console.log(`debug-mapviewpage `, lyrs)
-				// 		return lyrs[0]
-				// 	}
-				// )
-				
-				let import_prom;
-				
-				importLayer({"name":"city", "layerRepresentType":"location"})
-				.then(
-					(lyrObj)=>{
-						
-						// if(!lyrModel[0]["visible"])
-						// {
-						// 	lyrObj.setVisible(false)
-						// }
-						_this.$refs["map"].addLayer(lyrObj,  "city", "default")	
-				
-						// $store.dispatch("findLayers",
-						// // {"name":"city"},
-						// {"field":"name","value":"city"}
-						// )
-						// .then(
-						// 	(lyrs)=>{
-						// 		console.log(`debug-mapviewpage `, lyrs)
-						// 		// return lyrs[0]
-						// 		if(lyrs[0] && !lyrs[0]["visible"])
-						// 		{
-						// 			lyrObj.setVisible(false)
-						// 		}
-						// 	}
-						// )
-						// _this.$refs["map"].setDrawLayer("city")	
-						
-					}
-				
-				)
-				
-				// _this.$refs["map"].addLayer(lyrObj,  "city", "default")
-				// import_prom.then(
-				// 	(result)=>{
-				// 		// console.log("debug-zsolmap import layer", _this.rfmapVm)
-				// 		// _this.map.addLayer(result)
-				// 		// _this.addLayer(result, "city", "default")
-				// 		// _this.rfmapVm.addLayer(result,  "city", "default")
-				// 		_this.$refs["map"].addLayer(result,  "city", "default")
-				// 		// _this.map.render()
-						
-				// 	}
-				// )
-				
-				// var lyr_item = {
-				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
-				// 	"dataSourceType":"vector"
-				// }
-				// _this.emitEvent("createMapLayer", 
-				// 				lyr_item,
-				// 			)
-				
-				// _this.$mapStore.commit("addLayer", lyr_item)
-				
-				importLayer({"name":"county", "layerRepresentType":"location"})
-				.then(
-					(result)=>{
-						// _this.map.addLayer(result)
-						// _this.addLayer(result, "county", "default")
-						// _this.map.render()
-						// _this.addLayer(result, "county", "default")
-						
-						_this.rfmapVm.addLayer(result, "county", "default")
-					}	
-				)
-				
-				
-				importLayer({name:"outdoorCamera"})
-				.then(
-					(result)=>{
-						
-						console.log("debug-mapviewpage ", result)
-						
-						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
-						// _this.rfmapVm.setDrawLayer("outdoorCamera")
-						// for test
-						// _this.rfmapVm.setUsedMode("edit")
-						// _this.rfmapVm.setupInteraction({"type":"draw"})
-						// _this.rfmapVm.setInteractionType("draw")
-					}	
-				)
-				
-				// _this.rfmapVm.setInteractionType("select")
-				_this.rfmapVm.createDoodleLayer("default", "red", 4)
-				_this.rfmapVm.startDoodle("default")
-				
-			}
-			
-			
 			
 		},
 		
 
 	}
+
 </script>
 
+<style>
+/* 
+    your CSS
+
+    or use '@import "/path/package/you.css"'
+    import the third library css files
+*/
+</style>
 <style lang="scss">
 	// #app {
 	// 	font-family: Avenir, Helvetica, Arial, sans-serif;

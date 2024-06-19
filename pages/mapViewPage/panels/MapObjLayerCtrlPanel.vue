@@ -239,7 +239,7 @@ export default {
 	
 	created(){
 		
-		uni.$on("createMapLayer", this.addLayerItem)
+		// uni.$on("createMapLayer", this.addLayerItem)
 		// var r = ref(2);
 		// console.log(`debug vue version ${Vue.version}`)
 		
@@ -253,8 +253,16 @@ export default {
 		
 		// this.rfvecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
 		// console.log(`debug-mapobj this.rfvecItems`,  this.$store.getters)
-		this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
-		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`,this.rfvecItems)
+		var lyrs_sto = this.$store.state.map.layers
+		var lyr_arr = []
+		for(var k in lyrs_sto){
+			lyr_arr.push(lyrs_sto[k])
+		}
+		// this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
+		this.rfvecItems = transformDatas( lyr_arr, _item_data_trans_map_table)
+		
+
+		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`,this.rfvecItems, this.$store.state.map.layers)
 		// this.urfItemDataTransMapTable = 
 	},
 	

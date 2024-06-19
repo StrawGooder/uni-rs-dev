@@ -59,7 +59,7 @@
 			"path" : "pages/task_infos/task_infor_items/spot_survey_task_view_page",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "外业核查",
                 "enablePullDownRefresh": false
             }
             
@@ -72,7 +72,6 @@
                 "navigationBarTitleText": "",
                 "enablePullDownRefresh": false
             }
-            
         }
         ,
         {
