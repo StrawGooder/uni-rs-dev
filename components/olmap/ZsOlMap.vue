@@ -1868,7 +1868,8 @@
 				
 			},
 			
-			addLayer(lyr, name, group = "default", scope = "default"){
+			addLayer_v1(lyr, name, group = "default", scope = "default"){
+				
 				
 				// this.urfMapLayers.push(lyr)
 				// var existedLyrCount = this.map.getAllLayers().length
@@ -1924,6 +1925,7 @@
 				var lyrBaseStyle = lyr.get("xbaseStyle") || {}
 				var lyrItemExt = {
 					"name":name, 
+					
 					"scope":scope, 
 					"group":group,
 					"url":dataUrl,
@@ -1951,6 +1953,10 @@
 				
 				try{
 					this.map.addLayer(lyr)
+					this.$store.commit(
+						"addLayer", 
+						lyrItemExt
+					)
 				}catch(e){
 					//TODO handle the exception
 					console.log(`error-zsolmap attemp to add layer '${name}', but happen an error `, e)
@@ -1958,14 +1964,143 @@
 				// this.map.addLayer(lyr)
 				// this.map.render()
 				
-				
 				// this.$mapStore.commit(
 				
 				// this.$store.state.map.commit(
-				this.$store.commit(
-				"addLayer", 
-				lyrItemExt
+				
+				
+			},
+			
+			addLayer(lyr, name, group = "default", scope = "default"){
+				
+				
+				// var route = group
+				
+				
+				
+				// this.urfMapLayers.push(lyr)
+				// var existedLyrCount = this.map.getAllLayers().length
+			
+				
+				// var lyrKls = lyr.prototype.constructor
+				var lyrKlsName = lyr.__proto__.constructor["name"]
+				var dataSrcType = "image"
+				
+				if(lyrKlsName=="VectorLayer" ||　lyrKlsName=="VectorTiledLayer")
+				{
+					dataSrcType = "vector"
+				}
+			
+				// var builtinLyrName = `${dataSrcType}-${lyrName}`
+				var builtinLyrName = `${lyrKlsName}-${name}`
+				
+				var lyrSrcLocation = `/${group}/${builtinLyrName}`
+			
+				var alLyrs = this.map.getAllLayers()
+				// var newName = `${doodleNamePrefix}1-${name}`
+				var foundLyrs = alLyrs.filter(
+					(lyr)=>{
+						// const lyrName = lyr.get("xname") || ""
+						// return lyrName.includes(doodleNamePrefix) 
+						var layerItem = lyr.get("xlayerItem")||{}
+						return layerItem["lyrSrcLocation"]==lyrSrcLocation
+					}
 				)
+				if(foundLyrs.length>1){
+					throw new Error(`layer '${name}' type '${lyrKlsName}' has existed, don't add to map again`)
+				}
+				
+				var mpSrc = lyr.getSource()
+				var dataUrl = ""
+				var mpLyrStyle = null
+				// console.log("debug-zsolmap addlayer ", lyrKls, lyrKls["name"])
+				try{
+					dataUrl = mpSrc.getUrl()
+				}catch(e){
+					//TODO handle the exception
+				}
+				
+				try{
+					mpLyrStyle = lyr.getStyle()
+				}catch(e){
+					//TODO handle the exception
+				}
+				
+				// var geomStyle = null
+				// var geomStrokeStyle = null
+				// var geomColor = "pink"
+				
+				// if(mpLyrStyle)
+				// {
+				// 	// console.log("debug-zsolmap mpLyrStyle", mpLyrStyle)
+				// 	geomStrokeStyle = mpLyrStyle.getStroke()
+				// 	// if( geomStrokeStyle ){
+						
+				// 	// }
+				// 	geomColor = geomStrokeStyle.getColor() || geomColor
+				// }
+				
+				// var defaultColor = "pink"
+				
+				
+				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
+				
+				// var exitedLyrsInGroup = []
+				// if(targetLyrGroup.length<1)
+				// {
+				// 	targetLyrGroup = new LayerGroup({properties:{"name":group}})
+				// 	this.map.addLayerGroup(targetLyrGroup)
+				// 	exitedLyrsInGroup = targetLyrGroup.getLayers()
+				// }
+				
+				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
+				// targetLyrGroup.addLayer(lyr)
+				
+				try{
+					this.map.addLayer(lyr)
+					
+					var lyrSeqid = this.urfLayerSeqCount
+					this.urfLayerSeqCount++
+					// only interface createVectorLayer function was used to
+					// create a layer, leading to the 'baseStyleEx' variable 
+					// initialized
+					var lyrBaseStyle = lyr.get("xbaseStyle") || {}
+					var lyrItemExt = {
+						"name":name, 
+						"fullName":builtinLyrName,
+						"lyrSrcLocation":lyrSrcLocation,
+						"scope":scope, 
+						"group":group,
+						"url":dataUrl,
+						"borderColor": lyrBaseStyle["strokeColor"]?lyrBaseStyle["strokeColor"]:"black",
+						"fillColor": lyrBaseStyle["fillColor"]?lyrBaseStyle["fillColor"]:"black",
+						"dataSourceType":dataSrcType,
+						"seqid":lyrSeqid,
+						"visible":true,
+						}
+					
+					lyr.set("xseqid", lyrSeqid)
+					lyr.set("xname", name)
+					lyr.set("xlayerItem", lyrItemExt || {})
+					
+						this.$store.commit(
+						"addLayer", 
+						lyrItemExt
+						)
+						
+				}catch(e){
+					//TODO handle the exception
+					console.log(`error-zsolmap attemp to add layer '${name}', but happen an error `, e)
+				}
+				// else{
+					
+				// 	this.$store.commit(
+				// 	"addLayer", 
+				// 	lyrItemExt
+				// 	)
+				// }
+				
+				// this.map.render()
 				
 			},
 			
@@ -2313,6 +2448,63 @@
 				// this.urfdrawStyleTheme = "base"
 				
 				// this.urfdrawGeomType = "Polygon"
+				
+				var success = true
+				const drawOpts = Object.assign( {}, this.urfdrawOptsDefault)
+
+				var lyrs = this.map.getAllLayers()
+				var foundLyr = lyrs.filter((lyr)=>{return lyr.get("xname")==lyrName })[0] || null
+				
+				if(foundLyr)
+				{
+					var drawerClass = foundLyr.get("xdrawerClass")
+					if(drawerClass!="Doodle")
+					{
+						var geomType = foundLyr.get("geomType") || "Polygon"
+						geomType = geomType.toLowerCase()
+						
+						 if(geomType=="point")
+						 {
+							 drawOpts["vectorType"] = "Point"
+							 drawOpts["type"] = "default"
+							 drawOpts["drawStyleTheme"] = null
+						 }
+						this.urfdrawOpts = drawOpts
+						this.urfdrawStoreLyr = foundLyr
+					}
+					else if(drawerClass=="Doodle"){
+						
+						drawOpts["type"] = "Doodle"
+						 // drawOpts["drawStyleTheme"] = "base"
+						 var baseStyle = foundLyr.get("xbaseStyle") || {}
+						 drawOpts["color"] = baseStyle["strokeColor"] || "red"
+						 drawOpts["width"] = baseStyle["strokeWidth"] || 4
+						this.urfdrawOpts = drawOpts
+						this.urfdrawStoreLyr = foundLyr
+					}
+					
+				}
+				else{
+					success = false
+					console.log(`debug-zsolmap attemp to set draw layer on '${lyrName}', but not found`)
+								
+				}
+					
+				
+				
+				 
+				
+				return success
+			},
+			
+
+			setDrawLayer_v1(lyrName, doodle=false){
+				
+				this.urfdrawStoreLyr = null
+				
+				// this.urfdrawStyleTheme = "base"
+				
+				// this.urfdrawGeomType = "Polygon"
 				var lyrs = this.map.getAllLayers()
 				
 				// var lyrFilter = null
@@ -2445,20 +2637,21 @@
 				this.urfdrawStoreLyr = null
 			},
 			
-			createDoodleLayer(lyrName, color, width){
+			createDoodleLayer(lyrName, color, lineWidth){
 				
 				const doodleNamePrefix = "@doodle"
 				color = color || "red"
-				width = width || 4
+				lineWidth = lineWidth || 4
 				lyrName = lyrName || "default"
 				
-				var alllyrs = this.map.getAllLayers()
+				var alLyrs = this.map.getAllLayers()
 				
-				// var newName = `${doodleNamePrefix}1-${name}`
-				var foundLyrs = alllyrs.filter(
+				// // var newName = `${doodleNamePrefix}1-${name}`
+				var foundLyrs = alLyrs.filter(
 					(lyr)=>{
-						const lyrName = lyr.get("xname") || ""
-						return lyrName.includes(doodleNamePrefix) 
+						// const lyrName = lyr.get("xname") || ""
+						// return lyrName.includes(doodleNamePrefix) 
+						return lyr.get("xdrawClass")=="Doodle"
 					}
 				)
 				
@@ -2466,21 +2659,21 @@
 				const maxLyrNum = 2
 				if(foundLyrNum<maxLyrNum)
 				{
-					const newName = `${doodleNamePrefix}${foundLyrNum}-${lyrName}`
+					const newLyrName = `${doodleNamePrefix}${foundLyrNum}-${lyrName}`
 					const lyr = new VectorLayer(
 						{
 							style: new style({
-								stroke:new Stroke({color:color, width:width})
+								stroke:new Stroke({color:color, width:lineWidth})
 							}),
 							source:new VectorSource({wrapX:false})
 						}
 					)
 					lyr.set("xgeomType", "LineString")
 					lyr.set("xdrawerClass", "Doodle")
-					lyr.set("xbuiltinName", lyrName)
-					lyr.set("xbaseStyle", {strokeColor:color, strokeWidth: width})
+					// lyr.set("xbuiltinName", lyrName)
+					lyr.set("xbaseStyle", {strokeColor:color, strokeWidth: lineWidth})
 					
-					this.addLayer(lyr, newName)
+					this.addLayer(lyr, lyrName)
 				}
 				else{
 					console.log(`warning-zsolmap doodle layer num reaches max limit ${maxLyrNum}, can't be created`)

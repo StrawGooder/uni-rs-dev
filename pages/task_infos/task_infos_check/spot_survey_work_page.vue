@@ -24,7 +24,6 @@
 		ref = "map"
 		>
 			
-			
 		</OlMap>	
 
 		<ZsFloatBall>

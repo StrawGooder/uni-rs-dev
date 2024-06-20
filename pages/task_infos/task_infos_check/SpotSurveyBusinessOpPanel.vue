@@ -15,7 +15,7 @@
 
 		<ZsTabs
 		:type="rftabId"
-		:value="4"
+		:value="1"
 		>
 			
 			<ZsTab
@@ -33,9 +33,9 @@
 				:name="makeupTabKey('spotInfo')"
 				>
 					
-					<SpotInfoViewPanel>
+					<SpotItemsViewPanel>
 						
-					</SpotInfoViewPanel>
+					</SpotItemsViewPanel>
 					
 				</ZsTab>
 				<ZsTab
@@ -92,13 +92,11 @@ import Vue from 'vue';
 
 import ZsTabs from '@/components/zs-components/zs-tabs/ZsTabs.vue';
 import ZsTab from '@/components/zs-components/zs-tabs/ZsTab.vue';
-// import MapObjLayerCtrlPanel from './MapObjLayerCtrlPanel.vue';
-// import MapObjLayerCtrlPanel from './panels/MapObjLayerCtrlPanel.vue';
-// import OutdoorDataCollectionPanel from './panels/OutdoorDataCollectionPanel.vue';
-// import SpatialAnalyPanel from "@/pages/mapViewPage/panels/SpatialAnalyPanel.vue";
+
+
 import SpatialQueryPanel from '@/pages/mapViewPage/panels/SpatialQueryPanel.vue';
 // import DataAnalyPanel from './panels/DataAnalyPanel.vue';
-import SpotInfoViewPanel from './SpotInfoViewPanel.vue';
+import SpotItemsViewPanel from './SpotItemsViewPanel.vue';
 import OutdoorPhotoPanel from './OutdoorPhotoPanel.vue';
 import MapEditCtrlPanel from "./MapEditCtrlPanel.vue"
 // import OutdoorDataCollectionPanel from '@/components/custom-tab-check/custom-tab-check-chooseimage.vue';
@@ -128,7 +126,7 @@ export default {
 			// MapViewBasicCtrlPanel,
 			// ZsBottomPullup,
 			
-			SpotInfoViewPanel,
+			SpotItemsViewPanel,
 			OutdoorPhotoPanel,
 			MapEditCtrlPanel,
 		},

@@ -7,7 +7,7 @@
 		
 		<uni-section
 		:type="rfsectType"
-		title="vector info"
+		title="矢量"
 		>
 			<view  :class="rfsecContainerClass">
 				<!-- rfvecItems -->
@@ -23,7 +23,7 @@
 		</uni-section>
 		<uni-section
 		:type="rfsectType"
-		title="raster info"
+		title="影像"
 		>
 		
 		<!-- 	<view :class="rfsecContainerClass">
