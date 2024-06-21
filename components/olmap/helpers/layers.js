@@ -31,10 +31,8 @@ const _geom_type_to_cls = {
 
 // }
 
-// data_obj: is geojson format object
+// data_obj: is geojson format object and type is FeatureCollection
 export function createVectorLayerFromDataObj(data_obj, style, opts){
-	
-	
 	
 	const new_feat_array = []
 	
@@ -45,9 +43,10 @@ export function createVectorLayerFromDataObj(data_obj, style, opts){
 		var geom_cls = null;
 		var geom_type;
 		var geom;
-		var warning_msg = ""
+		
 		var new_feat;
 		var iter_feat_data 
+		var warning_msg = ""
 		
 		for(i in feat_datas)
 		{

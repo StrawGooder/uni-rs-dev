@@ -1,23 +1,72 @@
 import { createVectorLayerFromURL, createVectorByDataSource } from "../helpers/layers";
 
 import {createStyle as createCameraStyle} from "./CameraVectorLayer.js"
+import {createStyle as createStyleFromPreset} from "./layerStyleLibs.js"
 import {merge as mergeObj } from "lodash"
 
-const _baseUrl = "/gserver/wms/layers"
+// const _baseUrl = "/gserver/wms/layers"
+const _baseUrl = "/static/map/locations"
 
 const _layerNameToConfig = {
-	"outdoorCamera":{
-		// baseUrl:_baseUrl,
-		// url:"/outdoorCamera",
+	"GPSLocation":{
 		route:{
 			baseUrl:_baseUrl,
-			url:"/outdoorCamera",
+			url:"/user/gps-location.json",
 			queryParam:null,
 		},
 		
 		layerOptions:{
-			sourceData:{},
-			style:createCameraStyle(),
+			sourceData:null,
+			style:createStyleFromPreset("location"),
+			props:{
+				geomType:"Point"
+			}
+		}	
+	},
+	"OutdoorPhotograph":{
+		// baseUrl:_baseUrl,
+		// url:"/outdoorCamera",
+		route:{
+			baseUrl:_baseUrl,
+			url:"/user/photograph-locations.json",
+			queryParam:null,
+		},
+		
+		layerOptions:{
+			sourceData:null,
+			style:createStyleFromPreset("photograph"),
+			
+			props:{
+				geomType:"Point"
+			}
+		}
+	},
+	"TraceMemoryLocationRed":{
+		route:{
+			baseUrl:_baseUrl,
+			url:"/user/red-flag.json",
+			queryParam:null,
+		},
+		
+		layerOptions:{
+			sourceData:null,
+			style:createStyleFromPreset("redFlag"),
+			
+			props:{
+				geomType:"Point"
+			}
+		}
+	},
+	"TraceMemoryLocationYellow":{
+		route:{
+			baseUrl:_baseUrl,
+			url:"/user/red-flag.json",
+			queryParam:null,
+		},
+		
+		layerOptions:{
+			sourceData:null,
+			style:createStyleFromPreset("redFlag"),
 			
 			props:{
 				geomType:"Point"
@@ -45,8 +94,10 @@ export function createLayer(name, opts){
 	const props = layerOptions["props"] || {}
 	
 	// temp process
-	const sourceData = layerOptions["sourceData"] || {}
-	const sourceObj = sourceData || finalUrl
+	// const sourceData = layerOptions["sourceData"] || {}
+	// const sourceObj = sourceData || finalUrl
+	var sourceObj =  layerOptions["sourceData"] || (finalUrl || null)
+	
 	return createVectorByDataSource(sourceObj, layerOptions["style"], Object.assign(props, {xname:name}))
 	
 }

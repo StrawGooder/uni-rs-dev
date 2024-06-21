@@ -255,14 +255,35 @@ export default {
 		// console.log(`debug-mapobj this.rfvecItems`,  this.$store.getters)
 		var lyrs_sto = this.$store.state.map.layers
 		var lyr_arr = []
+		var seqids = []
 		for(var k in lyrs_sto){
+			// seqids.push(k)
 			lyr_arr.push(lyrs_sto[k])
 		}
+		lyr_arr = lyr_arr.sort( (x,y)=>{
+				// console.log("debug sort", x["seqid"],y["seqid"]); 
+				// return x["seqid"] > y["seqid"]; 
+				const a = x["seqid"]
+				const b = y["seqid"]
+				// if( a > b ){
+				// 	return 1
+				// }
+				// else if(a<b){
+				// 	return 0
+				// }
+				if( a < b ){
+					return 1
+				}
+				else if(a > b){
+					return -1
+				}
+				return 0
+			}
+		)
 		// this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
 		this.rfvecItems = transformDatas( lyr_arr, _item_data_trans_map_table)
 		
-
-		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`,this.rfvecItems, this.$store.state.map.layers)
+		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`, this.rfvecItems, this.$store.state.map.layers)
 		// this.urfItemDataTransMapTable = 
 	},
 	

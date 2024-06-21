@@ -828,27 +828,41 @@
 					
 				// }
 				var pixPos = evt.pixel || [evt.pageX, evt.pageY]
+			
 				
-				var touchFeat = this.map.xgetFeaturesAtPixel(pixPos)[0]
-				
-				
-				var featSelector =  getFeatureSelection("singleclick")
-				var selFeat =  featSelector.getFeatures().getArray()[0]
 				var subject = "map"
 				var menuName = "MapBackdropMenu"
 				
-				// menuName = "MapBackdropMenu"
-				if( touchFeat &&　selFeat === touchFeat )
-				{
-					featSelector.stopInput()
-					subject = "feature"
-					menuName = "FeaturePolygonEditMenu"
+				var featSelector =  getFeatureSelection("singleclick")
+				// if(featSelector){
 					
-					var featModifier = getFeatureModification("default")
-					if(featModifier && featModifier.isTouchPointOnPolygonBoundary())
+				// }
+				
+				// if(featSelector && selFeat==touchFeat){
+					
+				// }
+				// menuName = "MapBackdropMenu"
+				if( featSelector)
+				{
+					var selFeat =  featSelector.getFeatures().getArray()[0]
+					// var touchFeat = this.map.xgetFeaturesAtPixel(pixPos)[0]
+					// touchFeat &&　selFeat === touchFeat 
+					if(selFeat)
 					{
-						menuName = "FeaturePolygonVertexEditMenu"
+						var touchFeat = this.map.xgetFeaturesAtPixel(pixPos)[0]
+						if(touchFeat &&　selFeat === touchFeat)
+						{
+							featSelector.stopInput()
+							subject = "feature"
+							menuName = "FeaturePolygonEditMenu"
+							var featModifier = getFeatureModification("default")
+							if(featModifier && featModifier.isTouchPointOnPolygonBoundary())
+							{
+								menuName = "FeaturePolygonVertexEditMenu"
+							}
+						}
 					}
+					
 					
 					this.urftouchRecvLayerId = 2
 				}
@@ -1434,9 +1448,11 @@
 				
 				// console.log("debug-zsolmap interactions ", foundIntact)
 				
+				// remove olmap builtin DragPan
+				// add custom ZsDragPan for the draw 
 				const dragPan = new ZsDragPan()
-				dragPan.setEnabled(false)
-				// dragPan.setEnabled(true)
+				// dragPan.setEnabled(false)
+				dragPan.setEnabled(true)
 				this.map.addInteraction(dragPan)
 			
 				
@@ -1692,53 +1708,7 @@
 				
 				// this.testViewZoom()
 				
-				
-				var import_prom = importAdminLayer("city")
-				
-				import_prom.then(
-				(result)=>{
-					// console.log("debug-zsolmap import layer", result)
-					// _this.map.addLayer(result)
-					_this.addLayer(result, "city", "default")
-					// _this.map.render()
-				})
-				
-				// var lyr_item = {
-				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
-				// 	"dataSourceType":"vector"
-				// }
-				// _this.emitEvent("createMapLayer", 
-				// 				lyr_item,
-				// 			)
-				
-				// _this.$mapStore.commit("addLayer", lyr_item)
-				
-				import_prom = importAdminLayer("county")
-				
-				import_prom.then(
-				(result)=>{
-					// _this.map.addLayer(result)
-					// _this.addLayer(result, "county", "default")
-					// _this.map.render()
-					_this.addLayer(result, "county", "default")
-				})
-				
-				// import by url
-				// lyr_item = {
-				// 	"name":"county", "url":"/static/county.json", "borderColor":"blue",
-				// 	"dataSourceType":"vector"
-				// }
-				// // _this.emitEvent("createMapLayer", 
-				// // 				lyr_item
-				// // 			)
-				// _this.$mapStore.commit("addLayer", lyr_item)
-				// const root_url = "/static/map/locations/nations/china"
-				// var lyr = createVectorLayerFromURL(
-				// 	root_url + "/广西壮族自治区-县-test.json", 
-				// 	{"geomStyle":{"color":"cyan", "width":"1px"}}
-				// )
-				// _this.map.addLayer(lyr)
-				// _this.map.render()
+			
 				
 			},
 			
@@ -1827,27 +1797,30 @@
 			testViewZoom(){
 				
 				// 河池
-				// coord 107.89729588504589,24.663186754658177
+				// coord = [107.89729588504589,24.663186754658177]
 				// zoom 9
 				// 河池 extent
 				// var extent = [106.568412,25.613664999999997,109.153964,23.557816]
-				var extent = [108,25.613664999999997,109.153964,23.557816]
-				var _this = this
-				var total = 5
+				// var extent = [108,25.613664999999997,109.153964,23.557816]
+				// var _this = this
+				// var total = 5
 				
 				
-				
-			
-				var center_coord = computeCenter(extent)
+				// var center_coord = computeCenter(extent)
 				
 				// this.locateViewportTo(center_coord, {extent: extent})
 				
 			
 				var mpview = this.map.getView()
 				
+				// 凤山县
+				var coord = [107.15964276350222,24.686252109169924]
+				var zoomLv = 12
 				// temp
-				mpview.setZoom(11)
-				mpview.setCenter([109.09033049526474,25.42893144809194])
+				mpview.setZoom(zoomLv)
+				
+				
+				mpview.setCenter(coord)
 				
 				function _loop() {
 					
@@ -1868,121 +1841,8 @@
 				
 			},
 			
-			addLayer_v1(lyr, name, group = "default", scope = "default"){
-				
-				
-				// this.urfMapLayers.push(lyr)
-				// var existedLyrCount = this.map.getAllLayers().length
-				var lyrSeqid = this.urfLayerSeqCount
-				this.urfLayerSeqCount++
-				var mpSrc = lyr.getSource()
-	
-				var mpLyrStyle = null
-				
-				var dataUrl = ""
-				
-				// var lyrKls = lyr.prototype.constructor
-				var lyrKlsName = lyr.__proto__.constructor["name"]
-				var dataSrcType = "image"
-				
-				if(lyrKlsName=="VectorLayer" ||　lyrKlsName=="VectorTiledLayer")
-				{
-					dataSrcType = "vector"
-				}
-
-				// console.log("debug-zsolmap addlayer ", lyrKls, lyrKls["name"])
-				try{
-					dataUrl = mpSrc.getUrl()
-				}catch(e){
-					//TODO handle the exception
-				}
-				
-				try{
-					mpLyrStyle = lyr.getStyle()
-				}catch(e){
-					//TODO handle the exception
-				}
-				
-				// var geomStyle = null
-				// var geomStrokeStyle = null
-				// var geomColor = "pink"
-				
-				// if(mpLyrStyle)
-				// {
-				// 	// console.log("debug-zsolmap mpLyrStyle", mpLyrStyle)
-				// 	geomStrokeStyle = mpLyrStyle.getStroke()
-				// 	// if( geomStrokeStyle ){
-						
-				// 	// }
-				// 	geomColor = geomStrokeStyle.getColor() || geomColor
-				// }
-				
-				// var defaultColor = "pink"
-				
-				// only interface createVectorLayer function was used to
-				// create a layer, leading to the 'baseStyleEx' variable 
-				// initialized
-				var lyrBaseStyle = lyr.get("xbaseStyle") || {}
-				var lyrItemExt = {
-					"name":name, 
-					
-					"scope":scope, 
-					"group":group,
-					"url":dataUrl,
-					"borderColor": lyrBaseStyle["strokeColor"]?lyrBaseStyle["strokeColor"]:"black",
-					"fillColor": lyrBaseStyle["fillColor"]?lyrBaseStyle["fillColor"]:"black",
-					"dataSourceType":dataSrcType,
-					"seqid":lyrSeqid,
-					"visible":true,
-					}
-				
-				lyr.set("xseqid", lyrSeqid)
-				lyr.set("xname", name)
-				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
-				
-				// var exitedLyrsInGroup = []
-				// if(targetLyrGroup.length<1)
-				// {
-				// 	targetLyrGroup = new LayerGroup({properties:{"name":group}})
-				// 	this.map.addLayerGroup(targetLyrGroup)
-				// 	exitedLyrsInGroup = targetLyrGroup.getLayers()
-				// }
-				
-				// targetLyrGroup.setLayers(exitedLyrsInGroup.concat([lyr]))
-				// targetLyrGroup.addLayer(lyr)
-				
-				try{
-					this.map.addLayer(lyr)
-					this.$store.commit(
-						"addLayer", 
-						lyrItemExt
-					)
-				}catch(e){
-					//TODO handle the exception
-					console.log(`error-zsolmap attemp to add layer '${name}', but happen an error `, e)
-				}
-				// this.map.addLayer(lyr)
-				// this.map.render()
-				
-				// this.$mapStore.commit(
-				
-				// this.$store.state.map.commit(
-				
-				
-			},
-			
 			addLayer(lyr, name, group = "default", scope = "default"){
 				
-				
-				// var route = group
-				
-				
-				
-				// this.urfMapLayers.push(lyr)
-				// var existedLyrCount = this.map.getAllLayers().length
-			
-				
-				// var lyrKls = lyr.prototype.constructor
 				var lyrKlsName = lyr.__proto__.constructor["name"]
 				var dataSrcType = "image"
 				
@@ -2025,23 +1885,6 @@
 				}catch(e){
 					//TODO handle the exception
 				}
-				
-				// var geomStyle = null
-				// var geomStrokeStyle = null
-				// var geomColor = "pink"
-				
-				// if(mpLyrStyle)
-				// {
-				// 	// console.log("debug-zsolmap mpLyrStyle", mpLyrStyle)
-				// 	geomStrokeStyle = mpLyrStyle.getStroke()
-				// 	// if( geomStrokeStyle ){
-						
-				// 	// }
-				// 	geomColor = geomStrokeStyle.getColor() || geomColor
-				// }
-				
-				// var defaultColor = "pink"
-				
 				
 				// var targetLyrGroup = existedLyrGroupArr.filter((x)=>{return x.get("name")==group })
 				
@@ -2102,6 +1945,39 @@
 				
 				// this.map.render()
 				
+			},
+			
+			getLayer(target, opts){
+				
+				var typ = (typeof target)
+				var retLyr
+				// console.log("debug-zsolmap getLayer ", typ, target instanceof Number)
+				if(typ == 'number'){
+					retLyr = this.findLayer_((lyr)=>{return lyr.get("xseqid")==target})
+				}
+				else if(typ == 'string'){
+					
+					retLyr = this.findLayer_((lyr)=>{return lyr.get("xname")==target})
+				}
+				
+				return retLyr
+
+			},
+			
+			findLayer_(condition){
+				
+				// var alLyrs = this.map.getAllLayers()
+				// var newName = `${doodleNamePrefix}1-${name}`
+				var foundLyrs = this.map.getAllLayers().filter(
+					condition
+					// (lyr)=>{
+					// 	// const lyrName = lyr.get("xname") || ""
+					// 	// return lyrName.includes(doodleNamePrefix) 
+					// 	var layerItem = lyr.get("xlayerItem")||{}
+					// 	return layerItem["lyrSrcLocation"]==lyrSrcLocation
+					// }
+				)
+				return foundLyrs
 			},
 			
 			setLayerVisibleById(id, enabled = true){

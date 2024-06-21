@@ -24,6 +24,7 @@ export function importLayer(opts){
 		throw new Error("attemp to import map layer, but 'name' parameter not in options")
 	}
 	
+	// temp for static nation location
 	const lyrRepresentType = opts["layerRepresentType"] || null
 	
 	
@@ -34,12 +35,22 @@ export function importLayer(opts){
 	}
 	
 	
-	if(createLayerFunc == null || createLayerFunc == undefined || typeof createLayerFunc != 'function'){
+	if(
+	// createLayerFunc == null || 
+	// createLayerFunc == undefined || 
+	typeof createLayerFunc != 'function'
+	){
 		throw new Error("attemp to import map layer, but 'createLayer' parameter not in options and require a function object")
 	}
 	var createLayerFuncArgs = opts["layerCreateArgs"] || {}
+	// for asynch import layer
+	var asyncLoaded = opts["asyncLoaded"]==undefined?true:false;
 	var map = opts["map"]
 	var prom = createLayerFunc(lyrName, createLayerFuncArgs)
+	if(!asyncLoaded){
+		return prom
+	}
+	
 	
 	// if(map)
 	// {

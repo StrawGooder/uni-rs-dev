@@ -512,10 +512,7 @@
 				.then(
 					(lyrObj)=>{
 						
-						// if(!lyrModel[0]["visible"])
-						// {
-						// 	lyrObj.setVisible(false)
-						// }
+
 						_this.$refs["map"].addLayer(lyrObj,  "city", "default")	
 				
 						// $store.dispatch("findLayers",
@@ -538,60 +535,98 @@
 				
 				)
 				
-				// _this.$refs["map"].addLayer(lyrObj,  "city", "default")
-				// import_prom.then(
-				// 	(result)=>{
-				// 		// console.log("debug-zsolmap import layer", _this.rfmapVm)
-				// 		// _this.map.addLayer(result)
-				// 		// _this.addLayer(result, "city", "default")
-				// 		// _this.rfmapVm.addLayer(result,  "city", "default")
-				// 		_this.$refs["map"].addLayer(result,  "city", "default")
-				// 		// _this.map.render()
-						
-				// 	}
-				// )
-				
-				// var lyr_item = {
-				// 	"name":"city", "url":"/static/city.json", "borderColor":"red",
-				// 	"dataSourceType":"vector"
-				// }
-				// _this.emitEvent("createMapLayer", 
-				// 				lyr_item,
-				// 			)
-				
-				// _this.$mapStore.commit("addLayer", lyr_item)
-				
+		
 				importLayer({"name":"county", "layerRepresentType":"location"})
 				.then(
 					(result)=>{
-						// _this.map.addLayer(result)
-						// _this.addLayer(result, "county", "default")
-						// _this.map.render()
-						// _this.addLayer(result, "county", "default")
 						
 						_this.rfmapVm.addLayer(result, "county", "default")
 					}	
 				)
 				
 				
-				importLayer({name:"outdoorCamera"})
+				importLayer({name:"OutdoorPhotograph"})
 				.then(
 					(result)=>{
 						
-						console.log("debug-mapviewpage ", result)
+						// console.log("debug-mapviewpage ", result)
 						
 						_this.rfmapVm.addLayer(result, "outdoorCamera", "default")
-						// _this.rfmapVm.setDrawLayer("outdoorCamera")
-						// for test
-						// _this.rfmapVm.setUsedMode("edit")
-						// _this.rfmapVm.setupInteraction({"type":"draw"})
-						// _this.rfmapVm.setInteractionType("draw")
+					
 					}	
 				)
 				
+				importLayer({name:"TraceMemoryLocationRed"})
+				.then(
+					(result)=>{
+						
+						console.log("debug-mapviewpage red flag ", result)
+						
+						_this.rfmapVm.addLayer(result, "red flag", "default")
+						
+					}	
+				)
+				
+				importLayer({name:"GPSLocation"})
+				.then(
+					(result)=>{
+						
+						result.getSource().on("featuresloadend", ()=>{_this.testSyncGPS()})
+						_this.rfmapVm.addLayer(result, "gps_user_self", "default")
+					
+					}	
+				)
+				// importLayer({name:"TraceMemoryLocationYellow"})
+				// .then(
+				// 	(result)=>{
+						
+				// 		// console.log("debug-mapviewpage ", result)
+						
+				// 		_this.rfmapVm.addLayer(result, "yellow flag", "default")
+				// 		// _this.rfmapVm.setDrawLayer("outdoorCamera")
+				// 		// for test
+				// 		// _this.rfmapVm.setUsedMode("edit")
+				// 		// _this.rfmapVm.setupInteraction({"type":"draw"})
+				// 		// _this.rfmapVm.setInteractionType("draw")
+				// 	}	
+				// )
+				
 				// _this.rfmapVm.setInteractionType("select")
-				_this.rfmapVm.createDoodleLayer("default", "red", 4)
-				_this.rfmapVm.startDoodle("default")
+				// _this.rfmapVm.createDoodleLayer("default", "red", 4)
+				// _this.rfmapVm.startDoodle("default")
+				
+			},
+			
+			testSyncGPS(){
+				
+				var lyr = this.rfmapVm.getLayer("gps_user_self")[0]
+				// console.log("debug-spot survey ", lyr)
+				var feat = lyr.getSource().getFeatures()[0]
+				// var feat = lyr.getSource().forEachFeature((feat)=>{console.log("debug-spot survey ", feat)})
+				// console.log("debug-spot survey ", feat)
+				var geom = feat.getGeometry()
+				var originCoord = geom.getCoordinates()
+				
+				var vx = 0.005
+				
+				var loopNum = 5
+				
+				
+				const loop_ = function(){
+					
+					originCoord[0] = originCoord[0] + vx
+					geom.setCoordinates(originCoord)
+					// loopNum--
+					if(loopNum-->0){
+							setTimeout(loop_, 2000)
+					}
+					
+				}
+				
+				// lyr.on("featuresloadend", loop_)
+				
+				
+				loop_()
 				
 			}
 		},

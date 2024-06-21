@@ -1,0 +1,17 @@
+{
+    "features": [
+		{
+			"geometry":{
+				"type":"Point",
+				"coordinates":[107.11, 24.77673]
+			},
+			"type": "Feature",
+			"properties":
+			{
+				"name": "凤山县",
+				"gb": "156451223"
+			}
+		}
+    ],
+    "type": "FeatureCollection"
+}

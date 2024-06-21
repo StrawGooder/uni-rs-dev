@@ -1,0 +1,59 @@
+{
+
+    "features": [
+		{
+			"geometry":{
+				"type":"Point",
+				"coordinates":[107.098674, 24.7447]
+			},
+			"type": "Feature",
+			"properties":
+			{
+				"name": "凤山县",
+				"gb": "156451223",
+				"photoAngle":30
+			}
+		},
+		{
+			"geometry":{
+				"type":"Point",
+				"coordinates":[107.126633, 24.759116]
+			},
+			"type": "Feature",
+			"properties":
+			{
+				"name": "凤山县",
+				"gb": "156451223",
+				"photoAngle":45
+			}
+		},
+		{
+			"geometry":{
+				"type":"Point",
+				"coordinates":[107.12955, 24.752898]
+			},
+			"type": "Feature",
+			"properties":
+			{
+				"name": "凤山县",
+				"gb": "156451223",
+				"photoAngle":90
+			}
+		},
+		{
+			"geometry":{
+				"type":"Point",
+				"coordinates":[107.157477, 24.769395]
+			},
+			"type": "Feature",
+			"properties":
+			{
+				"name": "凤山县",
+				"gb": "156451223",
+				"photoAngle":135
+			}
+		}
+		
+    ],
+    "type": "FeatureCollection"
+}
