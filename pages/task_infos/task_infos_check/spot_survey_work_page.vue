@@ -22,6 +22,9 @@
 		drawTheme="base"
 		:afterInit="importMapLayers"
 		ref = "map"
+		
+		@changeGpsLocation="onLocationChanged"
+		@changeCompass="onCompassChanged"
 		>
 			
 		</OlMap>	
@@ -78,12 +81,12 @@
 <script>
 	// import olmapoperation from "./@/components/olmap/olmap_operation.vue";
 	import setting from '@/setting.js';
-	import one from "./@/components/custom-tab-check/custom-tab-check-one.vue";
-	import two from "./@/components/custom-tab-check/custom-tab-check-two.vue";
-	import three from "./@/components/custom-tab-check/custom-tab-check-three.vue";
-	import analy from "./@/components/custom-tab-check/custom-tab-check-analy.vue";
-	import chooseimage from "./@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
-	import coordtransform from 'coordtransform';
+	// import one from "./@/components/custom-tab-check/custom-tab-check-one.vue";
+	// import two from "./@/components/custom-tab-check/custom-tab-check-two.vue";
+	// import three from "./@/components/custom-tab-check/custom-tab-check-three.vue";
+	// import analy from "./@/components/custom-tab-check/custom-tab-check-analy.vue";
+	// import chooseimage from "./@/components/custom-tab-check/custom-tab-check-chooseimage.vue";
+	// import coordtransform from 'coordtransform';
 	
 	import OlMap from "@/components/olmap/ZsOlMap.vue";
 	import ZsFloatBall from "@/components/zs-components/zs-floatball/ZsFloatBall.vue";
@@ -162,14 +165,12 @@
 			this.user_id = options.user_id;
 			// this.id = options.id
 			this.windowHeight = uni.getSystemInfoSync().windowHeight;
+			
+			
+			this.urfGpsLocCoordsHistory = []
 		},
 		methods: {
 
-			//开始触摸
-			touchStart(e) {
-				//记录手指触摸到屏幕的那一个的位置，计算小黑条的top值
-				this.start = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2);
-			},
 			//修改transition的top值,获取空间分析的值
 			messageAnaly(message) {
 				//控制下拉框是否自动弹出
@@ -221,6 +222,9 @@
 				}
 				// this.get_location = message//获取经纬度信息
 			},
+			// use autonavi service to 
+			// implement the route navigation
+			// mechnism: using Native.js call the android java api
 			openmap(dlons,dlats,slons,slats) {
 				//坐标转换
 				var dlons_dlats = coordtransform.wgs84togcj02(dlons,dlats)
@@ -262,72 +266,7 @@
 				this.featureGeoJsonData.push(message.geometry)
 			},
 
-			//触摸开始并且移动
-			touchMove(e) {			
-				// 
-				this.$u.throttle(function(e) {
-					//step 和 run 方法 查看uniapp官方文档："https://uniapp.dcloud.io/component/uniui/uni-transition?id=基本用法";其实文档上写需要先初始化init，但是不init也可以使用，不知道为什么
-					let top = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2) * 100 + "vh";
-					if (parseInt(top) >= 80) {
-						top = "90vh";
-						this.isActive = true,
-							this.hasError = false
-					} else if (parseInt(top) <= 60) {
-						top = "45vh";
-						this.isActive = true,
-							this.hasError = false
-					} else {
-						top = top;
-						this.isActive = true,
-							this.hasError = false
-					}
-					this.$refs.menuWarp.step({
-						top: top
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
-				}, 60, true)
-				//节流函数：60ms内，只触发一次，感知不大，这里用的是uview封装好的节流函数，官方文档：https://v1.uviewui.com/js/debounce.html
-			},
-			//手指离开手机
-			touchEnd(e) {
-				const start = this.start * 100;
-				const end = (e.changedTouches[0].pageY / this.windowHeight).toFixed(2) * 100;
-				if (start > end) {
-					this.$refs.menuWarp.step({
-						top: "35%"
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
-				} else if (start < end) {
-					this.$refs.menuWarp.step({
-						top: "90vh"
-					}, {
-						duration: 180
-					});
-					this.$refs.menuWarp.run(() => {});
-				}
-			},
-			//输入框获焦
-			focus() {
-				this.$refs.menuWarp.step({
-					top: "45vh"
-				}, {
-					duration: 180
-				});
-				this.$refs.menuWarp.run(() => {});
-			},
-			//输入框失焦
-			blur() {
-				this.$refs.menuWarp.step({
-					top: "90vh"
-				}, {
-					duration: 180
-				});
-				this.$refs.menuWarp.run(() => {});
-			},
+		
 			postMins() {
 				var _this = this
 
@@ -620,14 +559,63 @@
 					if(loopNum-->0){
 							setTimeout(loop_, 2000)
 					}
-					
 				}
 				
 				// lyr.on("featuresloadend", loop_)
 				
-				
 				loop_()
 				
+			},
+			
+			updateGpsLocationToMap(data){
+				
+				const evt = data
+				
+				// var speed = evt.speed
+				
+				var lyr = this.rfmapVm.getLayer("gps_user_self")[0]
+				// console.log("debug-spot survey ", lyr)
+				var feat = lyr.getSource().getFeatures()[0]
+				// var feat = lyr.getSource().forEachFeature((feat)=>{console.log("debug-spot survey ", feat)})
+				// console.log("debug-spot survey ", feat)
+				
+				if(evt.longitude){
+					
+					// const lon = evt.longitude
+					// const lat = evt.latitude
+					const geom = feat.getGeometry()
+					const coord = [ evt.longitude, evt.latitude]
+					// var originCoord = geom.getCoordinates()
+					geom.setCoordinates(coord)
+					if(this.urfGpsLocCoordsHistory.length>50){
+						// push to server then save them
+						// uni.request()
+						const temp =  this.urfGpsLocCoordsHistory.slice()
+						this.urfGpsLocCoordsHistory.clear()
+					}
+					this.urfGpsLocCoordsHistory.push(coord)
+				}
+				
+				if(evt.compassOrientation){
+					feat.setProperties({orientation: evt.compassOrientation})
+				}
+				
+			},
+			
+			onLocationChanged(evt){
+				
+				const lon = evt.longitude
+				const lat = evt.latitude
+				const speed = evt.speed
+				// console.log("debug-spot_survey_work_page gps location ", evt)
+				this.updateGpsLocationToMap(evt)
+				
+			},
+			
+			onCompassChanged(evt){
+				
+				this.updateGpsLocationToMap({"compassOrientation":evt})
+				console.log("debug-spot_survey_work_page compass", evt)
 			}
 		},
 	};

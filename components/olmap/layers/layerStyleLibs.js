@@ -75,7 +75,7 @@ function PhotographStyle(){
 	const width = 32
 	const imgSize = [width,width]
 	
-	const srcUrl = "/static/map/pngs/angle-cyan.png"
+	const srcUrl = "/static/map/icons/angle-cyan.png"
 	var styleDefault = new Style({
 		
 		image: new Icon({
@@ -161,7 +161,7 @@ function LocationStyle(){
 			return styleDefault
 		}
 		var featProps = feat.getProperties()
-		var angle = featProps["photoAngle"] || 0
+		var angle = featProps["orientation"] || 0
 		// angle = angle * 3.14 / 360
 		angle = PI * angle
 	

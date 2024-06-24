@@ -150,6 +150,25 @@ export default {
 				this.slideBottomPanelTo(pos)
 			},
 			
+			//输入框获焦
+			focus() {
+				this.$refs.menuWarp.step({
+					top: "45vh"
+				}, {
+					duration: 180
+				});
+				this.$refs.menuWarp.run(() => {});
+			},
+			//输入框失焦
+			blur() {
+				this.$refs.menuWarp.step({
+					top: "90vh"
+				}, {
+					duration: 180
+				});
+				this.$refs.menuWarp.run(() => {});
+			},
+			
 			// just for web client,
 			// maybe some fixup
 			onBottomBtnPressed(ev){

@@ -119,6 +119,9 @@
 	import MenuView from './menu/MenuView.vue';
 	import ZsButtonSta2 from "../zs-components/zs-button-group/ZsButtonSta2.vue";
 	import MapViewBasicCtrlPanel from "../../pages/mapViewPage/MapViewBasicCtrlPanel.vue";
+	// import ZsUserLocation from "../zs-components/zs-map-widgets/ZsUserLocation.vue";
+	import ZsUserLocationAndOrientation from "../zs-components/zs-map-widgets/ZsUserLocationAndOrientation.vue";
+	
 	export default {
 		
 		name:"ZsOlMap",
@@ -128,7 +131,9 @@
 			Menu,
 			MapViewBasicCtrlPanel,
 			ZsButtonSta2,
+			// ZsUserLocation,
 		},
+		mixins:[ZsUserLocationAndOrientation],
 		data() {
 			return {
 				nowMapIndex: true,
