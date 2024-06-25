@@ -37,6 +37,7 @@ export function createStyle(name){
 		"redFlag":RedFlagStyle,
 		"photograph":PhotographStyle,
 		"location":LocationStyle,
+		"locationDynamic":LocationDynamicStyle
 	}
 	
 	var styleCreator = nameToStyle[name] || null
@@ -131,7 +132,7 @@ function PhotographStyle(){
 }
 
 
-function LocationStyle(){
+function LocationDynamicStyle(){
 	
 	const width = 24
 	const imgSize = [width,width]
@@ -143,7 +144,7 @@ function LocationStyle(){
 				src:srcUrl,
 				width:imgSize[0],
 				height:imgSize[1],
-				anchor:[0.5,0.5]
+				anchor:[0.5,1]
 			}
 		),
 		// image: new Circle(
@@ -190,4 +191,68 @@ function LocationStyle(){
 		})
 		return style
 	}
+}
+
+
+function LocationStyle(){
+	
+	const width = 24
+	const imgSize = [width,width]
+	
+	const srcUrl = "/static/map/icons/gps-down-blue.png"
+	var styleDefault = new Style({
+		
+		image: new Icon({
+				src:srcUrl,
+				width:imgSize[0],
+				height:imgSize[1],
+				anchor:[0.5,1]
+			}
+		),
+		// image: new Circle(
+		// 	{
+		// 		radius:5,
+		// 		stroke: new Stroke({color:"red"})
+		// 	}
+		// )
+	})
+	
+	return styleDefault
+	
+	// var PI = 3.14*2/360
+	
+	// return function(feat){
+	// 	if(!feat){
+	// 		return styleDefault
+	// 	}
+	// 	var featProps = feat.getProperties()
+	// 	var angle = featProps["orientation"] || 0
+	// 	// angle = angle * 3.14 / 360
+	// 	angle = PI * angle
+	
+	// 	var style = new Style({
+			
+	// 		image: new Icon({
+	// 			// img: canvasElem, 
+	// 			src:srcUrl,
+	// 			// size:[`${imgSize[0]}px`, `${imgSize[1]}px`],
+	// 			// width:`${imgSize[0]}px`,
+	// 			// height:`${imgSize[1]}px`,
+	// 			width:imgSize[0],
+	// 			height:imgSize[1],
+				
+				
+	// 			rotation: angle,
+	// 			anchor:[0.5,1]
+	// 			}
+	// 		),
+	// 		// image: new Circle(
+	// 		// 	{
+	// 		// 		radius:5,
+	// 		// 		stroke: new Stroke({color:"red"})
+	// 		// 	}
+	// 		// )
+	// 	})
+	// 	return style
+	// }
 }

@@ -1,12 +1,22 @@
 <template>
 	<view class="container">
 		<!-- compassangel用于当罗盘角度改变，逻辑层向视图层传递改变角度 -->
-		<view 
-		:prop="compassangel" 
-		:change:prop="ol.oncompasschanges" 
+
+<!-- 		<view 
+		:prop="compassangel"
+		:change:prop="ol.oncompasschanges"
 		:propgeojson="geojson_data"
 		:change:propgeojson="ol.GetGeojson"
 		>
+		</view> -->
+		<view
+		:propselfgpsloc = "rfselfGpsLoc"
+		:change:propselfgpsloc= "ol.onGpsLocationChanged_"
+		:propselforient = "rfselfOrient"
+		:change:propselforient = "ol.onCompassChanged_"
+		>
+			
+
 		</view>
 		
 		
@@ -134,6 +144,41 @@
 			// ZsUserLocation,
 		},
 		mixins:[ZsUserLocationAndOrientation],
+		props:{
+			hideMapImg:{
+				type:Boolean
+			},
+			afterInit:{
+				type:Function
+			},
+			
+			usedMode:{
+				type:String,
+				default:"view"
+			},
+			featureSelectionOn:{
+				type:Boolean
+			},
+			
+			drawTheme:{
+				type:String,
+				default:"base"
+			},
+			
+			// for user self location
+			// vector layer render
+			selfGpsLocation:{
+				type:Array
+			},
+			selfOrientation:{
+				type:Number,
+				default:0
+			},
+			selfGpsLocationLayerName:{
+				type:String,
+				default:"user_self_location"
+			}
+		},
 		data() {
 			return {
 				nowMapIndex: true,
@@ -184,6 +229,10 @@
 				// for float ball and MapBasicCtrlPanel expanding
 				// control
 				rfctrlPanelVisible:false,
+				
+				
+				rfselfGpsLoc:null,
+				rfselfOrient:null
 			}
 		},
 	
@@ -441,7 +490,16 @@
 				this.rfctrlPanelVisible = false
 			},
 			
-			// },
+			changeGpsLocation(result){
+				console.log("debug-zsolmap view layer gps location", result)
+				this.rfselfGpsLoc = result
+			},
+			
+			changeCompass(result){
+				
+				console.log("debug-zsolmap view layer compass", result)
+				this.rfselfOrient = result
+			}
 
 		},
 		mounted() {
@@ -500,6 +558,8 @@
 			uni.$on("map:menu:hide", this.hideMenuUni)
 			
 			
+			this.$on("changeGpsLocation", this.changeGpsLocation)
+			this.$on("changeCompass", this.changeCompass)
 		},
 	};
 	// import Draw from "ol/interaction/Draw.js";
@@ -512,8 +572,8 @@
 	// import { openDrawInteraction, closeDrawInteraction } from './drawer';
 	// import Projection from "ol/proj/Projection.js"
 	// import * as olProj from "ol/proj"
-	import {getPointResolution} from "ol/proj"
-	import {getArea,getLength} from "ol/sphere.js"
+	// import {getPointResolution} from "ol/proj"
+	// import {getArea,getLength} from "ol/sphere.js"
 	// import {intersects} from "ol/extent.js"
 	// import { bufferExtent } from './helpers/geo.js';
 	// import {Polygon} from "ol/geom"
@@ -690,7 +750,8 @@
 				//图斑坐标
 				PolygonCoordinate: null,
 				//图斑数据
-				PolygonData: "222",
+				// PolygonData: "222",
+				PolygonData: null,
 				// wkbs:null,
 				//用来做双向判断，判断地图是否初始化好
 				init_map_complete: 0,
@@ -719,7 +780,7 @@
 						// _this.phoneHeight = res.windowHeight;
 						// _this.phoneWidth = res.windowWidth
 						_this.rfscreenSize = [res.windowWidth, res.windowHeight]
-						// _this.testViewZoom()
+						// _this.testZoomView()
 					},
 					fail(e) {
 						console.log("设备屏幕尺寸获取失败：",e)
@@ -727,13 +788,14 @@
 				}
 				)
 				
-			
+			// layer manage 
 			this.urfMapLayers = []
 			this.urfLayerSeqCount=0
 			this.urfclickDown = false
 			this.urfclickStartTime = -1
 			this.urfclickPos = null
 			
+			// interaction 
 			this.urffeatSelector = null
 			
 			this.urfcurInteractionType = null
@@ -741,19 +803,28 @@
 			// this.urflongPressMonitor = createActionTrigger("LongTimeMonitor", this.onLongPressed, 3000)
 			// this.urflongPressMonitor.addListener("rejected", ()=>{console.log("debug-zsolmap long time monitor")})
 			
+			// menu relevant
 			this.urfcurPopupMenuName = null
 			this.urfmenuOpen = false
 			this.urftouchRecvLayerId = 0
 			
+			// draw relevant
 			this.urfdrawStoreLyr = null
 			
 			this.urfdrawOptsDefault = {
 				"drawStyleTheme":"base",
 				"geomType":"polygon",
-				"classType":"base",
-				"type":"base"
+				// "classType":"base",
+				// "type":"base"
+				"classType":"shapeVertex",
+				"type":"shapeVertex"
 			}
 			this.urfdrawOpts = Object.assign({}, this.urfdrawOptsDefault)
+			
+			
+			// self location and compass
+			this.urfselfLocViewportFollowDistAccu = 0
+			
 		},
 		mounted() {
 			if (typeof window.ol === 'function') {
@@ -1161,7 +1232,7 @@
 			createShePolygon() {
 				const format = new WKB();
 				// 任务数量
-				const task_num = this.PolygonData ?.length??0
+				const task_num = this.PolygonData ?this.PolygonData.length:0
 				//遍历任务数量
 				for (var i = 0; i < task_num; i++) {
 					//获取一个任务数据
@@ -1243,9 +1314,6 @@
 					
 				}
 				
-				
-
-					
 				// console.log("debug-zsolmap add select")
 					
 				// const recvDrawVecSrc = new VectorSource({
@@ -1683,7 +1751,7 @@
 				
 				// mpview.adjustZoom(0.5, center_coord)
 				
-				this.testViewZoom()
+				this.testZoomView()
 				
 				
 				// this.testImportGeoLocation()
@@ -1694,7 +1762,7 @@
 				
 				let _this = this
 				// setTimeout(()=>{
-				// 	this.testViewZoom()}, 
+				// 	this.testZoomView()}, 
 				// 	1000
 				// )
 				
@@ -1703,7 +1771,7 @@
 				// 		// _this.phoneHeight = res.windowHeight;
 				// 		// _this.phoneWidth = res.windowWidth
 				// 		_this.rfscreenSize = [res.windowWidth, res.windowHeight]
-				// 		_this.testViewZoom()
+				// 		_this.testZoomView()
 				// 	},
 				// 	fail(e) {
 				// 		console.log("设备屏幕尺寸获取失败：",e)
@@ -1711,72 +1779,98 @@
 				// }
 				// )
 				
-				// this.testViewZoom()
-				
-			
+				// this.testZoomView()
 				
 			},
 			
 			locateViewportTo(coord, opts){
 				
 				opts = opts || {}
+				
 				var mode = opts["mode"] || "full_extent" 
 				// geo extent
 				var extent = opts["extent"] || null
-				if(mode=="full_extent")
-				{
-					if(!extent)
-					{
-						var msg = `attemp to nav location to coordinate ${coord} on mode '${mode}', but 'extent' param not given`
-						throw new Error(msg)
-						// console.log(msg)
-					}
-				}
-			
-				// var extent = geo_extent
 				
 				var _this = this
-							
-				// var center_coord = computeCenter(extent)
 				var center_coord = coord
-				
-				var zoom_lv = 9
 				var mpview = _this.map.getView()
-				// mpview.setZoom(9.2)
-				
-				// var bottom_height_mp = mpview.getResolution()*100
-				// center_coord[1] = center_coord[1] - bottom_height_mp
 				
 				var view_size = [1100,1000]
 				if(this.rfscreenSize){
 					view_size = this.rfscreenSize
 				}
-				view_size = [0,0]
-				var resol;
 				
+				if(mode=="full_extent")
+				{
+					// if(!extent)
+					// {
+					// 	var msg = `attemp to nav location to coordinate ${coord} on mode '${mode}', but 'extent' param not given`
+					// 	throw new Error(msg)
+					// 	// console.log(msg)
+					// }
+							
+					// var center_coord = computeCenter(extent)
+					
+					
+					var zoom_lv = 9
+					
+					// mpview.setZoom(9.2)
+					
+					// var bottom_height_mp = mpview.getResolution()*100
+					// center_coord[1] = center_coord[1] - bottom_height_mp
+					
+					var view_size = [1100,1000]
+					if(this.rfscreenSize){
+						view_size = this.rfscreenSize
+					}
+					view_size = [0,0]
+					var resol;
+					
+					
+					// resol = computeResolution(this.rfscreenSize[0], Math.abs(extent[2]- extent[0]) )
+					resol = computeResolutionByExtent(extent, this.rfscreenSize, "longer")
+					
+					// var resol_scale = resol*1.5
+					var resol_scale = resol*2.4
+					// var lat_offset = 500 * resol
+					// var lat_offset = (this.rfscreenSize[1]/2)  * resol 
+					// 
+					// to display the feature geometry on user visible area 
+					// so popuping bottom panel height was considered, 
+					// map viewport center posistion was moved down 
+					 // according distance of the feature geometry
+					 // half geographical height
+					
+					var lat_offset = Math.abs( (extent[1] - extent[3]) )*0.6
+					
+					// extent[1] = extent[1] - lat_offset
+					// extent[3] = extent[3] - lat_offset
+					center_coord[1] = center_coord[1] - lat_offset
+					// var resol_delta = resol / mpview.getResolution()
+					// mpview.setResolution(resol + resol*0.2)
+					mpview.setResolution(resol_scale)
+				}
+				else{
+					
+					const curResol = mpview.getResolution()
+					// this.rfscreenSize[1]*curResol/4
 				
-				// resol = computeResolution(this.rfscreenSize[0], Math.abs(extent[2]- extent[0]) )
-				resol = computeResolutionByExtent(extent, this.rfscreenSize, "longer")
+					// consider bottom pullup was popped up,
+					// visible viewport is narrower,
+					// so need to move up the coordinate
+					var lat_offset = this.rfscreenSize[1]*curResol/4
+					
+					// extent[1] = extent[1] - lat_offset
+					// extent[3] = extent[3] - lat_offset
+					center_coord[1] = center_coord[1] - lat_offset
+					
+				}
+			
+				// var extent = geo_extent
 				
-				// var resol_scale = resol*1.5
-				var resol_scale = resol*2.4
-				// var lat_offset = 500 * resol
-				// var lat_offset = (this.rfscreenSize[1]/2)  * resol 
-				// 
-				// to display the feature geometry on user visible area 
-				// so popuping bottom panel height was considered, 
-				// map viewport center posistion was moved down 
-				 // according distance of the feature geometry
-				 // half geographical height
+
 				
-				var lat_offset = Math.abs( (extent[1] - extent[3]) )*0.6
-				
-				// extent[1] = extent[1] - lat_offset
-				// extent[3] = extent[3] - lat_offset
-				center_coord[1] = center_coord[1] - lat_offset
-				// var resol_delta = resol / mpview.getResolution()
-				// mpview.setResolution(resol + resol*0.2)
-				mpview.setResolution(resol_scale)
+			
 				// mpview.adjustResolution(resol_delta)
 				
 				// console.log("debug-zsolmap ", 
@@ -1799,7 +1893,7 @@
 					
 			},
 			
-			testViewZoom(){
+			testZoomView(){
 				
 				// 河池
 				// coord = [107.89729588504589,24.663186754658177]
@@ -1810,17 +1904,17 @@
 				// var _this = this
 				// var total = 5
 				
-				
 				// var center_coord = computeCenter(extent)
 				
 				// this.locateViewportTo(center_coord, {extent: extent})
 				
-			
 				var mpview = this.map.getView()
 				
 				// 凤山县
-				var coord = [107.15964276350222,24.686252109169924]
-				var zoomLv = 12
+				// var coord = [107.15964276350222,24.686252109169924]
+				// var zoomLv = 12
+				var coord = [107.13999999999997,24.152569233398438]
+				var zoomLv = 9
 				// temp
 				mpview.setZoom(zoomLv)
 				
@@ -1843,6 +1937,92 @@
 				
 				// setTimeout(()=>{_loop()}, 4000);
 				// _loop()
+				
+			},
+			
+			// for service layer watching
+			onGpsLocationChanged_(newVal, oldVal, ownerInstance){
+				
+				this.updateSelfLocation(newVal, {oldVal: oldVal})
+			},
+			// for service layer  watching
+			onCompassChanged_(newVal,oldVal, ownerInstance){
+				this.updateSelfLocation({"compassOrientation":newVal}, {oldVal: oldVal})
+			},
+			
+			updateSelfLocation(data, opts){
+				
+				const evt = data
+				
+				opts = opts || {}
+				var viewportFollowed = opts["viewportFollow"] || false
+				var viewportFollowTolerance = opts["viewportFollowTolerance"] || 0.1
+				
+				
+				var lyr = this.getLayer(this.selfGpsLocationLayerName)[0]
+				if(!lyr){
+					console.log(`debug-zsolmap attemp to update the self location\n`, 
+					`but not found layer '${this.selfGpsLocationLayerName}'\n,`, 
+					`maybe you need to add a layer by vue componet instance or modify props's selfGpsLocationLayerName to accurate value`)
+					return;
+				}
+				// console.log("debug-spot survey ", lyr)
+				var feats = lyr.getSource().getFeatures()
+				const featNum = feats.length
+				var feat = feats[featNum-1]
+				if(!feat){
+					return
+				}
+				// if(feat==null || feat==undefined)
+				// {
+				// 	feat = new Feature()
+				// 	feat.setGeometry(new Point([112,25]))
+				// 	lyr.getSource().addFeature(feat)
+				// }
+				// console.log("debug-zsolmap updateSelfLocation ", feat)
+				
+				if(evt.longitude)
+				{
+					
+					// const lon = evt.longitude
+					// const lat = evt.latitude
+					const geom = feat.getGeometry()
+					const coord = [ evt.longitude, evt.latitude]
+					// var originCoord = geom.getCoordinates()
+					geom.setCoordinates(coord)
+					// if(this.urfGpsLocCoordsHistory.length>50){
+					// 	// push to server then save them
+					// 	// uni.request()
+					// 	const temp =  this.urfGpsLocCoordsHistory.slice()
+					// 	this.urfGpsLocCoordsHistory.clear()
+					// }
+					// this.urfGpsLocCoordsHistory.push(coord)
+					
+					if(viewportFollowed && opts["oldVal"]){
+						
+						const lastCoord = [opts["oldVal"]["longitude"], opts["oldVal"]["latitude"]]
+						const dx = lastCoord[0] - coord[0]
+						const dy = lastCoord[1] - coord[1]
+						var dist = Math.sqrt(dx*dx + dy*dy)
+						
+						// console.log("debug-zsolmap update self location ", opts["oldVal"], this.urfselfLocViewportFollowDistAccu, dist,dx,dy)
+						this.urfselfLocViewportFollowDistAccu = this.urfselfLocViewportFollowDistAccu + dist
+						if(viewportFollowTolerance<this.urfselfLocViewportFollowDistAccu)
+						{
+							this.locateViewportTo(coord, {mode:"byCenter"})
+							this.urfselfLocViewportFollowDistAccu = 0
+						}
+					}
+				}
+				
+				if(evt.compassOrientation)
+				{
+					// feat.setProperties({orientation: evt.compassOrientation})
+					
+					const style = lyr.getStyle()
+					style.getImage().setRotation( evt.compassOrientation* 3.14/360 )
+					feat.setStyle(style)
+				}
 				
 			},
 			
@@ -1955,7 +2135,8 @@
 			getLayer(target, opts){
 				
 				var typ = (typeof target)
-				var retLyr
+				// var retLyr = null
+				var retLyr = []
 				// console.log("debug-zsolmap getLayer ", typ, target instanceof Number)
 				if(typ == 'number'){
 					retLyr = this.findLayer_((lyr)=>{return lyr.get("xseqid")==target})
@@ -1973,16 +2154,25 @@
 				
 				// var alLyrs = this.map.getAllLayers()
 				// var newName = `${doodleNamePrefix}1-${name}`
-				var foundLyrs = this.map.getAllLayers().filter(
-					condition
-					// (lyr)=>{
-					// 	// const lyrName = lyr.get("xname") || ""
-					// 	// return lyrName.includes(doodleNamePrefix) 
-					// 	var layerItem = lyr.get("xlayerItem")||{}
-					// 	return layerItem["lyrSrcLocation"]==lyrSrcLocation
-					// }
-				)
-				return foundLyrs
+				
+				// maybe called before map initialized
+				// so judge it
+				if(this.map)
+				{
+					var foundLyrs = this.map.getAllLayers().filter(
+						condition
+						// (lyr)=>{
+						// 	// const lyrName = lyr.get("xname") || ""
+						// 	// return lyrName.includes(doodleNamePrefix) 
+						// 	var layerItem = lyr.get("xlayerItem")||{}
+						// 	return layerItem["lyrSrcLocation"]==lyrSrcLocation
+						// }
+					)
+					return foundLyrs
+				}
+				
+				return []
+			
 			},
 			
 			setLayerVisibleById(id, enabled = true){
@@ -2161,14 +2351,16 @@
 					featSel = this.setupFeatureSelection()
 				}
 				
+				const map = this.map
+				
 				if(this.rfusedMode=="edit")
 				{
 				
 					if(interactionType=="select")
 					{
 						
-						closeDrawInteraction(this.map, "default")
-						closeFeatureModification(this.map, "default")
+						closeDrawInteraction(map, "default")
+						closeFeatureModification(map, "default")
 						// this.urffeatModification = openFeatureModification(this.map, "default", {
 						// 	// features:this.urffeatSelector.getFeatures()
 						// 	features:featSel.getFeatures()
@@ -2178,9 +2370,9 @@
 					{
 						
 						// var sel = getFeatureSelection("singleclick")
-						var sel = this.setupFeatureSelection(this.map, "singleclick")
+						var sel = this.setupFeatureSelection(map, "singleclick")
 						// this.urffeatModification = 
-						var modifier = openFeatureModification(this.map, "default", 
+						var modifier = openFeatureModification(map, "default", 
 										{
 											// features:this.urffeatSelector.getFeatures()
 											// features:featSel.getFeatures()
@@ -2199,13 +2391,15 @@
 						// 	featSel.getFeatures().pop()
 						// }
 						
-						var drawIntr = openDrawInteraction(this.map, "default", 
+						var drawIntr = openDrawInteraction(map, 
+										"default", 
 										this.urfdrawStoreLyr,
+										
+										this.urfdrawOpts,
 										// {
 										// 	type:"base",
 										// 	drawStyleTheme:this.rfdrawStyleTheme
 										// },
-										this.urfdrawOpts,
 										)
 						
 						drawIntr.on("drawend", 
@@ -2234,8 +2428,8 @@
 							
 						)
 						
-						closeFeatureSelection(this.map, "singleclick")
-						closeFeatureModification(this.map, "default")
+						closeFeatureSelection(map, "singleclick")
+						closeFeatureModification(map, "default")
 					}
 					else if(interactionType=="$back"){
 						
@@ -2259,11 +2453,11 @@
 				}
 				else if(this.rfusedMode=="view")
 				{
-					closeFeatureModification(this.map, "default")
-					closeDrawInteraction(this.map, "default")
+					closeFeatureModification(map, "default")
+					closeDrawInteraction(map, "default")
 					// closeFeatureSelection(this.map, "singleclick")
 					if(interactionType!="select"){
-						closeFeatureSelection(this.map, "singleclick")
+						closeFeatureSelection(map, "singleclick")
 					}
 				}
 				
@@ -2347,13 +2541,14 @@
 						 if(geomType=="point")
 						 {
 							 drawOpts["vectorType"] = "Point"
-							 drawOpts["type"] = "default"
+							 drawOpts["type"] = "Shape"
 							 drawOpts["drawStyleTheme"] = null
 						 }
 						this.urfdrawOpts = drawOpts
 						this.urfdrawStoreLyr = foundLyr
 					}
-					else if(drawerClass=="Doodle"){
+					else if(drawerClass=="Doodle")
+					{
 						
 						drawOpts["type"] = "Doodle"
 						 // drawOpts["drawStyleTheme"] = "base"
@@ -2371,10 +2566,6 @@
 								
 				}
 					
-				
-				
-				 
-				
 				return success
 			},
 			

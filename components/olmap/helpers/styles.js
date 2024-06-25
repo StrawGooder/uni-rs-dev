@@ -138,7 +138,8 @@ export function createStyle(styleLike){
 		}
 	}
 	
-	var style = styleLike["geomStyle"]
+	var style = styleLike
+	var geom_style = style["geomStyle"]
 	var text_style = style["labelStyle"] || style["textStyle"]
 	if(style!=null || text_style!=null)
 	{
@@ -146,11 +147,12 @@ export function createStyle(styleLike){
 		// 	"color":style["color"] || "black",
 		// 	"width":style["width"] || "1px"
 		// }
-		style_final["stroke"]["color"] = style["color"] || style_final["stroke"]["color"]
-		style_final["stroke"]["width"] = style["width"] || style_final["stroke"]["width"]
+		style_final["stroke"]["color"] = geom_style["color"] || style_final["stroke"]["color"]
+		style_final["stroke"]["width"] = geom_style["width"] || style_final["stroke"]["width"]
 		
 		
 		var text_style_func = null
+		// console.log("debug-zsolmap label style  ", text_style)
 		
 		if(text_style==null)
 		{
@@ -170,7 +172,7 @@ export function createStyle(styleLike){
 									text: createTextStyleObject(feat, resol, text_style)
 								}
 							)
-							// console.log("debug-ollayer ", s.getText())
+							// console.log("debug-zsolmap label style  ", s.getText())
 							return s
 					}
 			

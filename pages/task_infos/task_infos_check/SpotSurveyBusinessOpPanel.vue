@@ -15,7 +15,7 @@
 
 		<ZsTabs
 		:type="rftabId"
-		:value="1"
+		:value="4"
 		>
 			
 			<ZsTab
@@ -178,7 +178,7 @@ export default {
 				
 				
 				rftabId:"ssptb",
-				rfcurTabInd:1,
+				rfcurTabInd:4,
 				// rfcurTabInd:2,
 				rftabRefName:"tabs"
 			};

@@ -7,7 +7,6 @@
 			:rows = "rftbRows"
 			:columns = "rftbColumns"
 			show-oper
-			
 			>
 			
 				<template #operCol = "slotProps"
@@ -38,7 +37,7 @@
 						<swiper
 						id="swiper-spot"
 						:duration="300" 
-						:current="0" 
+						:current="rfrightPanelTabInd" 
 						style="width:480rpx;"
 						>
 							<swiper-item>								
@@ -118,7 +117,8 @@
 </template>
 
 <script>
-	import { getShpOne,getFakeShpData } from '@/utils/getData.js';
+	import { getShpOne } from '@/utils/getData.js';
+	import { getFakeShpData } from '@/utils/getVectorData';
 	import ZsLhTable from '@/components/zs-components/zs-table/ZsLhTable.vue';
 	import ZsButtonGroup from '@/components/zs-components/zs-button-group/ZsButtonGroup.vue';
 	import SpotItemDetail from './SpotItemDetail.vue';
@@ -152,7 +152,6 @@
 		},
 		spotDetectClass:{
 			key:"tblx",
-			
 		},
 		spotArea:{
 			key:"dkmj",
@@ -182,7 +181,9 @@
 				rftbBtnItems:[{text:"详情","name":"detail"},{text:'填报', "name":"writeInfo"},{text:"拍照","name":"takePhoto"}],
 				
 				// right side panel
-				rfrightSidePanelVisible:false
+				rfrightSidePanelVisible:false,
+				
+				rfrightPanelTabInd:0,
 			}
 		},
 		methods: {
@@ -212,13 +213,28 @@
 				
 				console.log("debug-SpotItemsViewPanel ", evt, row)
 				
+				const btnKey = evt["btnKey"]
+				if(btnKey){
+					var ind = this.urftbBtnKeyToInd[btnKey]
+					this.rfrightPanelTabInd = ind
+				}
 				this.rfrightSidePanelVisible = true
 			},
 			
 			hideRightSidePanel(){
 				this.rfrightSidePanelVisible=false
-			}
+			},
+			
+			
 		},
+		
+		created(){
+			
+			const urftbBtnKeyToInd = {}
+			this.rftbBtnItems.forEach((e,i)=>{urftbBtnKeyToInd[e["name"]] = i})
+			this.urftbBtnKeyToInd = urftbBtnKeyToInd
+		},
+		
 		mounted() {
 			//获取图斑信息
 			// this.getTBInfor();

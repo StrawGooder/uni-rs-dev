@@ -454,6 +454,7 @@
 
 						_this.$refs["map"].addLayer(lyrObj,  "city", "default")	
 				
+						_this.rfmapVm.setDrawLayer("city")
 						// $store.dispatch("findLayers",
 						// // {"name":"city"},
 						// {"field":"name","value":"city"}
@@ -511,7 +512,7 @@
 					(result)=>{
 						
 						result.getSource().on("featuresloadend", ()=>{_this.testSyncGPS()})
-						_this.rfmapVm.addLayer(result, "gps_user_self", "default")
+						_this.rfmapVm.addLayer(result, "user_self_location", "default")
 					
 					}	
 				)
@@ -534,11 +535,15 @@
 				// _this.rfmapVm.createDoodleLayer("default", "red", 4)
 				// _this.rfmapVm.startDoodle("default")
 				
+				
+				
+				
 			},
 			
 			testSyncGPS(){
 				
-				var lyr = this.rfmapVm.getLayer("gps_user_self")[0]
+				var this_ = this
+				var lyr = this_.rfmapVm.getLayer("user_self_location")[0]
 				// console.log("debug-spot survey ", lyr)
 				var feat = lyr.getSource().getFeatures()[0]
 				// var feat = lyr.getSource().forEachFeature((feat)=>{console.log("debug-spot survey ", feat)})
@@ -550,14 +555,29 @@
 				
 				var loopNum = 5
 				
-				
 				const loop_ = function(){
 					
+					
+					const lastCoord = originCoord.slice()
 					originCoord[0] = originCoord[0] + vx
-					geom.setCoordinates(originCoord)
+					// geom.setCoordinates(originCoord)
+					
+					this_.rfmapVm.updateSelfLocation({
+						longitude:originCoord[0], 
+						latitude:originCoord[1],
+						compassOrientation:Math.random()*180,
+						}, 
+						{"viewportFollow":true,
+						"viewportFollowTolerance":0.01,
+						"oldVal":{
+							longitude:lastCoord[0],
+							latitude:lastCoord[1]
+						}
+						},
+						)
 					// loopNum--
 					if(loopNum-->0){
-							setTimeout(loop_, 2000)
+						setTimeout(loop_, 2000)
 					}
 				}
 				
@@ -568,6 +588,8 @@
 			},
 			
 			updateGpsLocationToMap(data){
+				
+				
 				
 				const evt = data
 				
@@ -583,17 +605,19 @@
 					
 					// const lon = evt.longitude
 					// const lat = evt.latitude
-					const geom = feat.getGeometry()
-					const coord = [ evt.longitude, evt.latitude]
-					// var originCoord = geom.getCoordinates()
-					geom.setCoordinates(coord)
-					if(this.urfGpsLocCoordsHistory.length>50){
-						// push to server then save them
-						// uni.request()
-						const temp =  this.urfGpsLocCoordsHistory.slice()
-						this.urfGpsLocCoordsHistory.clear()
-					}
-					this.urfGpsLocCoordsHistory.push(coord)
+					// const geom = feat.getGeometry()
+					// const coord = [ evt.longitude, evt.latitude]
+					// // var originCoord = geom.getCoordinates()
+					// geom.setCoordinates(coord)
+					// if(this.urfGpsLocCoordsHistory.length>50){
+					// 	// push to server then save them
+					// 	// uni.request()
+					// 	const temp =  this.urfGpsLocCoordsHistory.slice()
+					// 	this.urfGpsLocCoordsHistory.clear()
+					// }
+					// this.urfGpsLocCoordsHistory.push(coord)
+					
+					// this.rfmapVn.updateSelfLocation({coord:coord}, {"viewportFollow":true})
 				}
 				
 				if(evt.compassOrientation){
@@ -608,13 +632,14 @@
 				const lat = evt.latitude
 				const speed = evt.speed
 				// console.log("debug-spot_survey_work_page gps location ", evt)
-				this.updateGpsLocationToMap(evt)
+				// this.updateGpsLocationToMap(evt)
+				
 				
 			},
 			
 			onCompassChanged(evt){
 				
-				this.updateGpsLocationToMap({"compassOrientation":evt})
+				// this.updateGpsLocationToMap({"compassOrientation":evt})
 				console.log("debug-spot_survey_work_page compass", evt)
 			}
 		},
