@@ -15,14 +15,52 @@
 			</view> -->
 			<!-- </uni-list> -->
 
-			<view
+		<!-- 	<view
 			class="zs-hlyt"
 			>
 				<EditToolbar>
 					
 				</EditToolbar>
 				
-			</view>
+			</view> -->
+			
+			<ZsTabs
+			:type="rftabId"
+			:value="0"
+			>
+				<template
+				#tab-bar
+				>
+					<EditToolbar>
+						
+					</EditToolbar>
+				</template>
+				<ZsTab
+				:name="makeTabKey('editOption')"
+				label="editOption"
+				>
+					<!-- <view>
+						aaa
+					</view> -->
+					
+					<view style="display: flex;justify-content: end;">
+						<SingleMultiCheckGroup
+						@change="onSingleMultiCheckGroupChanged"
+						
+						/>
+					</view>
+					<MapObjLayerCtrlPanel
+					
+					hideImg
+					disableOp
+					selectable
+					:selectMode="rfselectMode"
+					>
+						
+					</MapObjLayerCtrlPanel>
+				</ZsTab>
+				
+			</ZsTabs>
 		</scroll-view>
 	
 	</view>
@@ -35,9 +73,24 @@
 	import xflSelect from '@/components/xfl-select/xfl-select.vue'; //导入
 	import ZsButtonSta2 from "@/components/zs-components/zs-button-group/ZsButtonSta2.vue"
 	import EditToolbar from '@/pages/mapViewPage/buttonGroup/EditToolbar.vue';
+	import ZsTab from '@/components/zs-components/zs-tabs/ZsTab.vue';
+	import ZsTabs from '@/components/zs-components/zs-tabs/ZsTabs.vue';
+	import MapObjLayerCtrlPanel from '../../mapViewPage/panels/MapObjLayerCtrlPanel.vue';
+	import SingleMultiCheckGroup from "@/components/zs-components/zs-form/ZsSingleMultiCheckForm.vue"
 	import {mapMutations} from "vuex"
+	
 	export default {
 		name:"MapEditCtrlPanel",
+		
+		components: {
+			xflSelect,
+			ZsButtonSta2,
+			EditToolbar,
+			ZsTabs,
+			ZsTab,
+			MapObjLayerCtrlPanel,
+			SingleMultiCheckGroup,
+		}, //注册为子组件
 		props: ['id'],
 		data() {
 			return {
@@ -45,14 +98,13 @@
 				device: '',
 				list: [], //要展示的数据	,
 				
-				drawStyleDataList:["base", "metric"]
+				drawStyleDataList:["base", "metric"],
+				
+				rftabId:"tabMapCtrl",
+				
+				rfselectMode:"single"
 			}
 		},
-		components: {
-			xflSelect,
-			ZsButtonSta2,
-			EditToolbar
-		}, //注册为子组件
 		methods: {
 			
 			// ...mapMutations(
@@ -96,6 +148,17 @@
 				var val = event["newVal"]
 				uni.$emit("map::setProps", {"drawTheme":val})
 				// console.log("debug-spaanal ", val)
+			},
+			
+			makeTabKey(name){
+				return this.rftabId+"_"+name
+			},
+			
+			onSingleMultiCheckGroupChanged(item){
+				if( item["checked"]){
+					const index = item["index"]
+					this.rfselectMode = index==1?"single":"multi";
+				}
 			}
 		},
 		mounted() {

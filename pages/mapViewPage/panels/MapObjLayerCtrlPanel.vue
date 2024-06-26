@@ -6,22 +6,30 @@
 	>
 		
 		<uni-section
+		v-if="!hideVector"
 		:type="rfsectType"
 		title="矢量"
+		
 		>
-			<view  :class="rfsecContainerClass">
+			<view  
+			:class="rfsecContainerClass">
 				<!-- rfvecItems -->
 				<!-- computedVecItems -->
 				<MapObjListItem 
 				v-for="it in rfvecItems"
 				:key="it.key"
 				v-bind="it"
-				@clickButton="onButtonClicked"
+				:hideOpBtn="disableOp"
+				@clickButton="onMapObjItemBtnClicked"
+				@clickItem="onMapObjItemClicked"
+				:class="determineListItemClass(it)"	
+				
 				/>			
 			</view>
-		
+
 		</uni-section>
 		<uni-section
+		v-if="!hideImg"
 		:type="rfsectType"
 		title="影像"
 		>
@@ -151,6 +159,28 @@ export default {
 		status:{
 			type:String,
 			default:"normal"
+		},
+		
+		hideVector:{
+			type:Boolean
+		},
+		hideImg:{
+			type:Boolean
+		},
+		hideDoodle:{
+			type:Boolean
+		},
+		disableOp:{
+			type:Boolean
+		},
+		selectable:{
+			type:Boolean
+		},
+		selectMode:{
+			type:String,
+			default:"single",
+			// options: multi single
+			// multi single
 		}
 		
 	},
@@ -188,6 +218,9 @@ export default {
 			rfUpd:false,
 			// rfVecToItem:{},
 			// rfImgToItem:{},
+			
+			rfclickedItemInd:-1,
+			rfcheckedItemIndArr:[],
 		}
 	},
 	
@@ -253,38 +286,13 @@ export default {
 		
 		// this.rfvecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
 		// console.log(`debug-mapobj this.rfvecItems`,  this.$store.getters)
-		var lyrs_sto = this.$store.state.map.layers
-		var lyr_arr = []
-		var seqids = []
-		for(var k in lyrs_sto){
-			// seqids.push(k)
-			lyr_arr.push(lyrs_sto[k])
-		}
-		lyr_arr = lyr_arr.sort( (x,y)=>{
-				// console.log("debug sort", x["seqid"],y["seqid"]); 
-				// return x["seqid"] > y["seqid"]; 
-				const a = x["seqid"]
-				const b = y["seqid"]
-				// if( a > b ){
-				// 	return 1
-				// }
-				// else if(a<b){
-				// 	return 0
-				// }
-				if( a < b ){
-					return 1
-				}
-				else if(a > b){
-					return -1
-				}
-				return 0
-			}
-		)
-		// this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
-		this.rfvecItems = transformDatas( lyr_arr, _item_data_trans_map_table)
 		
-		console.log(`debug-MapObjLayerCtrlPanel rfvecItems`, this.rfvecItems, this.$store.state.map.layers)
-		// this.urfItemDataTransMapTable = 
+	
+	},
+	
+	mounted(){
+		// this.init_()
+		setTimeout(this.init_.bind(this), 512)
 	},
 	
 	methods:{
@@ -335,9 +343,16 @@ export default {
 		},
 		
 		
-		
+		determineListItemClass(item){
+			
+			const isClicked = item["seqid"]==this.rfclickedItemInd?true:false
+			if(this.selectable && isClicked){
+				return "map-obj-list-item-clicked"
+			}
+			return "map-obj-list-item"
+		},
 	
-		onButtonClicked(ev){
+		onMapObjItemBtnClicked(ev){
 			
 			var evData = ev["data"]
 			var btnKey = ev["btnKey"]
@@ -366,6 +381,55 @@ export default {
 			// 	this.$emit("clickItem", {"seqid": mapObjId})
 			// }
 			
+		},
+		
+		onMapObjItemClicked(ev){
+			
+			const item = ev["item"]
+			
+			// if(item["seqid"]==)
+			this.rfclickedItemInd = item["seqid"]
+			
+			console.log("debug-zsmapobjlistpanel ", ev)
+		},
+		
+		init_(){
+			
+			var lyrs_sto = this.$store.state.map.layers
+			var lyr_arr = []
+			var seqids = []
+			for(var k in lyrs_sto){
+				// seqids.push(k)
+				lyr_arr.push(lyrs_sto[k])
+			}
+			lyr_arr = lyr_arr.sort( (x,y)=>{
+					// console.log("debug sort", x["seqid"],y["seqid"]); 
+					// return x["seqid"] > y["seqid"]; 
+					const a = x["seqid"]
+					const b = y["seqid"]
+					// if( a > b ){
+					// 	return 1
+					// }
+					// else if(a<b){
+					// 	return 0
+					// }
+					if( a < b ){
+						return 1
+					}
+					else if(a > b){
+						return -1
+					}
+					return 0
+				}
+			)
+			// this.rfvecItems = transformDatas( this.$store.getters.computedLayers, _item_data_trans_map_table)
+			this.rfvecItems = transformDatas( lyr_arr, _item_data_trans_map_table)
+			
+			console.log(`debug-MapObjLayerCtrlPanel rfvecItems`, this.rfvecItems, 
+			// this.$store.state.map.layers
+			lyr_arr
+			)
+			
 		}
 		
 	},
@@ -380,6 +444,9 @@ export default {
 		/* color:yellow */
 	}
 	
+	.map-obj-list-item-clicked{
+		background-color:pink;
+	}
 
 	
 </style>

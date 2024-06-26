@@ -6,17 +6,23 @@
 		:scroll-into-view="scrollId" 
 		scroll-with-animation
 		>
-			<view 
-			v-for="(item,index) in tabList" 
-			class="tab-bar-item" 
-			:class="{'active':tabIndex==index}" 
-			:id="`tab_${index}`" 
-			:style="[{'padding':`0 ${tabSpacing}rpx`},tabIndex==index?activeTextStyle:defaultTextStyle]" 
-			:key="index" 
-			@click="switchTab(index)">
-				<text class="txt">{{item.label}}</text>
-				<text class="active-line" v-if="tabIndex==index" :style="[activeLineStyle]"></text>
-			</view>
+	
+			<slot name="tab-bar"
+			v-bind:data="tabList"
+			>
+				<view
+				v-for="(item,index) in tabList" 
+				class="tab-bar-item" 
+				:class="{'active':tabIndex==index}" 
+				:id="`tab_${index}`" 
+				:style="[{'padding':`0 ${tabSpacing}rpx`},tabIndex==index?activeTextStyle:defaultTextStyle]" 
+				:key="index" 
+				@click="switchTab(index)">
+					<text class="txt">{{item.label}}</text>
+					<text class="active-line" v-if="tabIndex==index" :style="[activeLineStyle]"></text>
+				</view>
+				
+			</slot>
 		</scroll-view>
 		<view 
 		class="tab-cont" 

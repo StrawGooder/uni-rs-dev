@@ -73,6 +73,7 @@
 				
 			</view>
 			<view 
+			v-if="!hideOpBtn"
 			style="width:50%; display: flex;justify-content: end;"
 			>
 				<ZsButtonGroup
@@ -141,6 +142,10 @@ export default {
 		xprops:{
 			type:Object,
 			default:()=>{return {}}
+		},
+		
+		hideOpBtn:{
+			type:Boolean
 		}
 		
 	},

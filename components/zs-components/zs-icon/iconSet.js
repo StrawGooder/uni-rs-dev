@@ -237,7 +237,7 @@ function getAllIconComponents(){
 }
 
 function createIconComponent(name, svg, props){
-	
+	// svg(String): svg syntax
 	// var default_props = {
 	// 		svg:{
 	// 			type:String,
