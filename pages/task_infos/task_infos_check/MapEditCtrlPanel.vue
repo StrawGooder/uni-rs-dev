@@ -26,12 +26,16 @@
 			
 			<ZsTabs
 			:type="rftabId"
-			:value="0"
+			:value="1"
+			
+			ref="tabs"
 			>
 				<template
 				#tab-bar
 				>
-					<EditToolbar>
+					<EditToolbar
+					@clickItem="onTabNavBarClicked"
+					>
 						
 					</EditToolbar>
 				</template>
@@ -43,21 +47,31 @@
 						aaa
 					</view> -->
 					
-					<view style="display: flex;justify-content: end;">
+				<!-- 	<view style="display: flex;justify-content: end;">
 						<SingleMultiCheckGroup
+						:mustCheckOne="0"
 						@change="onSingleMultiCheckGroupChanged"
-						
+						@selectAll="selectAllItem"
+						@selectNo="selectNoItem"
 						/>
 					</view>
 					<MapObjLayerCtrlPanel
-					
 					hideImg
 					disableOp
 					selectable
 					:selectMode="rfselectMode"
+					ref="map-obj-layer"
 					>
 						
-					</MapObjLayerCtrlPanel>
+					</MapObjLayerCtrlPanel> -->
+					<MapLayerEditSettingPanel/>
+				</ZsTab>
+				<ZsTab
+				:name="makeTabKey('createLayer')"
+				label="layer creation"
+				>
+					<MapVectorLayerCreatePanel/>
+					
 				</ZsTab>
 				
 			</ZsTabs>
@@ -75,8 +89,10 @@
 	import EditToolbar from '@/pages/mapViewPage/buttonGroup/EditToolbar.vue';
 	import ZsTab from '@/components/zs-components/zs-tabs/ZsTab.vue';
 	import ZsTabs from '@/components/zs-components/zs-tabs/ZsTabs.vue';
-	import MapObjLayerCtrlPanel from '../../mapViewPage/panels/MapObjLayerCtrlPanel.vue';
-	import SingleMultiCheckGroup from "@/components/zs-components/zs-form/ZsSingleMultiCheckForm.vue"
+	// import MapObjLayerCtrlPanel from '../../mapViewPage/panels/MapObjLayerCtrlPanel.vue';
+	// import SingleMultiCheckGroup from "@/components/zs-components/zs-form/ZsSingleMultiCheckForm.vue";
+	import MapLayerEditSettingPanel from './MapLayerEditSettingPanel.vue';
+	import MapVectorLayerCreatePanel from './MapVectorLayerCreatePanel.vue';
 	import {mapMutations} from "vuex"
 	
 	export default {
@@ -88,8 +104,12 @@
 			EditToolbar,
 			ZsTabs,
 			ZsTab,
-			MapObjLayerCtrlPanel,
-			SingleMultiCheckGroup,
+			// MapObjLayerCtrlPanel,
+			// SingleMultiCheckGroup,
+			// MapLayerEditSettingPanel,
+			MapLayerEditSettingPanel,
+			MapVectorLayerCreatePanel,
+			
 		}, //注册为子组件
 		props: ['id'],
 		data() {
@@ -157,8 +177,21 @@
 			onSingleMultiCheckGroupChanged(item){
 				if( item["checked"]){
 					const index = item["index"]
-					this.rfselectMode = index==1?"single":"multi";
+					this.rfselectMode = index==1?"multi":"single";
 				}
+			},
+			selectAllItem(){
+				
+				this.$refs["map-obj-layer"].selectAll()
+			},
+			selectNoItem(){
+				this.$refs["map-obj-layer"].selectNothing()
+			},
+			onTabNavBarClicked(evt){
+				
+				var btnKey = ev["btnKey"]
+				var evData = ev["data"]
+				
 			}
 		},
 		mounted() {

@@ -59,9 +59,9 @@
 		getShpOne
 	} from '@/utils/getData.js';
 	import xflSelect from '@/components/xfl-select/xfl-select.vue'; //导入
-	import ZsButtonSta2 from "@/components/zs-components/zs-button-group/ZsButtonSta2.vue"
-	import ZsButtonGroup from "@/components/zs-components/zs-button-group/ZsButtonGroup.vue"
-	import {mapMutations} from "vuex"
+	import ZsButtonSta2 from "@/components/zs-components/zs-button-group/ZsButtonSta2.vue";
+	import ZsButtonGroup from "@/components/zs-components/zs-button-group/ZsButtonGroup.vue";
+	import {mapMutations} from "vuex";
 	export default {
 		name:"ZsMapEditToolbar",
 		props: ['id'],
@@ -79,17 +79,18 @@
 							// {name:"select",icon:"b-pointerFill", iconDisabled:"b-pointer", color:"orange",colorDisabled:"black",status:0},
 							{name:"select",icon:"b-pointerFill",status:0},
 							// {name:"draw",icon:"pencilFill", iconDisabled:"pencil", color:"orange",colorDisabled:"black",status:0},
-							
 							{name:"draw", icon:"aspose-polygon", status:0},
 							{name:"doodle", icon:"aspose-doodle", status:0},
 							{name:"edit", icon:"stopBtn",iconDisabled:"pencilSquare", color:"blue",colorDisabled:"blue",status:0},
+							{name:"createLayer", icon:"b-layer-plus", status:0, color:"red"},
 							// {name:"edit", icon:"stopBtn",status:0},
-							{name:"rectangle", icon:"b-rectangle", status:0, borderWidth:2, borderColor:"red"},
-							{name:"polygon", icon:"b-polygon", status:0, bgColor:"red", bgColorDisabled:"white"},
-							{name:"circle", icon:"b-circle", status:0, bgColor:"green", bgColorDisabled:"white"},
-							{name:"point", icon:"crosshair2", status:0, bgColor:"yellow",bgColorDisabled:"white"},
-							{name:"point", icon:"aspose-forward", reflection:"x", status:0, color:"cyan"},
-							{name:"point", icon:"aspose-forward", status:0, color:"green"},
+							// {name:"rectangle", icon:"b-rectangle", status:0, borderWidth:2, borderColor:"red"},
+							// {name:"polygon", icon:"b-polygon", status:0, bgColor:"red", bgColorDisabled:"white"},
+							// {name:"circle", icon:"b-circle", status:0, bgColor:"green", bgColorDisabled:"white"},
+							// {name:"point", icon:"crosshair2", status:0, bgColor:"yellow",bgColorDisabled:"white"},
+							{name:"prevStep", icon:"aspose-forward", reflection:"x", status:0, color:"cyan"},
+							{name:"nextStep", icon:"aspose-forward", status:0, color:"green"},
+							
 						],
 				rfdrawStyleList:["normal", "metric"],
 				
@@ -132,24 +133,27 @@
 					// this.$store.setUseMode("")
 					// this.$store.setUseMode("")
 					// this.setMapUseMode(enabled?"edit":"view")
+					
 					// uni.$emit("map:setProps", {"usedMode":enabled})
-					uni.$emit("map:setProps", {"usedMode":enabled})
 				}
-				else
-				{
-					var enabled = evData["enabled"]
-					uni.$emit("map:setProps", 
-					// {"interactionType":enabled==true?btnKey:"$back", "pluginName":btnKey},
-					{
-						"interaction":{
-						"type":enabled==true?btnKey:"$back",
-						"pluginName":btnKey
-						},
-					}
-					)
-				}
-				
+				// temp comment
+				// else
+				// {
+				// 	var enabled = evData["enabled"]
+				// 	uni.$emit("map:setProps", 
+				// 	// {"interactionType":enabled==true?btnKey:"$back", "pluginName":btnKey},
+				// 	{
+				// 		"interaction":{
+				// 		"type":enabled==true?btnKey:"$back",
+				// 		"pluginName":btnKey
+				// 		},
+				// 	}
+				// 	)
+				// }
+
 				console.log("debug-zsolmap ", ev)
+				
+				this.$emit("clickItem", ev)
 				
 			},
 			

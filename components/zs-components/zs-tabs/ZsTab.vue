@@ -33,6 +33,7 @@
 	// // #endif
 </script>
 <script>
+	// development based on custom-tabs
 	export default {
 		name:"ZsTab",
 		props: ['label', 'name'],

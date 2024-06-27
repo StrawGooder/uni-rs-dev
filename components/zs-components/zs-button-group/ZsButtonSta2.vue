@@ -35,10 +35,12 @@
 	</view>
 	<view v-else
 	>
+		<!-- size="mini" -->
 		<button
 		:style="renderStyle()"
 		:class="rfImgClass"
 		@click="onClicked"
+		
 		>
 			<image
 			:src = "loadSVG(computedIcon)"

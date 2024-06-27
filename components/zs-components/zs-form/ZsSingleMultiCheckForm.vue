@@ -51,16 +51,28 @@ export default (
 				// 	]
 				default:()=>{
 					return [
-						{"label":"单选", "checkedVal":"0"},
+						{"label":"单选", "checkedVal":"0", "disabled":false},
 						{"label":"多选", "checkedVal":"1"}
 					]
 				}
 			},
-			checked:{
-				type:Array,
-				default:()=>{
-					return [true,false]
-				}
+			// checked:{
+			// 	type:Array,
+			// 	default:()=>{
+			// 		return [true,false]
+			// 	}
+			// },
+			multiChecked:{
+				type:Boolean,
+				default:false
+			},
+			selectAllOn:{
+				type:Boolean,
+				default:true,
+			},
+			selectNoOn:{
+				type:Boolean,
+				default:true,
 			}
 		}
 	}

@@ -220,7 +220,7 @@ export default {
 			// rfImgToItem:{},
 			
 			rfclickedItemInd:-1,
-			rfcheckedItemIndArr:[],
+			rfclickedItemIndArray:[],
 		}
 	},
 	
@@ -287,7 +287,7 @@ export default {
 		// this.rfvecItems = transformDatas(this.$store.state.map.layers, _item_data_trans_map_table)
 		// console.log(`debug-mapobj this.rfvecItems`,  this.$store.getters)
 		
-	
+		// this.rfclickedItemIndArray = []
 	},
 	
 	mounted(){
@@ -345,8 +345,8 @@ export default {
 		
 		determineListItemClass(item){
 			
-			const isClicked = item["seqid"]==this.rfclickedItemInd?true:false
-			if(this.selectable && isClicked){
+			// const isClicked = this.rfclickedItemIndArray.includes(item["seqid"])
+			if(this.selectable && this.rfclickedItemIndArray.includes(item["seqid"])){
 				return "map-obj-list-item-clicked"
 			}
 			return "map-obj-list-item"
@@ -387,10 +387,42 @@ export default {
 			
 			const item = ev["item"]
 			
-			// if(item["seqid"]==)
-			this.rfclickedItemInd = item["seqid"]
+			var seqid = item["seqid"]
 			
-			console.log("debug-zsmapobjlistpanel ", ev)
+			var clickedItemInds = this.rfclickedItemIndArray
+			// console.log("debug-zs map obj ctrl ", clickedItemInds, seqid)
+			var maxNum = clickedItemInds.length
+			var foundInd = clickedItemInds.indexOf(seqid)
+			
+			// console.log("debug-zs map obj ctrl ", foundInd)
+			if(foundInd>-1){
+				clickedItemInds = clickedItemInds.slice(0,foundInd).concat(clickedItemInds.slice(foundInd+1))
+				// clickedItemInds.concat()
+			}
+			else{
+				if(this.selectMode=="single"){
+					clickedItemInds.pop()
+				}
+				clickedItemInds.push(seqid)
+			}
+			this.rfclickedItemIndArray = clickedItemInds
+			// if(item["seqid"]==)
+			// this.rfclickedItemInd = item["seqid"]
+			
+			// this.rfclickedItemIndArray.push(item["seqid"])
+			console.log("debug-zsmapobjlistpanel ", this.rfclickedItemIndArray)
+			
+			
+		},
+		
+		selectAll(){
+			this.rfvecItems.forEach((x)=>{
+				this.rfclickedItemIndArray.push(x["seqid"])
+			})
+		},
+		
+		selectNothing(){
+			this.rfclickedItemIndArray = []
 		},
 		
 		init_(){

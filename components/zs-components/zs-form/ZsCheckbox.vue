@@ -9,7 +9,6 @@
 			<view
 			:class="rfclass"
 			>
-				
 				<view 
 				
 				:class="rfclass"
@@ -46,6 +45,9 @@ export default {
 		label:{
 			type:String,
 			default:""
+		},
+		disabled:{
+			type:Boolean,
 		}
     },
 
@@ -63,7 +65,7 @@ export default {
 			// rfchecked:true,
 			rfclass:{
 				"zs-checkbox-input":true, 
-				"zs-checkbox-input-checked":this.rfchecked,
+				"zs-checkbox-input-checked":this.checked,
 				// "zs-checkbox-input-checked":true,
 			},
 			
@@ -92,9 +94,16 @@ export default {
     methods:{
 
 		onClicked(){
-		
-			this.setCheck(!this.rfchecked)
-			this.$emit("click", this.rfchecked)
+			
+			var checkedNew;
+			if(this.disabled){
+				checkedNew = this.checked
+			}
+			else{
+				checkedNew = !this.rfchecked
+			}
+			this.setCheck(checkedNew)
+			this.$emit("click", checkedNew)
 		},
 		
 		setCheck(val){

@@ -35,6 +35,32 @@
 		>
 			
 		</ZsCheckbox>
+		
+	<!-- 	<ZsCheckbox
+		v-if="selectAll"
+		v-for="(it,ind) in items"
+		:key="ind"
+		v-bind="it"
+		:ref="`cb${ind}`"
+		@click="(v)=>change(v,ind)"
+		>
+		</ZsCheckbox> -->
+		<button
+		v-if="selectAllOn"
+		@click="selectAllItem"
+		type="primary"
+		size="mini"
+		>
+			全选
+		</button>
+		<button
+		v-if="selectNoOn"
+		@click="selectNoItem"
+		type="warn"
+		size="mini"
+		>
+			清除
+		</button>
     </view>
     
 </template>
@@ -53,22 +79,30 @@ export default {
 			type:Array,
 			default:()=>{return []}
 		},
-		checked:{
-			type:Array,
-			default:()=>{return []}
-		},
-		// value:{
-		// 	type:Number,
-		// 	default:0
-		// },
 		multiChecked:{
 			type:Boolean,
 			// default:"single"
 		},
-		musteCheckOne:{
+		mustCheckOne:{
+			type:Number,
+			default:-1
+		},
+		selectAllOn:{
 			type:Boolean,
-			default:true
+			default:false,
+		},
+		selectNoOn:{
+			type:Boolean,
+			default:false,
 		}
+		// checked:{
+		// 	type:Array,
+		// 	default:()=>{return []}
+		// },
+		// value:{
+		// 	type:Number,
+		// 	default:0
+		// },
     },
 
     components:{
@@ -106,9 +140,33 @@ export default {
 		// 	this.rfcheckVals[1] = 1
 		// }
 		// this.rfcheckVals[this.value-1] = 1 
-		this.rfcheckVals[this.value] = true
-		console.log("debug-zs checkboxGroup ", this.items)
-		this.urfcheckedValRecord = this.checked.slice()
+		// this.rfcheckVals[this.value] = true
+		// console.log("debug-zs checkboxGroup ", this.items)
+		// this.urfcheckedValRecord = this.checked.slice()
+		
+		const items = this.items
+		
+		
+		const mustCheckInd = this.mustCheckOne
+		if(mustCheckInd>-1)
+		{
+			
+			var hasChecked = false
+			
+			for(var i in items){
+				
+				if(items[i]["checked"] == true){
+					hasChecked = true
+					break
+				}
+			}
+			if(!hasChecked){
+				items[mustCheckInd]["checked"] = true
+			}
+		}
+		
+		this.urfcheckedValRecord = items.map((x)=>{return x["checked"]})
+		this.urfcheckedArray = []
     },
 
     methods:{
@@ -120,8 +178,6 @@ export default {
 			
 			const evtSentData = {"index":index, checked:checked, value:checked?this.items[index]["checkedVal"] : null}
 
-			
-			console.log("debug-zs checkbox group", this.$refs)
 			if(!this.multiChecked)
 			{
 				var cbVm
@@ -142,16 +198,41 @@ export default {
 			}
 			else{
 				
-				evtSentData["checkedArray"] = this.urfcheckedValRecord
+				// evtSentData["checkedArray"] = this.urfcheckedValRecord
+				evtSentData["checkedArray"] = this.getChecked()
 				// this.$emit("change", {"index":index, checked:checked, value:checked?this.items[index]["checkedVal"] : null})
 			}
 
-			console.log("debug-zs single check", evtSentData)
+			// console.log("debug-zs checkbox group change emit ", evtSentData)
 			this.$emit("change", evtSentData)
 			// const cbVmName = `cb${index}`
 			// console.log("debug-zs single check", value, index, this.$refs['cb1'])
 			// this.$refs["cb2"].checkboxChecked = true
 			
+		},
+		
+		getChecked(){
+			
+			const checkedArray = []
+			
+			this.urfcheckedValRecord.forEach(
+				(x,i)=>{
+					if(x){
+						checkedArray.push({"index":i, "checkedVal":this.items[i]["checkedVal"]})
+					}
+				}
+			)
+			
+			return checkedArray
+			
+		},
+		
+		selectNoItem(){
+			this.$emit("selectNo")
+		},
+		
+		selectAllItem(){
+			this.$emit("selectAll")
 		}
     },
 
