@@ -5,7 +5,7 @@
 	@click="onclicked"
 	size="mini"
 	>
-	popup
+	palette
 	</button>
     
 </template>
@@ -17,10 +17,13 @@ import Vue from 'vue';
 
 export default {
     
-    name:"ZsColorPickerButton",
+    name:"ZsPaletteButton",
 
     props:{
-
+		name:{
+			type:String,
+			default:"paletteButton"
+		}
     },
 
     components:{},
@@ -47,6 +50,7 @@ export default {
     methods:{
 		onclicked(){
 			this.$emit("click")
+			uni.$emit("colorpicker:open", {"sender":this.name})
 		}
     },
 

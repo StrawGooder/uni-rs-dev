@@ -223,9 +223,35 @@
 					type: index > this.tabIndex ? 1 : 2
 				});
 			},
-			switchTab(index){
+			switchTab(target){
 				
-				var tab_key = this.tabList[index]["name"]
+				var tab_key;
+				var index;
+				var tabItem;
+				
+				if(typeof target == "number"){
+					index = target
+					tabItem= this.tabList[index]
+					// tab_key = tabItem["name"]
+				}
+				else if(typeof target=="string"){
+					
+					index = -1
+					for(var i in this.tabList)
+					{
+						if(this.tabList[i]["name"]==target){
+							index = i
+							tabItem = this.tabList[i]
+							break
+						}
+					}
+				}
+				
+				if(!tabItem){
+					console.log(`debug-zstabs attemp to switch tab to '${target}', but not found it`)
+					return
+				}
+				tab_key = tabItem["name"]
 				this.putChange(tab_key, index)
 				this.tabChange(index)
 				

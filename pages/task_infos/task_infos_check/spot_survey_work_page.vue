@@ -1,5 +1,16 @@
 <template>
 	<view>
+	<!-- 	<uni-popup
+		ref="popup"
+		>
+
+			
+		</uni-popup> -->
+		<!-- <ZsColorPicker
+		ref="color-picker"
+		>
+			
+		</ZsColorPicker> -->
 		<!-- <olMap  @func="chang_transition_top($event)"></olMap> -->
 		<!-- 地图模块向空间分析传值 -->
 
@@ -28,10 +39,9 @@
 		>
 			
 		</OlMap>	
-
+		
 		<ZsFloatBall>
 			<MapViewBasicCtrlPanel></MapViewBasicCtrlPanel>
-			
 		</ZsFloatBall>
 		
 		<ZsBottomPullup>
@@ -57,12 +67,19 @@
 				
 			</view> -->
 			<!-- 分析模块向地图模块传值 -->
+			
 			<SpotSurveyBusinessOpPanel>
 				
 			</SpotSurveyBusinessOpPanel>
 			
 		</ZsBottomPullup>
-		
+		<ZsColorPickerModal
+		>
+			
+		</ZsColorPickerModal>
+		<MapPopupPanel>
+			
+		</MapPopupPanel>
 		
 	</view>
 </template>
@@ -94,7 +111,9 @@
 	import ZsBottomPullup from "@/components/zs-components/zs-bottom-pullup/ZsBottomPullup.vue";
 	
 	import SpotSurveyBusinessOpPanel from "./SpotSurveyBusinessOpPanel.vue";
-	
+	// import ZsColorPicker from '@/components/zs-components/zs-form/ZsColorPicker.vue';
+	import ZsColorPickerModal from '@/components/zs-components/zs-form/ZsColorPickerModal.vue';
+	import MapPopupPanel from './MapPopupPanel.vue';
 	import { importLayer } from "@/components/olmap/layers";
 	
 	export default {
@@ -109,7 +128,10 @@
 			ZsFloatBall,
 			MapViewBasicCtrlPanel,
 			ZsBottomPullup,
-			SpotSurveyBusinessOpPanel
+			SpotSurveyBusinessOpPanel,
+			// ZsColorPicker,
+			ZsColorPickerModal,
+			MapPopupPanel,
 		},
 		data() {
 			return {
@@ -641,7 +663,17 @@
 				
 				// this.updateGpsLocationToMap({"compassOrientation":evt})
 				console.log("debug-spot_survey_work_page compass", evt)
-			}
+			},
+			
+			openColorPickerPanel(){
+				
+				this.$refs["popup"].open()
+				setTimeout(
+				()=>{
+						this.$refs["color-picker"].open()
+				}, 1000)
+				
+			},
 		},
 	};
 </script>

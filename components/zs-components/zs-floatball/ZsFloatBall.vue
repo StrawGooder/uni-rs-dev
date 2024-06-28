@@ -9,6 +9,7 @@
 				v-if = "!rfctrlPanelVisible"
 				icon="b-ring-fill"
 				color="bisque"
+				bgColor="#fffffff"
 				:size="32"
 				:status="0"
 				@click="onFloatBallClicked"

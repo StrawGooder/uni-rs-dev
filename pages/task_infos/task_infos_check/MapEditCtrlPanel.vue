@@ -1,6 +1,6 @@
 <template>
 	<view>
-	
+
 		<scroll-view 
 		scroll-y 
 		style="height: 384rpx;"
@@ -76,7 +76,7 @@
 				
 			</ZsTabs>
 		</scroll-view>
-	
+
 	</view>
 </template>
 
@@ -189,13 +189,17 @@
 			},
 			onTabNavBarClicked(evt){
 				
-				var btnKey = ev["btnKey"]
-				var evData = ev["data"]
+				var btnKey = evt["btnKey"]
+				var evData = evt["data"]
+				
+				uni.$emit("umodal:open:map", {tabKey:"editOption"})
 				
 			}
 		},
 		mounted() {
 			this.get_value()
+			
+			// this.$refs["popup"].open()
 		}
 	}
 </script>

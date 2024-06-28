@@ -11,7 +11,7 @@
 	
 
 <!-- style="top:0rpx;left:0rpx;position: fixed;" -->
-		<view
+	<!-- 	<view
 		style="position: fixed;top:0rpx;z-index: 999;"
 		>
 			<ZsColorPicker
@@ -19,7 +19,17 @@
 			>
 				
 			</ZsColorPicker>
-		</view>
+		</view> -->
+		<!-- <uni-popup
+		ref="popup"
+		>
+			<ZsColorPicker
+			ref="color-picker"
+			>
+				
+			</ZsColorPicker>
+			
+		</uni-popup> -->
 		
 		<view style="display: flex;justify-content: space-between;">
 			<h3>新建图层</h3>
@@ -56,11 +66,13 @@
 				<uni-forms-item
 				label="颜色"
 				>
-					<ZsColorPickerButton
+					<!-- <ZsColorPickerButton
 					@click="openColorPickerPanel"
 					>
 						
-					</ZsColorPickerButton>
+					</ZsColorPickerButton> -->
+					<!-- <ZsColorPicker></ZsColorPicker> -->
+					<ZsPaletteButton name="mvlcpPaletteBtn"></ZsPaletteButton>
 				</uni-forms-item>
 				<uni-forms-item
 				label="分组"
@@ -103,8 +115,10 @@
 import Vue from 'vue';
 import ZsButtonGroup from '@/components/zs-components/zs-button-group/ZsButtonGroup.vue';
 // import ZsButtonGroup from '../../../components/zs-components/zs-button-group/ZsButtonGroup.vue';
-import ZsColorPicker from '@/components/zs-components/zs-form/ZsColorPicker.vue';
-import ZsColorPickerButton from '@/components/zs-components/zs-form/ZsColorPickerButton.vue';
+// import ZsColorPicker from '@/components/zs-components/zs-form/ZsColorPicker.vue';
+// import ZsColorPicker from '@/components/zs-components/zs-form/ZsColorPicker.vue';
+import ZsPaletteButton from '@/components/zs-components/zs-form/ZsPaletteButton.vue';
+
 export default {
     
     name:"MapVectorLayerCreatePanel",
@@ -116,8 +130,9 @@ export default {
     components:{
 		
 		ZsButtonGroup,
-		ZsColorPicker,
-		ZsColorPickerButton
+		// ZsColorPicker,
+		ZsPaletteButton
+		// ZsColorPickerButton
 	},
 
     mixins:[],
@@ -153,7 +168,12 @@ export default {
 
 		openColorPickerPanel(){
 			
-			this.$refs["color-picker"].open()
+			this.$refs["popup"].open()
+			setTimeout(
+			()=>{
+					this.$refs["color-picker"].open()
+			}, 1000)
+			
 		},
 		onConfirm(){
 			
